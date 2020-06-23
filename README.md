@@ -25,7 +25,7 @@ G4LEDATA=/home/shogo/opt/Geant4/data/G4EMLOW7.1
 
 ## How to install the application
 1. Create a `build` directory to compile the application.
-2. Move to `build` directory. Then, do `cmake`and `make install`.
+2. Move to `build` directory. Then, do `cmake`and `make install`. A binary file `g4dna-bench` will be installed in `bin` directory.
 
 ```
 $ mkdir build
@@ -38,12 +38,12 @@ $ make install
 
 ## How to run simulation
 1. Create `work` directory. Then, move there.
-2. Copy `con.json` from `script` directory.
+2. Copy `con.json` from `config` directory.
 3. Run simulation.
 ```
 $ mkdir work
 $ cd work
-$ cp ../scripts/conf.json .
+$ cp ../config/conf.json .
 $ ../bin/g4dna-bench
 ```
 ### Simulaion option
