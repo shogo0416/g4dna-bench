@@ -159,14 +159,14 @@ void Application::Build() const
     G4DNAChemistryManager::Instance()->ResetCounterWhenRunEnds(false);
   }
 
-  auto pkind  = js["beam_particle"];
-  auto energy = js["beam_energy"].get<double>() * keV;
-  auto posx   = js["beam_source_pos"][0].get<double>() * um;
-  auto posy   = js["beam_source_pos"][1].get<double>() * um;
-  auto posz   = js["beam_source_pos"][2].get<double>() * um;
-  auto dirx   = js["beam_direction"][0];
-  auto diry   = js["beam_direction"][1];
-  auto dirz   = js["beam_direction"][2];
+  auto pkind  = ::js["beam_particle"];
+  auto energy = ::js["beam_energy"].get<double>() * keV;
+  auto posx   = ::js["beam_source_pos"][0].get<double>() * um;
+  auto posy   = ::js["beam_source_pos"][1].get<double>() * um;
+  auto posz   = ::js["beam_source_pos"][2].get<double>() * um;
+  auto dirx   = ::js["beam_direction"][0];
+  auto diry   = ::js["beam_direction"][1];
+  auto dirz   = ::js["beam_direction"][2];
 
   auto pgen = new PrimaryGenerator();
   pgen->SetParticle(pkind);
@@ -201,7 +201,7 @@ void Application::Setup(std::string conf_file)
   }
 
   fin >> ::js;
-  print_parameters();
+  ::print_parameters();
 
   // setup event number processing and thread number
   num_event_  = ::js["event_number"];
@@ -209,8 +209,8 @@ void Application::Setup(std::string conf_file)
 
   // setup event number processing, thread number, and seed
   auto seed = ::js["random_seed"];
-  G4Random::setTheEngine(new CLHEP::MTwistEngine);
-//  G4Random::setTheEngine(new CLHEP::RanecuEngine);
+//  G4Random::setTheEngine(new CLHEP::MTwistEngine);
+  G4Random::setTheEngine(new CLHEP::RanecuEngine);
   G4Random::setTheSeed(seed);
 
   // setup water phantom
