@@ -3,7 +3,8 @@
 [![geant4](https://img.shields.io/badge/geant4-10.5-blue.svg)](http://www.geant4.org/)
 [![geant4](https://img.shields.io/badge/geant4-10.6-green.svg)](http://www.geant4.org/)
 
-## Set Geant4 environment variables to specify the paths for data tables before compiling and running the application.
+## Before starting...
+Set Geant4 environment variables to specify the paths for data tables before compiling and running the application.
 
 ```
 $ env grep | G4
