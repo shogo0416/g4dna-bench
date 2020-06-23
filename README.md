@@ -1,9 +1,11 @@
 # g4dna-bench
 
+A benchmark application for Geant4-DNA radiolysis simulation
+
 [![geant4](https://img.shields.io/badge/geant4-10.5-blue.svg)](http://www.geant4.org/)
 [![geant4](https://img.shields.io/badge/geant4-10.6-green.svg)](http://www.geant4.org/)
 
-## Before starting...
+## Setup Geant4 enviroment variables
 Set Geant4 environment variables to specify the paths for data tables before compiling and running the application.
 
 ```
@@ -44,6 +46,16 @@ $ cd work
 $ cp ../scripts/conf.json .
 $ ../bin/g4dna-bench
 ```
+### Simulaion option
+
+```
+$ ../bin/g4dna-bench -h
+
+[Usage] g4dna-banch <options>
+[Options]
+  -h, --help             print this information
+  -c, --conf <file_name> set configuration file [defualt: conf.json]
+```
 
 ## Configuration file
 The configuration of the appilcation is described in `json` file:
@@ -66,3 +78,8 @@ The configuration of the appilcation is described in `json` file:
   "benchmark_file"      : "benchmark.json"
 }
 ```
+
+## Simulation geometry
+Target is a cubic water phantom (20 x 20 x 20 um3). Electrons with kinetic energy of 750 keV are shot from the center of the phantom.
+![geom](/misc/geom.png)
+
