@@ -1,6 +1,6 @@
 # g4dna-bench
 
-A benchmark application for Geant4-DNA radiolysis simulation
+A benchmark application for Geant4-DNA water radiolysis simulation
 
 [![geant4](https://img.shields.io/badge/geant4-10.5-blue.svg)](http://www.geant4.org/)
 [![geant4](https://img.shields.io/badge/geant4-10.6-green.svg)](http://www.geant4.org/)
