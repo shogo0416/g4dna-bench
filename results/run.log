@@ -1,0 +1,475 @@
+
+**************************************************************
+ Geant4 version Name: geant4-10-06-ref-05 [MT]   (31-May-2020)
+  << in Multi-threaded mode >> 
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+
+---------------------------------------------------------------
+ Parameters (g4dna-bench)
+---------------------------------------------------------------
+ - beam_direction : [0.0,0.0,1.0]
+ - beam_energy : 750
+ - beam_particle : "e-"
+ - beam_source_pos : [0.0,0.0,0.0]
+ - benchmark_file : "benchmark.json"
+ - chem_list : "G4EmDNAChemistry_option1"
+ - ele_solvation_model : "Meesungnoen2002"
+ - event_number : 14000
+ - kill_energy : [75.0,75.1]
+ - output_file : "gval.csv"
+ - phys_list : "G4EmDNAPhysics_option8"
+ - primary_removal : true
+ - random_seed : 123456789
+ - target_size : [20.0,20.0,20.0]
+ - thread_number : 14
+---------------------------------------------------------------
+
+
+### ===  Deexcitation model UAtomDeexcitation is activated for 1 region:
+          DefaultRegionForTheWorld  1  1  0
+### ===  Auger cascade flag: 1
+### ===  Ignore cuts flag:   1
+
+phot:  for gamma SubType=12 BuildTable=0
+      LambdaPrime table from 200 keV to 100 TeV in 61 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+ LivermorePhElectric : Emin=    0 eV  Emax=  100 TeV  SauterGavrila Fluo
+
+compt:  for gamma SubType=13 BuildTable=1
+      Lambda table from 100 eV  to 1 MeV, 7 bins/decade, spline: 1
+      LambdaPrime table from 1 MeV to 100 TeV in 56 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+    LivermoreCompton : Emin=    0 eV  Emax=  100 TeV Fluo
+
+conv:  for gamma SubType=14 BuildTable=1
+      Lambda table from 1.022 MeV to 100 TeV, 18 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+ LivermoreConversion : Emin=    0 eV  Emax=  100 TeV  ModifiedTsai
+
+Rayl:  for gamma SubType=11 BuildTable=1
+      Lambda table from 100 eV  to 100 keV, 7 bins/decade, spline: 0
+      LambdaPrime table from 100 keV to 100 TeV in 63 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   LivermoreRayleigh : Emin=    0 eV  Emax=  100 TeV  CullenGenerator
+
+e-_G4DNAElectronSolvation:  for e- SubType=58 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNAOneStepThermalizationModel_Meesungnoen2002 : Emin=    0 eV  Emax=   11 eV 
+
+e-_G4DNAElastic:  for e- SubType=51 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNACPA100ElasticModel : Emin=   11 eV  Emax=255.955 keV
+DNAChampionElasticModel : Emin=255.955 keV Emax=    1 MeV
+
+e-_G4DNAExcitation:  for e- SubType=52 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNABornExcitationModel : Emin=    0 eV  Emax=    1 MeV
+
+e-_G4DNAIonisation:  for e- SubType=53 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNABornIonisationModel : Emin=    0 eV  Emax=    1 MeV  deltaBorn Fluo
+
+e-_G4DNAVibExcitation:  for e- SubType=54 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNASancheExcitationModel : Emin=    0 eV  Emax=  100 eV 
+
+e-_G4DNAAttachment:  for e- SubType=55 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNAMeltonAttachmentModel : Emin=    0 eV  Emax=   13 eV 
+
+msc:  for e+  SubType= 10
+      RangeFactor= 0.04, stepLimType: 3, latDisp: 1, skin= 1, geomFactor= 2.5
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+eIoni:  for e+  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        MollerBhabha : Emin=    0 eV  Emax=  100 TeV
+
+eBrem:  for e+  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      LPM flag: 1 for E > 1 GeV,  VertexHighEnergyTh(GeV)= 100000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             eBremSB : Emin=    0 eV  Emax=    1 GeV  ModifiedTsai
+            eBremLPM : Emin=    1 GeV Emax=  100 TeV  ModifiedTsai
+
+annihil:  for e+, integral:1  SubType=5 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            eplus2gg : Emin=    0 eV  Emax=  100 TeV
+
+proton_G4DNAElastic:  for proton SubType=51 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  DNAIonElasticModel : Emin=    0 eV  Emax=    1 MeV
+
+proton_G4DNAExcitation:  for proton SubType=52 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNAMillerGreenExcitationModel : Emin=    0 eV  Emax=  500 keV
+DNABornExcitationModel : Emin=  500 keV Emax=  100 MeV
+
+proton_G4DNAIonisation:  for proton SubType=53 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNARuddIonisationModel : Emin=    0 eV  Emax=  500 keV  deltaRudd Fluo
+DNABornIonisationModel : Emin=  500 keV Emax=  100 MeV  deltaBorn Fluo
+
+proton_G4DNAChargeDecrease:  for proton SubType=56 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNADingfelderChargeDecreaseModel : Emin=    0 eV  Emax=  100 MeV
+
+GenericIon_G4DNAIonisation:  for GenericIon SubType=53 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNARuddIonisationExtendedModel : Emin=    0 eV  Emax=    1 TeV  deltaRudd Fluo
+
+alpha_G4DNAElastic:  for alpha SubType=51 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  DNAIonElasticModel : Emin=    0 eV  Emax=    1 MeV
+
+alpha_G4DNAExcitation:  for alpha SubType=52 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNAMillerGreenExcitationModel : Emin=    0 eV  Emax=  400 MeV
+
+alpha_G4DNAIonisation:  for alpha SubType=53 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNARuddIonisationModel : Emin=    0 eV  Emax=  400 MeV  deltaRudd Fluo
+
+alpha_G4DNAChargeDecrease:  for alpha SubType=56 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNADingfelderChargeDecreaseModel : Emin=    0 eV  Emax=  400 MeV
+
+alpha+_G4DNAElastic:  for alpha+ SubType=51 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  DNAIonElasticModel : Emin=    0 eV  Emax=    1 MeV
+
+alpha+_G4DNAExcitation:  for alpha+ SubType=52 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNAMillerGreenExcitationModel : Emin=    0 eV  Emax=  400 MeV
+
+alpha+_G4DNAIonisation:  for alpha+ SubType=53 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNARuddIonisationModel : Emin=    0 eV  Emax=  400 MeV  deltaRudd Fluo
+
+alpha+_G4DNAChargeDecrease:  for alpha+ SubType=56 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNADingfelderChargeDecreaseModel : Emin=    0 eV  Emax=  400 MeV
+
+alpha+_G4DNAChargeIncrease:  for alpha+ SubType=57 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNADingfelderChargeIncreaseModel : Emin=    0 eV  Emax=  400 MeV
+
+helium_G4DNAElastic:  for helium SubType=51 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  DNAIonElasticModel : Emin=    0 eV  Emax=    1 MeV
+
+helium_G4DNAExcitation:  for helium SubType=52 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNAMillerGreenExcitationModel : Emin=    0 eV  Emax=  400 MeV
+
+helium_G4DNAIonisation:  for helium SubType=53 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNARuddIonisationModel : Emin=    0 eV  Emax=  400 MeV  deltaRudd Fluo
+
+helium_G4DNAChargeIncrease:  for helium SubType=57 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNADingfelderChargeIncreaseModel : Emin=    0 eV  Emax=  400 MeV
+
+hydrogen_G4DNAElastic:  for hydrogen SubType=51 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  DNAIonElasticModel : Emin=    0 eV  Emax=    1 MeV
+
+hydrogen_G4DNAExcitation:  for hydrogen SubType=52 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNAMillerGreenExcitationModel : Emin=    0 eV  Emax=  500 keV
+
+hydrogen_G4DNAIonisation:  for hydrogen SubType=53 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNARuddIonisationModel : Emin=    0 eV  Emax=  100 MeV  deltaRudd Fluo
+
+hydrogen_G4DNAChargeIncrease:  for hydrogen SubType=57 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNADingfelderChargeIncreaseModel : Emin=    0 eV  Emax=  100 MeV
+[MESSAGE] Start: Mon Jun 22 14:09:55 2020
+### Run 0 starts.
+ Thread #8
+ - Total Event: 868 (Abort: 0, Chemistry: 868)
+ - Total Elapsed Time: 14924.7 sec
+   - Physics:   356.62 sec (0.410853 sec/event)
+   - Chemistry: 14568.1 sec (16.7835 sec/event)
+ - Throughput:
+   - Physics:   146.038 events/min.
+   - Chemistry: 3.57493 events/min.
+ - Number of Steps:
+   - Physics:   3076543
+   - Chemistry: 4406914
+ - Elapsed Time per Step:
+   - Physics:   0.115916 msec/step
+   - Chemistry: 3.30574 msec/step
+
+ Thread #3
+ - Total Event: 961 (Abort: 1, Chemistry: 960)
+ - Total Elapsed Time: 14989.6 sec
+   - Physics:   394.69 sec (0.410708 sec/event)
+   - Chemistry: 14594.9 sec (15.203 sec/event)
+ - Throughput:
+   - Physics:   146.089 events/min.
+   - Chemistry: 3.94659 events/min.
+ - Number of Steps:
+   - Physics:   3318006
+   - Chemistry: 4913473
+ - Elapsed Time per Step:
+   - Physics:   0.118954 msec/step
+   - Chemistry: 2.97038 msec/step
+
+ Thread #4
+ - Total Event: 887 (Abort: 1, Chemistry: 886)
+ - Total Elapsed Time: 14990.3 sec
+   - Physics:   361.65 sec (0.407723 sec/event)
+   - Chemistry: 14628.7 sec (16.5109 sec/event)
+ - Throughput:
+   - Physics:   147.159 events/min.
+   - Chemistry: 3.63395 events/min.
+ - Number of Steps:
+   - Physics:   2987492
+   - Chemistry: 4316896
+ - Elapsed Time per Step:
+   - Physics:   0.121055 msec/step
+   - Chemistry: 3.38871 msec/step
+
+ Thread #2
+ - Total Event: 930 (Abort: 1, Chemistry: 929)
+ - Total Elapsed Time: 15009.4 sec
+   - Physics:   381.52 sec (0.410237 sec/event)
+   - Chemistry: 14627.9 sec (15.7458 sec/event)
+ - Throughput:
+   - Physics:   146.257 events/min.
+   - Chemistry: 3.81053 events/min.
+ - Number of Steps:
+   - Physics:   3067627
+   - Chemistry: 4427809
+ - Elapsed Time per Step:
+   - Physics:   0.12437 msec/step
+   - Chemistry: 3.30364 msec/step
+
+ Thread #7
+ - Total Event: 837 (Abort: 1, Chemistry: 836)
+ - Total Elapsed Time: 15020.6 sec
+   - Physics:   345.56 sec (0.412855 sec/event)
+   - Chemistry: 14675 sec (17.5539 sec/event)
+ - Throughput:
+   - Physics:   145.329 events/min.
+   - Chemistry: 3.41805 events/min.
+ - Number of Steps:
+   - Physics:   2901072
+   - Chemistry: 4180087
+ - Elapsed Time per Step:
+   - Physics:   0.119115 msec/step
+   - Chemistry: 3.5107 msec/step
+
+ Thread #13
+ - Total Event: 868 (Abort: 1, Chemistry: 867)
+ - Total Elapsed Time: 15048.1 sec
+   - Physics:   355.48 sec (0.409539 sec/event)
+   - Chemistry: 14692.6 sec (16.9465 sec/event)
+ - Throughput:
+   - Physics:   146.506 events/min.
+   - Chemistry: 3.54055 events/min.
+ - Number of Steps:
+   - Physics:   2972945
+   - Chemistry: 4279427
+ - Elapsed Time per Step:
+   - Physics:   0.119572 msec/step
+   - Chemistry: 3.43332 msec/step
+
+ Thread #6
+ - Total Event: 1147 (Abort: 0, Chemistry: 1147)
+ - Total Elapsed Time: 15066 sec
+   - Physics:   478.2 sec (0.416914 sec/event)
+   - Chemistry: 14587.8 sec (12.7182 sec/event)
+ - Throughput:
+   - Physics:   143.915 events/min.
+   - Chemistry: 4.71764 events/min.
+ - Number of Steps:
+   - Physics:   3779984
+   - Chemistry: 5574314
+ - Elapsed Time per Step:
+   - Physics:   0.126508 msec/step
+   - Chemistry: 2.61697 msec/step
+
+ Thread #5
+ - Total Event: 1147 (Abort: 1, Chemistry: 1146)
+ - Total Elapsed Time: 15146.1 sec
+   - Physics:   472.2 sec (0.411683 sec/event)
+   - Chemistry: 14673.9 sec (12.8045 sec/event)
+ - Throughput:
+   - Physics:   145.743 events/min.
+   - Chemistry: 4.68587 events/min.
+ - Number of Steps:
+   - Physics:   3700495
+   - Chemistry: 5395885
+ - Elapsed Time per Step:
+   - Physics:   0.127605 msec/step
+   - Chemistry: 2.71946 msec/step
+
+ Thread #10
+ - Total Event: 1054 (Abort: 0, Chemistry: 1054)
+ - Total Elapsed Time: 15192.6 sec
+   - Physics:   435.1 sec (0.412808 sec/event)
+   - Chemistry: 14757.5 sec (14.0014 sec/event)
+ - Throughput:
+   - Physics:   145.346 events/min.
+   - Chemistry: 4.28528 events/min.
+ - Number of Steps:
+   - Physics:   3500876
+   - Chemistry: 5042193
+ - Elapsed Time per Step:
+   - Physics:   0.124283 msec/step
+   - Chemistry: 2.9268 msec/step
+
+ Thread #12
+ - Total Event: 775 (Abort: 0, Chemistry: 775)
+ - Total Elapsed Time: 15294.4 sec
+   - Physics:   316.17 sec (0.407961 sec/event)
+   - Chemistry: 14978.2 sec (19.3267 sec/event)
+ - Throughput:
+   - Physics:   147.073 events/min.
+   - Chemistry: 3.10452 events/min.
+ - Number of Steps:
+   - Physics:   2788595
+   - Chemistry: 4031508
+ - Elapsed Time per Step:
+   - Physics:   0.11338 msec/step
+   - Chemistry: 3.71528 msec/step
+
+ Thread #9
+ - Total Event: 1085 (Abort: 2, Chemistry: 1083)
+ - Total Elapsed Time: 15431.7 sec
+   - Physics:   449.9 sec (0.414654 sec/event)
+   - Chemistry: 14981.8 sec (13.8336 sec/event)
+ - Throughput:
+   - Physics:   144.699 events/min.
+   - Chemistry: 4.33726 events/min.
+ - Number of Steps:
+   - Physics:   3606409
+   - Chemistry: 5232450
+ - Elapsed Time per Step:
+   - Physics:   0.12475 msec/step
+   - Chemistry: 2.86325 msec/step
+
+ Thread #11
+ - Total Event: 961 (Abort: 2, Chemistry: 959)
+ - Total Elapsed Time: 15600.2 sec
+   - Physics:   397.19 sec (0.413309 sec/event)
+   - Chemistry: 15203 sec (15.853 sec/event)
+ - Throughput:
+   - Physics:   145.17 events/min.
+   - Chemistry: 3.78477 events/min.
+ - Number of Steps:
+   - Physics:   3200176
+   - Chemistry: 4581815
+ - Elapsed Time per Step:
+   - Physics:   0.124115 msec/step
+   - Chemistry: 3.31813 msec/step
+
+ Thread #0
+ - Total Event: 1364 (Abort: 2, Chemistry: 1362)
+ - Total Elapsed Time: 15626.6 sec
+   - Physics:   553.84 sec (0.406041 sec/event)
+   - Chemistry: 15072.8 sec (11.0667 sec/event)
+ - Throughput:
+   - Physics:   147.768 events/min.
+   - Chemistry: 5.42169 events/min.
+ - Number of Steps:
+   - Physics:   4271425
+   - Chemistry: 6353462
+ - Elapsed Time per Step:
+   - Physics:   0.129662 msec/step
+   - Chemistry: 2.37237 msec/step
+
+ Thread #1
+ - Total Event: 1116 (Abort: 3, Chemistry: 1113)
+ - Total Elapsed Time: 15631.6 sec
+   - Physics:   449.35 sec (0.402643 sec/event)
+   - Chemistry: 15182.3 sec (13.6409 sec/event)
+ - Throughput:
+   - Physics:   149.015 events/min.
+   - Chemistry: 4.39854 events/min.
+ - Number of Steps:
+   - Physics:   3644401
+   - Chemistry: 5312321
+ - Elapsed Time per Step:
+   - Physics:   0.123299 msec/step
+   - Chemistry: 2.85794 msec/step
+
+[MESSAGE] End: Mon Jun 22 18:30:27 2020
+
+ - Total Event Number: 14000
+ - Total Elapsed Time: 15631.7 sec
+   --> Throughput: 53.7369 events/min.
+
+G4WT0 >  Number of calls = 0
+G4WT4 >  Number of calls = 0
+G4WT5 >  Number of calls = 0
+G4WT0 >  Number of split level ('advances'):  0
+G4WT4 >  Number of split level ('advances'):  0
+G4WT5 >  Number of split level ('advances'):  0
+G4WT0 >  Number of full advances:             0
+G4WT4 >  Number of full advances:             0
+G4WT5 >  Number of full advances:             0
+G4WT0 >  Number of good advances:             0
+G4WT4 >  Number of good advances:             0
+G4WT5 >  Number of good advances:             0
+G4WT2 >  Number of calls = 0
+G4WT2 >  Number of split level ('advances'):  0
+G4WT2 >  Number of full advances:             0
+G4WT2 >  Number of good advances:             0
+G4WT8 >  Number of calls = 0
+G4WT8 >  Number of split level ('advances'):  0
+G4WT8 >  Number of full advances:             0
+G4WT8 >  Number of good advances:             0
+G4WT6 >  Number of calls = 0
+G4WT6 >  Number of split level ('advances'):  0
+G4WT6 >  Number of full advances:             0
+G4WT6 >  Number of good advances:             0
+G4WT13 >  Number of calls = 0
+G4WT13 >  Number of split level ('advances'):  0
+G4WT13 >  Number of full advances:             0
+G4WT13 >  Number of good advances:             0
+G4WT10 >  Number of calls = 0
+G4WT11 >  Number of calls = 0
+G4WT11 >  Number of split level ('advances'):  0
+G4WT10 >  Number of split level ('advances'):  0
+G4WT11 >  Number of full advances:             0
+G4WT11 >  Number of good advances:             0
+G4WT10 >  Number of full advances:             0
+G4WT10 >  Number of good advances:             0
+G4WT7 >  Number of calls = 0
+G4WT7 >  Number of split level ('advances'):  0
+G4WT7 >  Number of full advances:             0
+G4WT7 >  Number of good advances:             0
+G4WT1 >  Number of calls = 0
+G4WT1 >  Number of split level ('advances'):  0
+G4WT1 >  Number of full advances:             0
+G4WT1 >  Number of good advances:             0
+G4WT12 >  Number of calls = 0
+G4WT12 >  Number of split level ('advances'):  0
+G4WT3 >  Number of calls = 0
+G4WT12 >  Number of full advances:             0
+G4WT3 >  Number of split level ('advances'):  0
+G4WT12 >  Number of good advances:             0
+G4WT3 >  Number of full advances:             0
+G4WT3 >  Number of good advances:             0
+G4WT9 >  Number of calls = 0
+G4WT9 >  Number of split level ('advances'):  0
+G4WT9 >  Number of full advances:             0
+G4WT9 >  Number of good advances:             0
+ Number of calls = 0
+ Number of split level ('advances'):  0
+ Number of full advances:             0
+ Number of good advances:             0
