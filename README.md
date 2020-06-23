@@ -37,10 +37,32 @@ $ make install
 ## How to run simulation
 1. Create `work` directory. Then, move there.
 2. Copy `con.json` from `script` directory.
-
+3. Run simulation.
 ```
 $ mkdir work
 $ cd work
 $ cp ../scripts/conf.json .
 $ ../bin/g4dna-bench
+```
+
+## Configuration file
+The configuration of the appilcation is described in `json` file:
+```
+{
+  "random_seed"         : 123456789,
+  "event_number"        : 4,
+  "thread_number"       : 1,
+  "beam_particle"       : "e-",
+  "beam_energy"         : 750,                         // in keV
+  "beam_source_pos"     : [0.0, 0.0, 0.0],             // in um
+  "beam_direction"      : [0.0, 0.0, 1.0],
+  "target_size"         : [20.0, 20.0, 20.0],          // in um
+  "primary_removal"     : true,
+  "kill_energy"         : [75.0, 75.1],                // in keV
+  "phys_list"           : "G4EmDNAPhysics_option8",
+  "chem_list"           : "G4EmDNAChemistry_option1",
+  "ele_solvation_model" : "Meesungnoen2002",
+  "output_file"         : "gval.csv",
+  "benchmark_file"      : "benchmark.json"
+}
 ```
