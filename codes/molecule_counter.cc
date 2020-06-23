@@ -49,7 +49,7 @@ G4bool MoleculeCounter::ProcessHits(G4Step* step, G4TouchableHistory*)
 #ifdef G4MULTITHREADED
   int id = G4Threading::G4GetThreadId();
 #else
-  int id = 0;
+  constexpr int id = 0;
 #endif
   double edep = step->GetTotalEnergyDeposit();
   if (edep > 0) { simdata_->AccumulateEdep(id, edep); }
@@ -67,7 +67,7 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
 #ifdef G4MULTITHREADED
   int id = G4Threading::G4GetThreadId();
 #else
-  int id = 0;
+  constexpr int id = 0;
 #endif
 
   auto eman = G4EventManager::GetEventManager();
@@ -110,7 +110,7 @@ void MoleculeCounter::clear()
 #ifdef G4MULTITHREADED
   int id = G4Threading::G4GetThreadId();
 #else
-  int id = 0;
+  constexpr int id = 0;
 #endif
   simdata_->ResetEdep(id);
   G4MoleculeCounter::Instance()->ResetCounter();

@@ -53,7 +53,7 @@ void RunAction::EndOfRunAction(const G4Run*)
   SimData::GetInstance()->SaveSimulationResult(id);
 
 #else
-  int id = 0;
+  constexpr int id = 0;
 #endif
 
   SimData::GetInstance()->Performance(id);
