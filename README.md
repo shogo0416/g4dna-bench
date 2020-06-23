@@ -81,5 +81,6 @@ The configuration of the appilcation is described in `json` file:
 
 ## Simulation geometry
 Target is a cubic water phantom (20 x 20 x 20 um3). Electrons with kinetic energy of 750 keV are shot from the center of the phantom.
+
 ![geom](/misc/geom.png)
 
