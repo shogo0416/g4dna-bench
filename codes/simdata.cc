@@ -284,9 +284,12 @@ void SimData::Performance(int id)
   std::string title = "thread" + std::to_string(id);
 
   ::js[title] = {
-    {"event_number", {num_event, num_event_abort, num_event_chem}},
-    {"elapsed_time", {elap_time, elap_time_phys, elap_time_chem}},
-    {"throughput", {thr_phys, thr_chem}}
+    {"event_number",           {num_event, num_event_abort, num_event_chem}},
+    {"elapsed_time",           {elap_time, elap_time_phys, elap_time_chem}},
+    {"elapsed_time_per_event", {avg_time_phys, avg_time_chem}},
+    {"throughput",             {thr_phys, thr_chem}},
+    {"step_number",            {num_phys_step, num_chem_step}},
+    {"elapsed_time_per_step",  {avg_time_phys_step, avg_time_chem_step}}
   };
 
 }
