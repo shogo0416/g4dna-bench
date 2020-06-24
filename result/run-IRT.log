@@ -14,6 +14,8 @@
 ---------------------------------------------------------------
  - beam_direction : [0.0,0.0,1.0]
  - beam_energy : 750
+ - beam_ion_A : 0
+ - beam_ion_Z : 0
  - beam_particle : "e-"
  - beam_source_pos : [0.0,0.0,0.0]
  - benchmark_file : "benchmark.json"
@@ -195,204 +197,203 @@ DNARuddIonisationModel : Emin=    0 eV  Emax=  100 MeV  deltaRudd Fluo
 hydrogen_G4DNAChargeIncrease:  for hydrogen SubType=57 BuildTable=0
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
 DNADingfelderChargeIncreaseModel : Emin=    0 eV  Emax=  100 MeV
-[MESSAGE] Start: Tue Jun 23 12:23:41 2020
-### Run 0 starts.
- Thread #3
+[MESSAGE] Start: Wed Jun 24 13:57:41 2020
+ Thread #9
  - Total Event: 992 (Abort: 1, Chemistry: 991)
- - Total Elapsed Time: 451.56 sec
-   - Physics:   432.68 sec (0.436169 sec/event)
-   - Chemistry: 18.88 sec (0.0190515 sec/event)
+ - Total Elapsed Time: 456.73 sec
+   - Physics:   434.35 sec (0.437853 sec/event)
+   - Chemistry: 22.38 sec (0.0225832 sec/event)
  - Throughput:
-   - Physics:   137.561 events/min.
-   - Chemistry: 3149.36 events/min.
+   - Physics:   137.032 events/min.
+   - Chemistry: 2656.84 events/min.
  - Number of Steps:
-   - Physics:   3254143
-   - Chemistry: 63208
+   - Physics:   3233450
+   - Chemistry: 62342
  - Elapsed Time per Step:
-   - Physics:   0.132963 msec/step
-   - Chemistry: 0.298696 msec/step
-
- Thread #7
- - Total Event: 992 (Abort: 1, Chemistry: 991)
- - Total Elapsed Time: 453.19 sec
-   - Physics:   427.87 sec (0.431321 sec/event)
-   - Chemistry: 25.32 sec (0.0255499 sec/event)
- - Throughput:
-   - Physics:   139.108 events/min.
-   - Chemistry: 2348.34 events/min.
- - Number of Steps:
-   - Physics:   3317318
-   - Chemistry: 64623
- - Elapsed Time per Step:
-   - Physics:   0.128981 msec/step
-   - Chemistry: 0.391811 msec/step
+   - Physics:   0.13433 msec/step
+   - Chemistry: 0.358988 msec/step
 
  Thread #5
- - Total Event: 992 (Abort: 0, Chemistry: 992)
- - Total Elapsed Time: 454.55 sec
-   - Physics:   430.95 sec (0.434425 sec/event)
-   - Chemistry: 23.6 sec (0.0237903 sec/event)
+ - Total Event: 992 (Abort: 1, Chemistry: 991)
+ - Total Elapsed Time: 457.71 sec
+   - Physics:   433.14 sec (0.436633 sec/event)
+   - Chemistry: 24.57 sec (0.0247931 sec/event)
  - Throughput:
-   - Physics:   138.113 events/min.
-   - Chemistry: 2522.03 events/min.
+   - Physics:   137.415 events/min.
+   - Chemistry: 2420.02 events/min.
  - Number of Steps:
-   - Physics:   3355844
-   - Chemistry: 66226
+   - Physics:   3277836
+   - Chemistry: 64657
  - Elapsed Time per Step:
-   - Physics:   0.128418 msec/step
-   - Chemistry: 0.356356 msec/step
+   - Physics:   0.132142 msec/step
+   - Chemistry: 0.380005 msec/step
+
+ Thread #8
+ - Total Event: 992 (Abort: 0, Chemistry: 992)
+ - Total Elapsed Time: 458.29 sec
+   - Physics:   429.21 sec (0.432671 sec/event)
+   - Chemistry: 29.08 sec (0.0293145 sec/event)
+ - Throughput:
+   - Physics:   138.673 events/min.
+   - Chemistry: 2046.77 events/min.
+ - Number of Steps:
+   - Physics:   3415337
+   - Chemistry: 67849
+ - Elapsed Time per Step:
+   - Physics:   0.125671 msec/step
+   - Chemistry: 0.428599 msec/step
 
  Thread #1
  - Total Event: 992 (Abort: 1, Chemistry: 991)
- - Total Elapsed Time: 455.2 sec
-   - Physics:   424.86 sec (0.428286 sec/event)
-   - Chemistry: 30.34 sec (0.0306155 sec/event)
+ - Total Elapsed Time: 458.71 sec
+   - Physics:   433.68 sec (0.437177 sec/event)
+   - Chemistry: 25.03 sec (0.0252573 sec/event)
  - Throughput:
-   - Physics:   140.093 events/min.
-   - Chemistry: 1959.79 events/min.
+   - Physics:   137.244 events/min.
+   - Chemistry: 2375.55 events/min.
  - Number of Steps:
-   - Physics:   3519858
-   - Chemistry: 71198
+   - Physics:   3304087
+   - Chemistry: 64363
  - Elapsed Time per Step:
-   - Physics:   0.120704 msec/step
-   - Chemistry: 0.426136 msec/step
+   - Physics:   0.131256 msec/step
+   - Chemistry: 0.388888 msec/step
+
+ Thread #3
+ - Total Event: 1023 (Abort: 2, Chemistry: 1021)
+ - Total Elapsed Time: 458.79 sec
+   - Physics:   441.11 sec (0.431193 sec/event)
+   - Chemistry: 17.68 sec (0.0173164 sec/event)
+ - Throughput:
+   - Physics:   139.149 events/min.
+   - Chemistry: 3464.93 events/min.
+ - Number of Steps:
+   - Physics:   3181341
+   - Chemistry: 61816
+ - Elapsed Time per Step:
+   - Physics:   0.138655 msec/step
+   - Chemistry: 0.28601 msec/step
+
+ Thread #2
+ - Total Event: 992 (Abort: 0, Chemistry: 992)
+ - Total Elapsed Time: 462.2 sec
+   - Physics:   434.28 sec (0.437782 sec/event)
+   - Chemistry: 27.92 sec (0.0281452 sec/event)
+ - Throughput:
+   - Physics:   137.054 events/min.
+   - Chemistry: 2131.81 events/min.
+ - Number of Steps:
+   - Physics:   3424950
+   - Chemistry: 67669
+ - Elapsed Time per Step:
+   - Physics:   0.126799 msec/step
+   - Chemistry: 0.412597 msec/step
+
+ Thread #4
+ - Total Event: 1010 (Abort: 1, Chemistry: 1009)
+ - Total Elapsed Time: 463.55 sec
+   - Physics:   435.67 sec (0.431356 sec/event)
+   - Chemistry: 27.88 sec (0.0276313 sec/event)
+ - Throughput:
+   - Physics:   139.096 events/min.
+   - Chemistry: 2171.45 events/min.
+ - Number of Steps:
+   - Physics:   3519985
+   - Chemistry: 70693
+ - Elapsed Time per Step:
+   - Physics:   0.12377 msec/step
+   - Chemistry: 0.394381 msec/step
 
  Thread #6
  - Total Event: 992 (Abort: 0, Chemistry: 992)
- - Total Elapsed Time: 455.28 sec
-   - Physics:   428.06 sec (0.431512 sec/event)
-   - Chemistry: 27.22 sec (0.0274395 sec/event)
+ - Total Elapsed Time: 463.92 sec
+   - Physics:   430.11 sec (0.433579 sec/event)
+   - Chemistry: 33.81 sec (0.0340827 sec/event)
  - Throughput:
-   - Physics:   139.046 events/min.
-   - Chemistry: 2186.63 events/min.
+   - Physics:   138.383 events/min.
+   - Chemistry: 1760.43 events/min.
  - Number of Steps:
-   - Physics:   3218433
-   - Chemistry: 64358
+   - Physics:   3477645
+   - Chemistry: 70011
  - Elapsed Time per Step:
-   - Physics:   0.133003 msec/step
-   - Chemistry: 0.422947 msec/step
-
- Thread #9
- - Total Event: 992 (Abort: 0, Chemistry: 992)
- - Total Elapsed Time: 458.08 sec
-   - Physics:   430.65 sec (0.434123 sec/event)
-   - Chemistry: 27.43 sec (0.0276512 sec/event)
- - Throughput:
-   - Physics:   138.21 events/min.
-   - Chemistry: 2169.89 events/min.
- - Number of Steps:
-   - Physics:   3447815
-   - Chemistry: 67872
- - Elapsed Time per Step:
-   - Physics:   0.124905 msec/step
-   - Chemistry: 0.404143 msec/step
-
- Thread #4
- - Total Event: 992 (Abort: 1, Chemistry: 991)
- - Total Elapsed Time: 458.89 sec
-   - Physics:   432.17 sec (0.435655 sec/event)
-   - Chemistry: 26.72 sec (0.0269627 sec/event)
- - Throughput:
-   - Physics:   137.724 events/min.
-   - Chemistry: 2225.3 events/min.
- - Number of Steps:
-   - Physics:   3248355
-   - Chemistry: 63456
- - Elapsed Time per Step:
-   - Physics:   0.133043 msec/step
-   - Chemistry: 0.421079 msec/step
+   - Physics:   0.123679 msec/step
+   - Chemistry: 0.482924 msec/step
 
  Thread #0
- - Total Event: 1010 (Abort: 2, Chemistry: 1008)
- - Total Elapsed Time: 459.48 sec
-   - Physics:   438.12 sec (0.433782 sec/event)
-   - Chemistry: 21.36 sec (0.0211905 sec/event)
+ - Total Event: 992 (Abort: 2, Chemistry: 990)
+ - Total Elapsed Time: 466.75 sec
+   - Physics:   442.53 sec (0.446099 sec/event)
+   - Chemistry: 24.22 sec (0.0244646 sec/event)
  - Throughput:
-   - Physics:   138.318 events/min.
-   - Chemistry: 2831.46 events/min.
+   - Physics:   134.499 events/min.
+   - Chemistry: 2452.52 events/min.
  - Number of Steps:
-   - Physics:   3299781
-   - Chemistry: 64396
+   - Physics:   3307379
+   - Chemistry: 64936
  - Elapsed Time per Step:
-   - Physics:   0.132772 msec/step
-   - Chemistry: 0.331698 msec/step
+   - Physics:   0.133801 msec/step
+   - Chemistry: 0.372983 msec/step
 
- Thread #8
+ Thread #7
  - Total Event: 1023 (Abort: 1, Chemistry: 1022)
- - Total Elapsed Time: 459.69 sec
-   - Physics:   438.29 sec (0.428436 sec/event)
-   - Chemistry: 21.4 sec (0.0209393 sec/event)
+ - Total Elapsed Time: 469.33 sec
+   - Physics:   447.94 sec (0.437869 sec/event)
+   - Chemistry: 21.39 sec (0.0209295 sec/event)
  - Throughput:
-   - Physics:   140.044 events/min.
-   - Chemistry: 2865.42 events/min.
+   - Physics:   137.027 events/min.
+   - Chemistry: 2866.76 events/min.
  - Number of Steps:
-   - Physics:   3371518
-   - Chemistry: 65982
+   - Physics:   3299461
+   - Chemistry: 64807
  - Elapsed Time per Step:
-   - Physics:   0.129998 msec/step
-   - Chemistry: 0.324331 msec/step
+   - Physics:   0.135762 msec/step
+   - Chemistry: 0.330057 msec/step
 
- Thread #2
- - Total Event: 1023 (Abort: 2, Chemistry: 1021)
- - Total Elapsed Time: 464.45 sec
-   - Physics:   439.57 sec (0.429687 sec/event)
-   - Chemistry: 24.88 sec (0.0243683 sec/event)
- - Throughput:
-   - Physics:   139.636 events/min.
-   - Chemistry: 2462.22 events/min.
- - Number of Steps:
-   - Physics:   3408406
-   - Chemistry: 68004
- - Elapsed Time per Step:
-   - Physics:   0.128966 msec/step
-   - Chemistry: 0.365861 msec/step
-
-[MESSAGE] End: Tue Jun 23 12:31:25 2020
+[MESSAGE] End: Wed Jun 24 14:05:31 2020
 
  - Total Event Number: 10000
- - Total Elapsed Time: 464.49 sec
-   --> Throughput: 1291.74 events/min.
+ - Total Elapsed Time: 469.42 sec
+   --> Throughput: 1278.17 events/min.
 
-G4WT8 >  Number of calls = 0
-G4WT9 >  Number of calls = 0
-G4WT5 >  Number of calls = 0
-G4WT8 >  Number of split level ('advances'):  0
-G4WT9 >  Number of split level ('advances'):  0
-G4WT9 >  Number of full advances:             0
-G4WT9 >  Number of good advances:             0
-G4WT5 >  Number of split level ('advances'):  0
-G4WT8 >  Number of full advances:             0
-G4WT5 >  Number of full advances:             0
-G4WT8 >  Number of good advances:             0
-G4WT5 >  Number of good advances:             0
+G4WT7 >  Number of calls = 0
+G4WT7 >  Number of split level ('advances'):  0
 G4WT2 >  Number of calls = 0
+G4WT7 >  Number of full advances:             0
+G4WT7 >  Number of good advances:             0
 G4WT2 >  Number of split level ('advances'):  0
 G4WT2 >  Number of full advances:             0
 G4WT2 >  Number of good advances:             0
-G4WT6 >  Number of calls = 0
-G4WT6 >  Number of split level ('advances'):  0
-G4WT6 >  Number of full advances:             0
-G4WT0 >  Number of calls = 0
-G4WT4 >  Number of calls = 0
-G4WT6 >  Number of good advances:             0
-G4WT0 >  Number of split level ('advances'):  0
-G4WT0 >  Number of full advances:             0
-G4WT0 >  Number of good advances:             0
-G4WT4 >  Number of split level ('advances'):  0
 G4WT1 >  Number of calls = 0
-G4WT4 >  Number of full advances:             0
 G4WT1 >  Number of split level ('advances'):  0
 G4WT1 >  Number of full advances:             0
 G4WT1 >  Number of good advances:             0
+G4WT4 >  Number of calls = 0
+G4WT4 >  Number of split level ('advances'):  0
+G4WT4 >  Number of full advances:             0
 G4WT4 >  Number of good advances:             0
-G4WT7 >  Number of calls = 0
-G4WT7 >  Number of split level ('advances'):  0
-G4WT7 >  Number of full advances:             0
-G4WT7 >  Number of good advances:             0
+G4WT8 >  Number of calls = 0
+G4WT8 >  Number of split level ('advances'):  0
+G4WT8 >  Number of full advances:             0
+G4WT8 >  Number of good advances:             0
+G4WT0 >  Number of calls = 0
+G4WT0 >  Number of split level ('advances'):  0
+G4WT0 >  Number of full advances:             0
+G4WT0 >  Number of good advances:             0
+G4WT6 >  Number of calls = 0
+G4WT6 >  Number of split level ('advances'):  0
+G4WT6 >  Number of full advances:             0
+G4WT6 >  Number of good advances:             0
 G4WT3 >  Number of calls = 0
+G4WT5 >  Number of calls = 0
 G4WT3 >  Number of split level ('advances'):  0
+G4WT5 >  Number of split level ('advances'):  0
 G4WT3 >  Number of full advances:             0
+G4WT5 >  Number of full advances:             0
 G4WT3 >  Number of good advances:             0
+G4WT5 >  Number of good advances:             0
+G4WT9 >  Number of calls = 0
+G4WT9 >  Number of split level ('advances'):  0
+G4WT9 >  Number of full advances:             0
+G4WT9 >  Number of good advances:             0
  Number of calls = 0
  Number of split level ('advances'):  0
  Number of full advances:             0

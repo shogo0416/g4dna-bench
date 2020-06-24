@@ -55,7 +55,7 @@ void EventAction::EndOfEventAction(const G4Event*)
 #ifdef G4MULTITHREADED
   int id = G4Threading::G4GetThreadId();
 #else
-  int id = 0;
+  constexpr int id = 0;
 #endif
 
   time_end_ = ::timer->TakeSplit();

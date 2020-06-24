@@ -2,8 +2,7 @@
 
 A benchmark application for Geant4-DNA water radiolysis simulation
 
-[![geant4](https://img.shields.io/badge/geant4-10.5-blue.svg)](http://www.geant4.org/)
-[![geant4](https://img.shields.io/badge/geant4-10.6-green.svg)](http://www.geant4.org/)
+[![geant4](https://img.shields.io/badge/geant4-10.6.ref5-blue.svg)](http://www.geant4.org/)
 
 ## Setup Geant4 enviroment variables
 Set Geant4 environment variables to specify the paths for data tables before compiling and running the application.
@@ -25,7 +24,7 @@ G4LEDATA=/home/shogo/opt/Geant4/data/G4EMLOW7.1
 
 ## How to install the application
 1. Create a `build` directory to compile the application.
-2. Move to `build` directory. Then, do `cmake`and `make install`.
+2. Move to `build` directory. Then, do `cmake`and `make install`. A binary file `g4dna-bench` will be installed in `bin` directory.
 
 ```
 $ mkdir build
@@ -38,12 +37,12 @@ $ make install
 
 ## How to run simulation
 1. Create `work` directory. Then, move there.
-2. Copy `con.json` from `script` directory.
+2. Copy `con.json` from `config` directory.
 3. Run simulation.
 ```
 $ mkdir work
 $ cd work
-$ cp ../scripts/conf.json .
+$ cp ../config/conf.json .
 $ ../bin/g4dna-bench
 ```
 ### Simulaion option
@@ -65,12 +64,14 @@ The configuration of the appilcation is described in `json` file:
   "event_number"        : 4,
   "thread_number"       : 1,
   "beam_particle"       : "e-",
-  "beam_energy"         : 750,                         // in keV
-  "beam_source_pos"     : [0.0, 0.0, 0.0],             // in um
+  "beam_ion_Z"          : 0,                          // atomic number for ions
+  "beam_ion_A"          : 0,                          // mass number for ions
+  "beam_energy"         : 750,                        // in keV
+  "beam_source_pos"     : [0.0, 0.0, 0.0],            // in um
   "beam_direction"      : [0.0, 0.0, 1.0],
-  "target_size"         : [20.0, 20.0, 20.0],          // in um
+  "target_size"         : [20.0, 20.0, 20.0],         // in um
   "primary_removal"     : true,
-  "kill_energy"         : [75.0, 75.1],                // in keV
+  "kill_energy"         : [75.0, 75.1],               // in keV
   "phys_list"           : "G4EmDNAPhysics_option8",
   "chem_list"           : "G4EmDNAChemistry_option1",
   "ele_solvation_model" : "Meesungnoen2002",

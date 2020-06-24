@@ -35,8 +35,6 @@
 
 #include <string>
 #include <fstream>
-#include "json.hpp"
-using json = nlohmann::json;
 
 namespace {
 
@@ -49,8 +47,6 @@ constexpr double bin_width = log10(upp_tlim / low_tlim) / num_time_bin;
 static int num_mole_kind;
 static int matrix_size;
 
-json js;
-
 } // end of anonymous namespace
 
 //==============================================================================
@@ -59,12 +55,13 @@ SimData* SimData::instance_ = nullptr;
 
 //------------------------------------------------------------------------------
 SimData::SimData()
-    : fname_("result.csv"),
-      fname_bench_("benchmark.json"),
-      num_thread_(1),
-      result_each_thread_(false),
-      performance_each_thread_(true)
 {
+  fname_ = "result.csv";
+  fname_bench_ = "benchmark.json";
+  num_thread_ = 1;
+  setup_done_ = false;
+  result_each_thread_ = false;
+  performance_each_thread_ = true;
 }
 
 //------------------------------------------------------------------------------
@@ -77,6 +74,8 @@ SimData* SimData::GetInstance()
 //------------------------------------------------------------------------------
 void SimData::Setup()
 {
+
+  if (setup_done_) { return; }
 
   score_time_.resize(::num_time_point);
   double exponent = 0.0;
@@ -126,6 +125,9 @@ void SimData::Setup()
 
   num_phys_step_.resize(num_thread_, 0);
   num_chem_step_.resize(num_thread_, 0);
+
+  setup_done_ = true;
+
 }
 
 //------------------------------------------------------------------------------
@@ -283,7 +285,7 @@ void SimData::Performance(int id)
 
   std::string title = "thread" + std::to_string(id);
 
-  ::js[title] = {
+  js_[title] = {
     {"event_number",           {num_event, num_event_abort, num_event_chem}},
     {"elapsed_time",           {elap_time, elap_time_phys, elap_time_chem}},
     {"elapsed_time_per_event", {avg_time_phys, avg_time_chem}},
@@ -311,7 +313,7 @@ void SimData::SaveBenchmarkResult()
             << std::endl;
   std::cout << std::endl;
 
-  ::js["all"] = {
+  js_["all"] = {
     {"event_number", num_event},
     {"elapsed_time", elap_time},
     {"throughput", throughput}
@@ -319,6 +321,6 @@ void SimData::SaveBenchmarkResult()
 
   // save benchmark result
   std::ofstream fout(fname_bench_);
-  fout << std::setw(4) << ::js << std::endl;
+  fout << std::setw(4) << js_ << std::endl;
   fout.close();
 }

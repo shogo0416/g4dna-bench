@@ -115,7 +115,7 @@ void Geometry::ConstructSDandField()
 #ifdef G4MULTITHREADED
       int id = G4Threading::G4GetThreadId();
 #else
-      int id = 0;
+      constexpr int id = 0;
 #endif
 
       std::cout << "[Geometry::MESSAGE] Set PrimaryRemoval (Thread#:" << id

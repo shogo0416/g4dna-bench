@@ -46,14 +46,14 @@ void StackingAction::NewStage()
 #ifdef G4MULTITHREADED
   int id = G4Threading::G4GetThreadId();
 #else
-  int id = 0;
+  constexpr int id = 0;
 #endif
 
   static auto timer = TimeHistory::GetTimeHistory();
 
-  // run chemical stage
   double time_on = timer->TakeSplit();
 
+  // run chemical stage
   G4DNAChemistryManager::Instance()->Run();
 
   double time_end = timer->TakeSplit();

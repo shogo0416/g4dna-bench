@@ -3,6 +3,8 @@
   "event_number"        : 4,
   "thread_number"       : 1,
   "beam_particle"       : "e-",
+  "beam_ion_Z"          : 0,
+  "beam_ion_A"          : 0,
   "beam_energy"         : 750,
   "beam_source_pos"     : [0.0, 0.0, 0.0],
   "beam_direction"      : [0.0, 0.0, 1.0],
