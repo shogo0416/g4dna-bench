@@ -43,7 +43,7 @@ public:
   virtual void GeneratePrimaries(G4Event* event);
 
   // set/get methods
-  void SetParticle(std::string pkind);
+  void SetParticle(std::string pkind, int Z = 0, int A = 0);
   std::string GetParticle() const;
 
   void SetEnergy(double ekin);
@@ -97,20 +97,6 @@ inline void PrimaryGenerator::SetEnergy(double ekin)
 inline double PrimaryGenerator::GetEnergy() const
 {
   return ekin_;
-}
-
-//------------------------------------------------------------------------------
-inline void PrimaryGenerator::SetParticle(std::string pkind)
-{
-  pkind_ = pkind;
-
-  auto tab = G4ParticleTable::GetParticleTable();
-  particle_ = tab->FindParticle(pkind_);
-  if (particle_) { return; }
-
-  std::cerr << "[ERROR] Unknown particle was set (name: "
-            << pkind_ << ")" << std::endl;
-  std::exit(EXIT_FAILURE);
 }
 
 //------------------------------------------------------------------------------

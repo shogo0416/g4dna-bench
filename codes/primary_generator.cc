@@ -28,6 +28,7 @@
 #include "primary_generator.h"
 #include "G4PrimaryVertex.hh"
 #include "G4PrimaryParticle.hh"
+#include "G4IonTable.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4Event.hh"
 
@@ -51,4 +52,28 @@ void PrimaryGenerator::GeneratePrimaries(G4Event* event)
   auto vertex = new G4PrimaryVertex(pos_, 0.0);
   vertex->SetPrimary(primary);
   event->AddPrimaryVertex(vertex);
+}
+
+//------------------------------------------------------------------------------
+void PrimaryGenerator::SetParticle(std::string pkind, int Z, int A)
+{
+  pkind_ = pkind;
+  if (pkind_ == "ion") {
+    auto tab = G4ParticleTable::GetParticleTable()->GetIonTable();
+    particle_ = tab->GetIon(Z, A, 0);
+  } else {
+    auto tab = G4ParticleTable::GetParticleTable();
+    particle_ = tab->FindParticle(pkind_);
+  }
+
+  if (particle_) { return; }
+
+  if (pkind_ == "ion") {
+    std::cerr << "[ERROR] Unknown ion was set (Z: " << Z << ", A: " << A << ")"
+              << std::endl;
+  } else {
+    std::cerr << "[ERROR] Unknown particle was set (name: "
+              << pkind_ << ")" << std::endl;
+  }
+  std::exit(EXIT_FAILURE);
 }

@@ -32,6 +32,9 @@
 #include <string>
 #include <unordered_map>
 
+#include "json.hpp"
+using json = nlohmann::json;
+
 class SimData {
 public:
   static SimData* GetInstance();
@@ -100,6 +103,8 @@ private:
 
   std::vector<int> num_phys_step_;
   std::vector<int> num_chem_step_;
+
+  json js_;
 };
 
 //==============================================================================

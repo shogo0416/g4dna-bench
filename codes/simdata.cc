@@ -35,8 +35,6 @@
 
 #include <string>
 #include <fstream>
-#include "json.hpp"
-using json = nlohmann::json;
 
 namespace {
 
@@ -48,8 +46,6 @@ constexpr double bin_width = log10(upp_tlim / low_tlim) / num_time_bin;
 
 static int num_mole_kind;
 static int matrix_size;
-
-json js;
 
 } // end of anonymous namespace
 
@@ -283,7 +279,7 @@ void SimData::Performance(int id)
 
   std::string title = "thread" + std::to_string(id);
 
-  ::js[title] = {
+  js_[title] = {
     {"event_number",           {num_event, num_event_abort, num_event_chem}},
     {"elapsed_time",           {elap_time, elap_time_phys, elap_time_chem}},
     {"elapsed_time_per_event", {avg_time_phys, avg_time_chem}},
@@ -311,7 +307,7 @@ void SimData::SaveBenchmarkResult()
             << std::endl;
   std::cout << std::endl;
 
-  ::js["all"] = {
+  js_["all"] = {
     {"event_number", num_event},
     {"elapsed_time", elap_time},
     {"throughput", throughput}
@@ -319,6 +315,6 @@ void SimData::SaveBenchmarkResult()
 
   // save benchmark result
   std::ofstream fout(fname_bench_);
-  fout << std::setw(4) << ::js << std::endl;
+  fout << std::setw(4) << js_ << std::endl;
   fout.close();
 }

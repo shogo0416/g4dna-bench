@@ -50,6 +50,7 @@
 #include "G4SystemOfUnits.hh"
 #include "G4Version.hh"
 #include "G4Scheduler.hh"
+#include "CLHEP/Random/MTwistEngine.h"
 
 #include "json.hpp"
 #include <fstream>
@@ -58,7 +59,7 @@ using json = nlohmann::json;
 
 namespace {
 
-json js;
+static json js;
 
 //------------------------------------------------------------------------------
 void print_parameters()
@@ -155,11 +156,19 @@ void Application::Build() const
   G4MoleculeCounter::Use();
   G4MoleculeCounter::Instance()->DontRegister(G4H2O::Definition());
 
+  static bool setup_simdata = false;
+  if (!setup_simdata) {
+    SimData::GetInstance()->Setup();
+    setup_simdata = true;
+  }
+
   if (!G4Threading::IsMultithreadedApplication()) {
     G4DNAChemistryManager::Instance()->ResetCounterWhenRunEnds(false);
   }
 
   auto pkind  = ::js["beam_particle"];
+  auto Z      = ::js["beam_ion_Z"];
+  auto A      = ::js["beam_ion_A"];
   auto energy = ::js["beam_energy"].get<double>() * keV;
   auto posx   = ::js["beam_source_pos"][0].get<double>() * um;
   auto posy   = ::js["beam_source_pos"][1].get<double>() * um;
@@ -169,7 +178,7 @@ void Application::Build() const
   auto dirz   = ::js["beam_direction"][2];
 
   auto pgen = new PrimaryGenerator();
-  pgen->SetParticle(pkind);
+  pgen->SetParticle(pkind, Z, A);
   pgen->SetEnergy(energy);
   pgen->SetPosition(posx, posy, posz);
   pgen->SetDirection(dirx, diry, dirz);
@@ -209,8 +218,7 @@ void Application::Setup(std::string conf_file)
 
   // setup event number processing, thread number, and seed
   auto seed = ::js["random_seed"];
-//  G4Random::setTheEngine(new CLHEP::MTwistEngine);
-  G4Random::setTheEngine(new CLHEP::RanecuEngine);
+  G4Random::setTheEngine(new CLHEP::MTwistEngine);
   G4Random::setTheSeed(seed);
 
   // setup water phantom
@@ -247,7 +255,5 @@ void Application::Setup(std::string conf_file)
   sd->SetFileName(fname);
   sd->SetBenchmarkFileName(fname_bench);
   sd->SetThreadNumber(num_thread_);
-  sd->Setup();
 
-  run->SetPrintProgress(100);
 }
