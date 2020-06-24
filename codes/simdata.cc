@@ -55,12 +55,13 @@ SimData* SimData::instance_ = nullptr;
 
 //------------------------------------------------------------------------------
 SimData::SimData()
-    : fname_("result.csv"),
-      fname_bench_("benchmark.json"),
-      num_thread_(1),
-      result_each_thread_(false),
-      performance_each_thread_(true)
 {
+  fname_ = "result.csv";
+  fname_bench_ = "benchmark.json";
+  num_thread_ = 1;
+  setup_done_ = false;
+  result_each_thread_ = false;
+  performance_each_thread_ = true;
 }
 
 //------------------------------------------------------------------------------
@@ -73,6 +74,8 @@ SimData* SimData::GetInstance()
 //------------------------------------------------------------------------------
 void SimData::Setup()
 {
+
+  if (setup_done_) { return; }
 
   score_time_.resize(::num_time_point);
   double exponent = 0.0;
@@ -122,6 +125,9 @@ void SimData::Setup()
 
   num_phys_step_.resize(num_thread_, 0);
   num_chem_step_.resize(num_thread_, 0);
+
+  setup_done_ = true;
+
 }
 
 //------------------------------------------------------------------------------

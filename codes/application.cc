@@ -155,12 +155,7 @@ void Application::Build() const
 {
   G4MoleculeCounter::Use();
   G4MoleculeCounter::Instance()->DontRegister(G4H2O::Definition());
-
-  static bool setup_simdata = false;
-  if (!setup_simdata) {
-    SimData::GetInstance()->Setup();
-    setup_simdata = true;
-  }
+  SimData::GetInstance()->Setup();
 
   if (!G4Threading::IsMultithreadedApplication()) {
     G4DNAChemistryManager::Instance()->ResetCounterWhenRunEnds(false);
