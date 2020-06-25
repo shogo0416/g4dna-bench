@@ -47,6 +47,8 @@ constexpr double bin_width = log10(upp_tlim / low_tlim) / num_time_bin;
 static int num_mole_kind;
 static int matrix_size;
 
+std::mutex mtx;
+
 } // end of anonymous namespace
 
 //==============================================================================
@@ -59,7 +61,6 @@ SimData::SimData()
   fname_ = "result.csv";
   fname_bench_ = "benchmark.json";
   num_thread_ = 1;
-  setup_done_ = false;
   result_each_thread_ = false;
   performance_each_thread_ = true;
 }
@@ -74,8 +75,14 @@ SimData* SimData::GetInstance()
 //------------------------------------------------------------------------------
 void SimData::Setup()
 {
+  ::mtx.lock();
 
-  if (setup_done_) { return; }
+  static bool setup = false;
+
+  if (setup) {
+    ::mtx.unlock();
+    return;
+  }
 
   score_time_.resize(::num_time_point);
   double exponent = 0.0;
@@ -126,8 +133,9 @@ void SimData::Setup()
   num_phys_step_.resize(num_thread_, 0);
   num_chem_step_.resize(num_thread_, 0);
 
-  setup_done_ = true;
+  setup = true;
 
+  ::mtx.unlock();
 }
 
 //------------------------------------------------------------------------------

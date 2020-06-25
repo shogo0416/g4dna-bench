@@ -104,7 +104,6 @@ private:
   std::vector<int> num_phys_step_;
   std::vector<int> num_chem_step_;
 
-  bool setup_done_;
   json js_;
 };
 
