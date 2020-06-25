@@ -42,8 +42,8 @@ public:
   PhysicsList(const PhysicsList&) = delete;
   void operator=(PhysicsList&) = delete;
 
-  void SetPhysics(std::string name);
-  void SetChemistry(std::string name);
+  void SetPhysics(const std::string& name);
+  void SetChemistry(const std::string& name);
 
   void ConstructProcess();
   void ConstructParticle();

@@ -48,14 +48,14 @@ public:
 
   std::vector<double>& GetScoreTime();
 
-  void SetFileName(std::string fname);
-  void SetBenchmarkFileName(std::string fname);
+  void SetFileName(const std::string& fname);
+  void SetBenchmarkFileName(const std::string& fname);
 
   void AccumulateEdep(int id, double edep);
   void ResetEdep(int id);
   double GetEdep(int id) const;
 
-  void GValue(int id, int tid, std::string name, double gval);
+  void GValue(int id, int tid, const std::string& name, double gval);
 
   void CountAbortEvent(int id);
   void CountChemEvent(int id);
@@ -108,13 +108,13 @@ private:
 };
 
 //==============================================================================
-inline void SimData::SetFileName(std::string fname)
+inline void SimData::SetFileName(const std::string& fname)
 {
   fname_ = fname;
 }
 
 //------------------------------------------------------------------------------
-inline void SimData::SetBenchmarkFileName(std::string fname)
+inline void SimData::SetBenchmarkFileName(const std::string& fname)
 {
   fname_bench_ = fname;
 }

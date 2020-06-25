@@ -81,7 +81,7 @@ void print_parameters()
 }
 
 //------------------------------------------------------------------------------
-void set_solvation_model(std::string name)
+void set_solvation_model(const std::string& name)
 {
   G4DNAModelSubType type = fDNAUnknownModel;
   if (name == "Ritchie1994")
@@ -188,7 +188,7 @@ void Application::Build() const
 }
 
 //------------------------------------------------------------------------------
-void Application::Setup(std::string conf_file)
+void Application::Setup(const std::string& conf_file)
 {
 
 #ifdef G4MULTITHREADED

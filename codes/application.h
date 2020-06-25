@@ -40,7 +40,7 @@ public:
 
   virtual void BuildForMaster() const;
   virtual void Build() const;
-  void Setup(std::string conf_file);
+  void Setup(const std::string& conf_file);
 
   int GetEventNumber() const;
   int GetThreadNumber() const;

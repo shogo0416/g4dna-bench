@@ -139,7 +139,7 @@ void SimData::Setup()
 }
 
 //------------------------------------------------------------------------------
-void SimData::GValue(int id, int tid, std::string name, double gval)
+void SimData::GValue(int id, int tid, const std::string& name, double gval)
 {
 
   int mid = mole_map_[name];
