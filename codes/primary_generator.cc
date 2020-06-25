@@ -55,7 +55,7 @@ void PrimaryGenerator::GeneratePrimaries(G4Event* event)
 }
 
 //------------------------------------------------------------------------------
-void PrimaryGenerator::SetParticle(std::string pkind, int Z, int A)
+void PrimaryGenerator::SetParticle(const std::string& pkind, int Z, int A)
 {
   pkind_ = pkind;
   if (pkind_ == "ion") {

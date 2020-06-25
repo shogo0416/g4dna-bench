@@ -43,7 +43,7 @@ public:
   virtual void GeneratePrimaries(G4Event* event);
 
   // set/get methods
-  void SetParticle(std::string pkind, int Z = 0, int A = 0);
+  void SetParticle(const std::string& pkind, int Z = 0, int A = 0);
   std::string GetParticle() const;
 
   void SetEnergy(double ekin);

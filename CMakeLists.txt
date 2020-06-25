@@ -1,7 +1,7 @@
 #-------------------------------------------------------------------------------
 # CMakeLists.txt
 #-------------------------------------------------------------------------------
-cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 #-------------------------------------------------------------------------------
 # Set the name of the main program
@@ -12,15 +12,8 @@ set(NAME_MAIN_PROGRAM g4dna-bench)
 project(${NAME_MAIN_PROGRAM} CXX)
 
 #-------------------------------------------------------------------------------
-# Find Geant4 package, activating all available UI and Vis drivers by default
-# You can set WITH_GEANT4_UIVIS to OFF via the command line or ccmake/cmake-gui
-# to build a batch mode only executable
-option(WITH_GEANT4_UIVIS "Build example with Geant4 UI and Vis drivers" ON)
-if(WITH_GEANT4_UIVIS)
-  find_package(Geant4 REQUIRED ui_all vis_all)
-else()
-  find_package(Geant4 REQUIRED)
-endif()
+# Find Geant4 package
+find_package(Geant4 REQUIRED)
 
 #-------------------------------------------------------------------------------
 # Set build option

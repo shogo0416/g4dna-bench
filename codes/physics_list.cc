@@ -109,7 +109,7 @@ PhysicsList* PhysicsList::GetInstance()
 }
 
 //------------------------------------------------------------------------------
-void PhysicsList::SetPhysics(std::string name)
+void PhysicsList::SetPhysics(const std::string& name)
 {
   if (name == "G4EmDNAPhysics") {
     phys_list_ = new G4EmDNAPhysics();
@@ -136,7 +136,7 @@ void PhysicsList::SetPhysics(std::string name)
 }
 
 //------------------------------------------------------------------------------
-void PhysicsList::SetChemistry(std::string name)
+void PhysicsList::SetChemistry(const std::string& name)
 {
   if (name == "G4EmDNAChemistry")
   {
