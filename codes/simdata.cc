@@ -28,12 +28,15 @@
 #include "simdata.h"
 #include "application.h"
 #include "timehistory.h"
+#include "physics_list.h"
 #include "G4SystemOfUnits.hh"
 #include "G4MoleculeCounter.hh"
 #include "G4MolecularConfiguration.hh"
 #include "G4MoleculeTable.hh"
+#include "G4DNAMolecularReactionTable.hh"
 
 #include <string>
+#include <sstream>
 #include <fstream>
 
 namespace {
@@ -48,6 +51,109 @@ static int num_mole_kind;
 static int matrix_size;
 
 std::mutex mtx;
+
+constexpr double dm = 0.1 * m;
+constexpr double dm3 = dm * dm * dm;
+constexpr double rate_unit = dm3 / (mole * s);
+
+//------------------------------------------------------------------------------
+void print_chemical_reaction()
+{
+
+  auto pname = PhysicsList::GetInstance()->GetChemistry()->GetPhysicsName();
+//  if (pname != "G4EmDNAChemistry_option3") { return; }
+
+  std::cout << "[Message] " << pname << " is set for the chemistry stage."
+            << std::endl;
+
+  auto tab = G4DNAMolecularReactionTable::GetReactionTable();
+  auto datalist = tab->GetVectorOfReactionData();
+
+  std::stringstream ss;
+
+  ss << std::endl;
+
+  for (auto& x : datalist) {
+
+    auto reac1 = x->GetReactant1()->GetName();
+    auto reac2 = x->GetReactant2()->GetName();
+
+    ss << "--------------------------------------------------------------------"
+       << std::endl;
+    ss << reac1 << " + " << reac2 << " -> ";
+
+    int num_prod = x->GetNbProducts();
+    if (num_prod == 0) {
+      ss << "None" << std::endl;
+    } else {
+      for (int i = 0; i < num_prod; i++) {
+        auto prod = x->GetProduct(i);
+        ss << prod->GetName();
+        if (i == num_prod - 1) { ss << std::endl; }
+        else { ss << " + "; }
+      }
+    }
+
+    int type = x->GetReactionType();
+    double rc = x->GetOnsagerRadius();
+
+    if (type == 0 && rc == 0.0) {
+      type = 1;
+    } else if (type == 0 && rc != 0.0) {
+      type = 3;
+    } else if (type == 1 && rc == 0.0) {
+      type = 2;
+    } else if (type == 1 && rc != 0.0) {
+      type = 4;
+    }
+
+    if (x->GetReactant1()->GetDiffusionCoefficient() == 0.0 ||
+        x->GetReactant2()->GetDiffusionCoefficient() == 0.0) {
+      type = 6;
+    }
+
+    double k_obs = x->GetObservedReactionRateConstant();
+    double k_dif = x->GetDiffusionRateConstant();
+    double k_act = x->GetActivationRateConstant();
+    double sigma = x->GetReactionRadius();
+    double Reff  = x->GetEffectiveReactionRadius() / nm;
+    double prob  = x->GetProbability();
+
+    if (type == 6) {
+
+      ss << "--> Type: " << type << ", k_obs: " << k_obs * s << " s-1";
+
+    } else {
+
+      ss << "--> Type: " << type << ", k_obs: " << k_obs / rate_unit
+         << " (M*s)-1, Reff: " << Reff << " nm, ";
+
+      if (type == 1) {
+        ss << "Preac: " << prob;
+      } else if (type == 2) {
+        double alpha = 1.0 / sigma * k_act / k_obs;
+        ss << "k_dif: " << k_dif / rate_unit << " (M*s)-1, ";
+        ss << "k_act: " << k_act / rate_unit << " (M*s)-1, ";
+        ss << "Preac: " << prob << ", ";
+        ss << "alpha: " << alpha / (1.0 / nm) << " nm-1";
+      } else if (type == 3) {
+        ss << ", rc: " << rc / nm << " nm ";
+        ss << "Preac: " << prob;
+      } else if (type == 4) {
+        ss << "k_dif: " << k_dif / rate_unit << " (M*s)-1, ";
+        ss << "k_act: " << k_act / rate_unit << " (M*s)-1, ";
+        ss << "Preac: " << prob;
+      }
+
+    }
+
+    ss << std::endl;
+
+  }
+
+  std::cout << ss.str() << std::endl;
+}
+
 
 } // end of anonymous namespace
 
@@ -134,6 +240,8 @@ void SimData::Setup()
   num_chem_step_.resize(num_thread_, 0);
 
   setup = true;
+
+  ::print_chemical_reaction();
 
   ::mtx.unlock();
 }
