@@ -34,6 +34,7 @@
 #include "G4MolecularConfiguration.hh"
 #include "G4MoleculeTable.hh"
 #include "G4Threading.hh"
+#include "G4Molecule.hh"
 
 namespace {
 
@@ -82,8 +83,10 @@ G4bool MoleculeCounter::ProcessHits(G4Step* step, G4TouchableHistory*)
 #else
   constexpr int id = 0;
 #endif
+
   double edep = step->GetTotalEnergyDeposit();
-  if (edep > 0) { simdata_->AccumulateEdep(id, edep); }
+  if (edep > 0.0) { simdata_->AccumulateEdep(id, edep); }
+
   return true;
 }
 

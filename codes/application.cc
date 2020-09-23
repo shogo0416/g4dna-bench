@@ -36,6 +36,7 @@
 #include "simdata.h"
 #include "step_action.h"
 #include "time_step_action.h"
+#include "tracking_interactivity.h"
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
@@ -187,7 +188,16 @@ void Application::Build() const
   SetUserAction(new RunAction());
   SetUserAction(new StackingAction());
 
-  G4Scheduler::Instance()->SetUserAction(new TimeStepAction());
+  bool check_boundary = ::js["check_boundary"];
+  auto tsa = new TimeStepAction();
+  tsa->CheckBoundary(check_boundary);
+  G4Scheduler::Instance()->SetUserAction(tsa);
+
+  auto tri = new TrackingInteractivity();
+  auto sta = new StepAction();
+  sta->ForChemistry(true);
+  tri->SetSteppingAction(sta);
+  G4Scheduler::Instance()->SetInteractivity(tri);
 }
 
 //------------------------------------------------------------------------------

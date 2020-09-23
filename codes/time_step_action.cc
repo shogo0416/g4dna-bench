@@ -26,6 +26,7 @@
   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ==============================================================================*/
 #include "time_step_action.h"
+#include "geometry.h"
 #include "simdata.h"
 #include "G4Scheduler.hh"
 #include "G4Threading.hh"
@@ -34,11 +35,13 @@
 #include "G4ITTrackHolder.hh"
 #include "G4Molecule.hh"
 #include "G4MoleculeCounter.hh"
+#include "G4Step.hh"
 
 //------------------------------------------------------------------------------
 TimeStepAction::TimeStepAction()
     : G4UserTimeStepAction()
 {
+  check_boundary_ = false;
 }
 
 //------------------------------------------------------------------------------
@@ -53,9 +56,6 @@ void TimeStepAction::UserPostTimeStepAction()
   constexpr int id = 0;
 #endif
 
-  auto scheduler = G4Scheduler::Instance();
-  const double time = scheduler->GetGlobalTime();
-
   Reset();
 
   auto track_holder = G4ITTrackHolder::Instance();
@@ -65,10 +65,10 @@ void TimeStepAction::UserPostTimeStepAction()
     Count(x);
   }
 
+  const double time = G4Scheduler::Instance()->GetGlobalTime();
 
   TimeStepInfo tsi = {time, mcounter_};
   SimData::GetInstance()->PushTimeStepInfo(id, tsi);
-
 }
 
 //------------------------------------------------------------------------------
@@ -95,6 +95,12 @@ void TimeStepAction::Reset()
 //------------------------------------------------------------------------------
 void TimeStepAction::Count(G4Track* trk)
 {
+
+  if (!CheckInVolume(trk)) {
+    trk->SetTrackStatus(fStopAndKill);
+    return;
+  }
+
   std::string name = GetMolecule(trk)->GetName();
   auto x = mcounter_.find(name);
   if (x != mcounter_.end()) {
@@ -102,4 +108,35 @@ void TimeStepAction::Count(G4Track* trk)
   } else {
     mcounter_[name] = 1;
   }
+}
+
+//------------------------------------------------------------------------------
+void TimeStepAction::CheckBoundary(bool in)
+{
+  check_boundary_ = in;
+
+  if (!check_boundary_) { return; }
+
+  double* box_size = Geometry::GetInstance()->GetPhantomSize();
+
+  upp_bound_x_ = box_size[0] * 0.5;
+  upp_bound_y_ = box_size[1] * 0.5;
+  upp_bound_z_ = box_size[2] * 0.5;
+  low_bound_x_ = -1.0 * upp_bound_x_;
+  low_bound_y_ = -1.0 * upp_bound_y_;
+  low_bound_z_ = -1.0 * upp_bound_z_;
+}
+
+//------------------------------------------------------------------------------
+bool TimeStepAction::CheckInVolume(G4Track* trk)
+{
+  if (!check_boundary_) { return true; }
+
+  auto pos = trk->GetPosition();
+
+  if (pos.x() < low_bound_x_ || pos.x() >= upp_bound_x_) { return false; }
+  if (pos.y() < low_bound_y_ || pos.y() >= upp_bound_y_) { return false; }
+  if (pos.z() < low_bound_z_ || pos.z() >= upp_bound_z_) { return false; }
+
+  return true;
 }

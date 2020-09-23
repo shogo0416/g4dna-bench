@@ -15,6 +15,7 @@
   "chem_list"            : "G4EmDNAChemistry_option3",
   "ele_solvation_model"  : "Meesungnoen2002",
   "use_molecule_counter" : false,
+  "check_boundary"       : false,
   "output_file"          : "gval.csv",
   "benchmark_file"       : "benchmark.json"
 }
