@@ -29,11 +29,46 @@
 #include "simdata.h"
 #include "G4Scheduler.hh"
 #include "G4Threading.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4Scheduler.hh"
+#include "G4ITTrackHolder.hh"
+#include "G4Molecule.hh"
+#include "G4MoleculeCounter.hh"
 
 //------------------------------------------------------------------------------
 TimeStepAction::TimeStepAction()
     : G4UserTimeStepAction()
 {
+}
+
+//------------------------------------------------------------------------------
+void TimeStepAction::UserPostTimeStepAction()
+{
+
+  if (G4MoleculeCounter::InUse()) { return; }
+
+#ifdef G4MULTITHREADED
+  int id = G4Threading::G4GetThreadId();
+#else
+  constexpr int id = 0;
+#endif
+
+  auto scheduler = G4Scheduler::Instance();
+  const double time = scheduler->GetGlobalTime();
+
+  Reset();
+
+  auto track_holder = G4ITTrackHolder::Instance();
+  auto list = track_holder->GetMainList();
+
+  for (auto x : *list) {
+    Count(x);
+  }
+
+
+  TimeStepInfo tsi = {time, mcounter_};
+  SimData::GetInstance()->PushTimeStepInfo(id, tsi);
+
 }
 
 //------------------------------------------------------------------------------
@@ -46,6 +81,25 @@ void TimeStepAction::EndProcessing()
   constexpr int id = 0;
 #endif
 
-  static auto simdata = SimData::GetInstance();
+  auto simdata = SimData::GetInstance();
   simdata->GetNumChemStep()[id] += G4Scheduler::Instance()->GetNbSteps();
+
+}
+
+//------------------------------------------------------------------------------
+void TimeStepAction::Reset()
+{
+  mcounter_.clear();
+}
+
+//------------------------------------------------------------------------------
+void TimeStepAction::Count(G4Track* trk)
+{
+  std::string name = GetMolecule(trk)->GetName();
+  auto x = mcounter_.find(name);
+  if (x != mcounter_.end()) {
+    mcounter_[name] += 1;
+  } else {
+    mcounter_[name] = 1;
+  }
 }

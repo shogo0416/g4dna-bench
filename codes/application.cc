@@ -153,8 +153,11 @@ void Application::BuildForMaster() const
 //------------------------------------------------------------------------------
 void Application::Build() const
 {
-  G4MoleculeCounter::Use();
-  G4MoleculeCounter::Instance()->DontRegister(G4H2O::Definition());
+  bool use = ::js["use_molecule_counter"];
+  if (use) {
+    G4MoleculeCounter::Use();
+    G4MoleculeCounter::Instance()->DontRegister(G4H2O::Definition());
+  }
   SimData::GetInstance()->Setup();
 
   if (!G4Threading::IsMultithreadedApplication()) {

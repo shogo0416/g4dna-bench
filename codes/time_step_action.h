@@ -28,12 +28,21 @@
 #ifndef TIME_STEP_ACTION_H_
 #define TIME_STEP_ACTION_H_
 #include "G4UserTimeStepAction.hh"
+#include "G4Track.hh"
 
 class TimeStepAction : public G4UserTimeStepAction {
 public:
   TimeStepAction();
   virtual ~TimeStepAction() = default;
+
+  void UserPostTimeStepAction();
   void EndProcessing();
+
+private:
+  void Count(G4Track* trk);
+  void Reset();
+
+  std::map<std::string, int> mcounter_;
 };
 
 #endif // TIME_STEP_ACTION_H_

@@ -30,10 +30,13 @@
 #include "timehistory.h"
 #include "physics_list.h"
 #include "G4SystemOfUnits.hh"
-#include "G4MoleculeCounter.hh"
 #include "G4MolecularConfiguration.hh"
 #include "G4MoleculeTable.hh"
 #include "G4DNAMolecularReactionTable.hh"
+#include "G4H2O.hh"
+#if G4VERSION_NUMBER >= 1070
+#include "G4FakeMolecule.hh"
+#endif
 
 #include <string>
 #include <sstream>
@@ -51,6 +54,8 @@ static int num_mole_kind;
 static int matrix_size;
 
 std::mutex mtx;
+
+#if G4VERSION_NUMBER >= 1070
 
 constexpr double dm = 0.1 * m;
 constexpr double dm3 = dm * dm * dm;
@@ -154,6 +159,21 @@ void print_chemical_reaction()
   std::cout << ss.str() << std::endl;
 }
 
+#endif // G4VERSION_NUMBER >= 1070
+
+//------------------------------------------------------------------------------
+bool check_molecule_type(const G4MoleculeDefinition* part)
+{
+  bool skip = false;
+
+  if (part == G4H2O::Definition()) { skip = true; }
+
+#if G4VERSION_NUMBER >= 1070
+  if (part == G4FakeMolecule::Definition()) { skip = true; }
+#endif
+
+  return skip;
+}
 
 } // end of anonymous namespace
 
@@ -200,13 +220,13 @@ void SimData::Setup()
   }
 
   auto miterator = G4MoleculeTable::Instance()->GetConfigurationIterator();
-  auto mcounter = G4MoleculeCounter::Instance();
 
   int counter = 0;
   while ((miterator)()) {
 
     auto val = miterator.value();
-    if (mcounter->IsRegistered(val->GetDefinition()) == false) { continue; }
+
+    if (::check_molecule_type(val->GetDefinition())) { continue; }
 
     auto name = val->GetName();
     if (mole_map_.count(name)) { continue; }
@@ -226,6 +246,8 @@ void SimData::Setup()
     gval_buff_[i].resize(::matrix_size, 0.0);
   }
 
+  tsi_buff_.resize(num_thread_);
+
   header_.resize(::num_mole_kind + 1);
   header_[0] = "Time_ps";
   for (auto x: mole_map_) { header_[x.second + 1] = x.first; }
@@ -241,7 +263,9 @@ void SimData::Setup()
 
   setup = true;
 
+#if G4VERSION_NUMBER >= 1070
   ::print_chemical_reaction();
+#endif
 
   ::mtx.unlock();
 }
