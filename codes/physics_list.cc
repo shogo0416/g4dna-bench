@@ -43,11 +43,14 @@
 #include "G4EmDNAChemistry_option1.hh"
 
 #if G4VERSION_NUMBER >= 1060
-
 #include "G4EmDNAChemistry_option2.hh"
-#include "G4EmDNAChemistry_option3.hh"
+#endif
 
-#else
+#if G4VERSION_NUMBER >= 1070
+#include "G4EmDNAChemistry_option3.hh"
+#endif
+
+#if G4VERSION_NUMBER < 1060
 
 #include "G4ProcessTable.hh"
 #include "G4VProcess.hh"
@@ -79,7 +82,7 @@ void add_physics_process()
 
 } // end of anonymous namespace
 
-#endif // G4VERSION_NUMBER >= 1060
+#endif // G4VERSION_NUMBER < 1060
 
 //==============================================================================
 
@@ -151,6 +154,8 @@ void PhysicsList::SetChemistry(const std::string& name)
   {
     chem_list_ = new G4EmDNAChemistry_option2();
   }
+#endif
+#if G4VERSION_NUMBER >= 1070
   else if (name == "G4EmDNAChemistry_option3")
   {
     chem_list_ = new G4EmDNAChemistry_option3();
@@ -169,7 +174,9 @@ void PhysicsList::ConstructProcess()
   AddTransportation();
   phys_list_->ConstructProcess();
 #if G4VERSION_NUMBER < 1060
-  ::add_physics_process();
+  if (phys_list_->GetPhysicsName() == "G4EmDNAPhysics_option8") {
+    ::add_physics_process();
+  }
 #endif
   chem_list_->ConstructProcess();
 }

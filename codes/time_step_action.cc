@@ -26,14 +26,49 @@
   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ==============================================================================*/
 #include "time_step_action.h"
+#include "geometry.h"
 #include "simdata.h"
 #include "G4Scheduler.hh"
 #include "G4Threading.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4Scheduler.hh"
+#include "G4ITTrackHolder.hh"
+#include "G4Molecule.hh"
+#include "G4MoleculeCounter.hh"
+#include "G4Step.hh"
 
 //------------------------------------------------------------------------------
 TimeStepAction::TimeStepAction()
     : G4UserTimeStepAction()
 {
+  check_boundary_ = false;
+}
+
+//------------------------------------------------------------------------------
+void TimeStepAction::UserPostTimeStepAction()
+{
+
+  if (G4MoleculeCounter::InUse()) { return; }
+
+#ifdef G4MULTITHREADED
+  int id = G4Threading::G4GetThreadId();
+#else
+  constexpr int id = 0;
+#endif
+
+  Reset();
+
+  auto track_holder = G4ITTrackHolder::Instance();
+  auto list = track_holder->GetMainList();
+
+  for (auto x : *list) {
+    Count(x);
+  }
+
+  const double time = G4Scheduler::Instance()->GetGlobalTime();
+
+  TimeStepInfo tsi = {time, mcounter_};
+  SimData::GetInstance()->PushTimeStepInfo(id, tsi);
 }
 
 //------------------------------------------------------------------------------
@@ -46,6 +81,62 @@ void TimeStepAction::EndProcessing()
   constexpr int id = 0;
 #endif
 
-  static auto simdata = SimData::GetInstance();
+  auto simdata = SimData::GetInstance();
   simdata->GetNumChemStep()[id] += G4Scheduler::Instance()->GetNbSteps();
+
+}
+
+//------------------------------------------------------------------------------
+void TimeStepAction::Reset()
+{
+  mcounter_.clear();
+}
+
+//------------------------------------------------------------------------------
+void TimeStepAction::Count(G4Track* trk)
+{
+
+  if (!CheckInVolume(trk)) {
+    trk->SetTrackStatus(fStopAndKill);
+    return;
+  }
+
+  std::string name = GetMolecule(trk)->GetName();
+  auto x = mcounter_.find(name);
+  if (x != mcounter_.end()) {
+    mcounter_[name] += 1;
+  } else {
+    mcounter_[name] = 1;
+  }
+}
+
+//------------------------------------------------------------------------------
+void TimeStepAction::CheckBoundary(bool in)
+{
+  check_boundary_ = in;
+
+  if (!check_boundary_) { return; }
+
+  double* box_size = Geometry::GetInstance()->GetPhantomSize();
+
+  upp_bound_x_ = box_size[0] * 0.5;
+  upp_bound_y_ = box_size[1] * 0.5;
+  upp_bound_z_ = box_size[2] * 0.5;
+  low_bound_x_ = -1.0 * upp_bound_x_;
+  low_bound_y_ = -1.0 * upp_bound_y_;
+  low_bound_z_ = -1.0 * upp_bound_z_;
+}
+
+//------------------------------------------------------------------------------
+bool TimeStepAction::CheckInVolume(G4Track* trk)
+{
+  if (!check_boundary_) { return true; }
+
+  auto pos = trk->GetPosition();
+
+  if (pos.x() < low_bound_x_ || pos.x() >= upp_bound_x_) { return false; }
+  if (pos.y() < low_bound_y_ || pos.y() >= upp_bound_y_) { return false; }
+  if (pos.z() < low_bound_z_ || pos.z() >= upp_bound_z_) { return false; }
+
+  return true;
 }

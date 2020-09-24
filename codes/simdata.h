@@ -30,10 +30,19 @@
 #include "globals.hh"
 #include <vector>
 #include <string>
-#include <unordered_map>
+#include <map>
 
 #include "json.hpp"
 using json = nlohmann::json;
+
+//==============================================================================
+
+struct TimeStepInfo {
+  double sim_time;
+  std::map<std::string, int> species;
+};
+
+//==============================================================================
 
 class SimData {
 public:
@@ -74,6 +83,12 @@ public:
   std::vector<int>& GetNumPhysStep();
   std::vector<int>& GetNumChemStep();
 
+  void PushTimeStepInfo(int id, const TimeStepInfo& info);
+  void ClearTimeStepInfo(int id);
+  std::vector<TimeStepInfo>& GetTimeStepInfo(int id);
+
+  std::map<std::string, int>& GetScoredMolecule();
+
 private:
   SimData();
   static SimData* instance_;
@@ -89,6 +104,8 @@ private:
   std::vector<double> edep_buff_;
   std::vector<std::vector<double> > gval_buff_;
 
+  std::vector<std::vector<TimeStepInfo> > tsi_buff_;
+
   std::vector<int> num_abort_event_;
   std::vector<int> num_chem_event_;
 
@@ -98,7 +115,7 @@ private:
   bool result_each_thread_;
   bool performance_each_thread_;
 
-  std::unordered_map<std::string, int> mole_map_;
+  std::map<std::string, int> mole_map_;
   std::vector<std::string> header_;
 
   std::vector<int> num_phys_step_;
@@ -196,4 +213,37 @@ inline std::vector<int>& SimData::GetNumChemStep()
 {
   return num_chem_step_;
 }
+
+//------------------------------------------------------------------------------
+inline void SimData::PushTimeStepInfo(int id, const TimeStepInfo& info)
+{
+  if (tsi_buff_[id].size() == 0) {
+    tsi_buff_[id].push_back(info);
+    return;
+  }
+  auto itr = tsi_buff_[id].end(); itr--;
+  if ((*itr).sim_time == info.sim_time) {
+    tsi_buff_[id].erase(itr);
+  }
+  tsi_buff_[id].push_back(info);
+}
+
+//------------------------------------------------------------------------------
+inline std::vector<TimeStepInfo>& SimData::GetTimeStepInfo(int id)
+{
+  return tsi_buff_[id];
+}
+
+//------------------------------------------------------------------------------
+inline void SimData::ClearTimeStepInfo(int id)
+{
+  tsi_buff_[id].clear();
+}
+
+//------------------------------------------------------------------------------
+inline std::map<std::string, int>& SimData::GetScoredMolecule()
+{
+  return mole_map_;
+}
+
 #endif // SIMDATA_H_

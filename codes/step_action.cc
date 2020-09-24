@@ -28,15 +28,19 @@
 #include "step_action.h"
 #include "simdata.h"
 #include "G4Threading.hh"
+#include "G4Molecule.hh"
+#include "G4Scheduler.hh"
+#include "G4Step.hh"
 
 //------------------------------------------------------------------------------
-StepAction::StepAction()
+StepAction::StepAction(bool chem)
     : G4UserSteppingAction()
 {
+  chem_ = chem;
 }
 
 //------------------------------------------------------------------------------
-void StepAction::UserSteppingAction(const G4Step*)
+void StepAction::UserSteppingAction(const G4Step* step)
 {
 
 #ifdef G4MULTITHREADED
@@ -46,5 +50,22 @@ void StepAction::UserSteppingAction(const G4Step*)
 #endif
 
   static auto simdata = SimData::GetInstance();
-  simdata->GetNumPhysStep()[id] += 1;
+
+  // for physics stage
+  if (!chem_) {
+    simdata->GetNumPhysStep()[id] += 1;
+    return;
+  }
+
+  // for chemistry stage
+  //   accumulate energy deposit of excited water molecules (H2O*)
+
+  if (G4Scheduler::Instance()->GetNbSteps() != 0) { return; }
+
+  auto molecule = GetMolecule(step->GetTrack());
+  if (molecule->GetName() != "H2O^0") { return; }
+
+  double edep = step->GetTotalEnergyDeposit();
+  if (edep > 0.0) { simdata->AccumulateEdep(id, edep); }
+
 }

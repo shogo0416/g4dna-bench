@@ -45,6 +45,9 @@ public:
   void SetPhysics(const std::string& name);
   void SetChemistry(const std::string& name);
 
+  G4VPhysicsConstructor* GetPhysics();
+  G4VPhysicsConstructor* GetChemistry();
+
   void ConstructProcess();
   void ConstructParticle();
 
@@ -55,5 +58,17 @@ private:
   G4VPhysicsConstructor* phys_list_;
   G4VPhysicsConstructor* chem_list_;
 };
+
+//==============================================================================
+inline G4VPhysicsConstructor* PhysicsList::GetPhysics()
+{
+  return phys_list_;
+}
+
+//------------------------------------------------------------------------------
+inline G4VPhysicsConstructor* PhysicsList::GetChemistry()
+{
+  return chem_list_;
+}
 
 #endif // PHYSICS_LIST_H_

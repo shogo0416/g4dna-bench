@@ -25,17 +25,30 @@
   OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ==============================================================================*/
-#ifndef STEP_ACTION_H_
-#define STEP_ACTION_H_
-#include "G4UserSteppingAction.hh"
+#ifndef TRACKING_INTERACTIVITY_H_
+#define TRACKING_INTERACTIVITY_H_
+#include "G4ITTrackingInteractivity.hh"
 
-class StepAction : public G4UserSteppingAction {
+class G4Track;
+class G4Step;
+class G4UserSteppingAction;
+
+class TrackingInteractivity: public G4ITTrackingInteractivity {
 public:
-  StepAction(bool chem = false);
-  virtual ~StepAction() = default;
-  virtual void UserSteppingAction(const G4Step* step);
+  TrackingInteractivity();
+  ~TrackingInteractivity() = default;
+  void AppendStep(G4Track*, G4Step* step);
+  void SetSteppingAction(G4UserSteppingAction* ptr);
+
 private:
-  bool chem_;
+  G4UserSteppingAction* step_action_;
 };
 
-#endif // STEP_ACTION_H_
+//==============================================================================
+inline void TrackingInteractivity::SetSteppingAction(
+  G4UserSteppingAction* ptr)
+{
+  step_action_ = ptr;
+}
+
+#endif // TRACKING_INTERACTIVITY_H_

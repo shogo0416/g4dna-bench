@@ -36,6 +36,7 @@
 #include "simdata.h"
 #include "step_action.h"
 #include "time_step_action.h"
+#include "tracking_interactivity.h"
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
@@ -153,8 +154,11 @@ void Application::BuildForMaster() const
 //------------------------------------------------------------------------------
 void Application::Build() const
 {
-  G4MoleculeCounter::Use();
-  G4MoleculeCounter::Instance()->DontRegister(G4H2O::Definition());
+  bool use = ::js["use_molecule_counter"];
+  if (use) {
+    G4MoleculeCounter::Use();
+    G4MoleculeCounter::Instance()->DontRegister(G4H2O::Definition());
+  }
   SimData::GetInstance()->Setup();
 
   if (!G4Threading::IsMultithreadedApplication()) {
@@ -184,7 +188,14 @@ void Application::Build() const
   SetUserAction(new RunAction());
   SetUserAction(new StackingAction());
 
-  G4Scheduler::Instance()->SetUserAction(new TimeStepAction());
+  bool check_boundary = ::js["check_boundary"];
+  auto tsa = new TimeStepAction();
+  tsa->CheckBoundary(check_boundary);
+  G4Scheduler::Instance()->SetUserAction(tsa);
+
+  auto tri = new TrackingInteractivity();
+  tri->SetSteppingAction(new StepAction(true));
+  G4Scheduler::Instance()->SetInteractivity(tri);
 }
 
 //------------------------------------------------------------------------------

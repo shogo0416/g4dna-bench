@@ -51,14 +51,13 @@ void EventAction::BeginOfEventAction(const G4Event*)
 //------------------------------------------------------------------------------
 void EventAction::EndOfEventAction(const G4Event*)
 {
+  time_end_ = ::timer->TakeSplit();
 
 #ifdef G4MULTITHREADED
   int id = G4Threading::G4GetThreadId();
 #else
   constexpr int id = 0;
 #endif
-
-  time_end_ = ::timer->TakeSplit();
 
   double elap_time = time_end_ - time_on_;
 
