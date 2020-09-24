@@ -194,9 +194,7 @@ void Application::Build() const
   G4Scheduler::Instance()->SetUserAction(tsa);
 
   auto tri = new TrackingInteractivity();
-  auto sta = new StepAction();
-  sta->ForChemistry(true);
-  tri->SetSteppingAction(sta);
+  tri->SetSteppingAction(new StepAction(true));
   G4Scheduler::Instance()->SetInteractivity(tri);
 }
 

@@ -33,10 +33,10 @@
 #include "G4Step.hh"
 
 //------------------------------------------------------------------------------
-StepAction::StepAction()
+StepAction::StepAction(bool chem)
     : G4UserSteppingAction()
 {
-  chem_ = false;
+  chem_ = chem;
 }
 
 //------------------------------------------------------------------------------
@@ -51,22 +51,21 @@ void StepAction::UserSteppingAction(const G4Step* step)
 
   static auto simdata = SimData::GetInstance();
 
-  if (chem_) {
-
-    // for chemistry stage
-    //   accumulate energy deposit of excited water molecules (H2O*)
-
-    if (G4Scheduler::Instance()->GetNbSteps() != 0) { return; }
-
-    auto molecule = GetMolecule(step->GetTrack());
-    if (molecule->GetName() != "H2O^0") { return; }
-
-    double edep = step->GetTotalEnergyDeposit();
-    if (edep > 0.0) { simdata->AccumulateEdep(id, edep); }
-
+  // for physics stage
+  if (!chem_) {
+    simdata->GetNumPhysStep()[id] += 1;
     return;
   }
 
-  // for physics stage
-  simdata->GetNumPhysStep()[id] += 1;
+  // for chemistry stage
+  //   accumulate energy deposit of excited water molecules (H2O*)
+
+  if (G4Scheduler::Instance()->GetNbSteps() != 0) { return; }
+
+  auto molecule = GetMolecule(step->GetTrack());
+  if (molecule->GetName() != "H2O^0") { return; }
+
+  double edep = step->GetTotalEnergyDeposit();
+  if (edep > 0.0) { simdata->AccumulateEdep(id, edep); }
+
 }

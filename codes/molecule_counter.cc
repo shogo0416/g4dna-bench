@@ -153,13 +153,13 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
       double t2 = tsi[id2].sim_time;
 
       for (auto x : simdata_->GetScoredMolecule()) {
-        auto kind = x.first;
-        int n1 = tsi[id1].species[kind];
-        int n2 = tsi[id2].species[kind];
+        auto name = x.first;
+        int n1 = tsi[id1].species[name];
+        int n2 = tsi[id2].species[name];
         int n  = ::interpolate(t, t1, t2, n1, n2);
 
         double gval = n * edep_factor;
-        simdata_->GValue(id, tid, kind, gval);
+        simdata_->GValue(id, tid, name, gval);
 
       }
 
@@ -168,7 +168,6 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
     }
 
   }
-
 
   simdata_->CountChemEvent(id);
 
