@@ -38,6 +38,8 @@
 
 namespace {
 
+constexpr bool prestep = true;
+
 //------------------------------------------------------------------------------
 int find_lower_bound(const std::vector<TimeStepInfo>& info, double x)
 {
@@ -169,6 +171,12 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
 
   }
 
+  // number of species generated at 1 ps vs process time for the chemistry stage
+  auto tsi = simdata_->GetTimeStepInfo(id, ::prestep);
+  auto etc = simdata_->GetElapTimeChem()[id];
+  ChemInfo ci = {etc, tsi[0].species};
+  simdata_->PushChemInfo(id, ci);
+
   simdata_->CountChemEvent(id);
 
   clear();
@@ -188,6 +196,7 @@ void MoleculeCounter::clear()
   } else {
     simdata_->ClearTimeStepInfo(id);
   }
+  simdata_->ClearTimeStepInfo(id, ::prestep);
 }
 
 //------------------------------------------------------------------------------

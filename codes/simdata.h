@@ -44,6 +44,13 @@ struct TimeStepInfo {
 
 //==============================================================================
 
+struct ChemInfo {
+  double proc_time;
+  std::map<std::string, int> species;
+};
+
+//==============================================================================
+
 class SimData {
 public:
   static SimData* GetInstance();
@@ -72,7 +79,8 @@ public:
   void SaveSimulationResult(int id = -1);
   void SaveBenchmarkResult();
 
-  std::vector<double>& GetElapTime();
+  std::vector<double>& GetTotElapTime();
+  std::vector<double>& GetTotElapTimeChem();
   std::vector<double>& GetElapTimeChem();
 
   void Performance(int id);
@@ -83,11 +91,14 @@ public:
   std::vector<int>& GetNumPhysStep();
   std::vector<int>& GetNumChemStep();
 
-  void PushTimeStepInfo(int id, const TimeStepInfo& info);
-  void ClearTimeStepInfo(int id);
-  std::vector<TimeStepInfo>& GetTimeStepInfo(int id);
+  void PushTimeStepInfo(int id, const TimeStepInfo& info, bool prestep = false);
+  void ClearTimeStepInfo(int id, bool prestep = false);
+  std::vector<TimeStepInfo>& GetTimeStepInfo(int id, bool prestep = false);
 
   std::map<std::string, int>& GetScoredMolecule();
+
+  void PushChemInfo(int id, const ChemInfo& info);
+  std::vector<ChemInfo>& GetChemInfo(int id);
 
 private:
   SimData();
@@ -104,12 +115,16 @@ private:
   std::vector<double> edep_buff_;
   std::vector<std::vector<double> > gval_buff_;
 
+  std::vector<std::vector<TimeStepInfo> > tsi_buff_pre_;
   std::vector<std::vector<TimeStepInfo> > tsi_buff_;
+
+  std::vector<std::vector<ChemInfo> > ci_buff_;
 
   std::vector<int> num_abort_event_;
   std::vector<int> num_chem_event_;
 
-  std::vector<double> elap_time_;
+  std::vector<double> tot_elap_time_;
+  std::vector<double> tot_elap_time_chem_;
   std::vector<double> elap_time_chem_;
 
   bool result_each_thread_;
@@ -179,9 +194,15 @@ inline void SimData::CountChemEvent(int id)
 }
 
 //------------------------------------------------------------------------------
-inline std::vector<double>& SimData::GetElapTime()
+inline std::vector<double>& SimData::GetTotElapTime()
 {
-  return elap_time_;
+  return tot_elap_time_;
+}
+
+//------------------------------------------------------------------------------
+inline std::vector<double>& SimData::GetTotElapTimeChem()
+{
+  return tot_elap_time_chem_;
 }
 
 //------------------------------------------------------------------------------
@@ -215,35 +236,57 @@ inline std::vector<int>& SimData::GetNumChemStep()
 }
 
 //------------------------------------------------------------------------------
-inline void SimData::PushTimeStepInfo(int id, const TimeStepInfo& info)
+inline void SimData::PushTimeStepInfo(
+  int id, const TimeStepInfo& info, bool prestep)
 {
-  if (tsi_buff_[id].size() == 0) {
-    tsi_buff_[id].push_back(info);
+
+  std::vector<std::vector<TimeStepInfo> >* buff = nullptr;
+  if (prestep) { buff = &tsi_buff_pre_; }
+  else { buff = &tsi_buff_; }
+
+  if ((*buff)[id].size() == 0) {
+    (*buff)[id].push_back(info);
     return;
   }
-  auto itr = tsi_buff_[id].end(); itr--;
+
+  auto itr = (*buff)[id].end(); itr--;
   if ((*itr).sim_time == info.sim_time) {
-    tsi_buff_[id].erase(itr);
+    (*buff)[id].erase(itr);
   }
-  tsi_buff_[id].push_back(info);
+  (*buff)[id].push_back(info);
+
 }
 
 //------------------------------------------------------------------------------
-inline std::vector<TimeStepInfo>& SimData::GetTimeStepInfo(int id)
+inline std::vector<TimeStepInfo>& SimData::GetTimeStepInfo(int id, bool prestep)
 {
-  return tsi_buff_[id];
+  if (prestep) { return tsi_buff_pre_[id]; }
+  else { return tsi_buff_[id]; }
 }
 
 //------------------------------------------------------------------------------
-inline void SimData::ClearTimeStepInfo(int id)
+inline void SimData::ClearTimeStepInfo(int id, bool prestep)
 {
-  tsi_buff_[id].clear();
+  if (prestep) { tsi_buff_pre_[id].clear(); }
+  else { tsi_buff_[id].clear(); }
 }
 
 //------------------------------------------------------------------------------
 inline std::map<std::string, int>& SimData::GetScoredMolecule()
 {
   return mole_map_;
+}
+
+//------------------------------------------------------------------------------
+inline void SimData::PushChemInfo(int id, const ChemInfo& info)
+{
+  ci_buff_[id].push_back(info);
+}
+
+//------------------------------------------------------------------------------
+inline std::vector<ChemInfo>& SimData::GetChemInfo(int id)
+{
+  return ci_buff_[id];
 }
 
 #endif // SIMDATA_H_

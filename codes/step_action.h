@@ -31,11 +31,9 @@
 
 class StepAction : public G4UserSteppingAction {
 public:
-  StepAction(bool chem = false);
+  StepAction() = default;
   virtual ~StepAction() = default;
-  virtual void UserSteppingAction(const G4Step* step);
-private:
-  bool chem_;
+  virtual void UserSteppingAction(const G4Step*);
 };
 
 #endif // STEP_ACTION_H_

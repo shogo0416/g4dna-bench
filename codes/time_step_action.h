@@ -35,6 +35,7 @@ public:
   TimeStepAction();
   virtual ~TimeStepAction() = default;
 
+  void UserPreTimeStepAction();
   void UserPostTimeStepAction();
   void EndProcessing();
   void CheckBoundary(bool in);

@@ -36,7 +36,6 @@
 #include "simdata.h"
 #include "step_action.h"
 #include "time_step_action.h"
-#include "tracking_interactivity.h"
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
@@ -193,9 +192,6 @@ void Application::Build() const
   tsa->CheckBoundary(check_boundary);
   G4Scheduler::Instance()->SetUserAction(tsa);
 
-  auto tri = new TrackingInteractivity();
-  tri->SetSteppingAction(new StepAction(true));
-  G4Scheduler::Instance()->SetInteractivity(tri);
 }
 
 //------------------------------------------------------------------------------

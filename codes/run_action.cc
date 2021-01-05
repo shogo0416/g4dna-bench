@@ -31,12 +31,6 @@
 #include "G4Threading.hh"
 
 //------------------------------------------------------------------------------
-RunAction::RunAction()
-    : G4UserRunAction()
-{
-}
-
-//------------------------------------------------------------------------------
 void RunAction::BeginOfRunAction(const G4Run*)
 {
 }

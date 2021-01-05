@@ -37,12 +37,6 @@ static auto timer = TimeHistory::GetTimeHistory();
 } // end of anonymous namespace
 
 //==============================================================================
-EventAction::EventAction()
-    : G4UserEventAction()
-{
-}
-
-//------------------------------------------------------------------------------
 void EventAction::BeginOfEventAction(const G4Event*)
 {
   time_on_ = ::timer->TakeSplit();
@@ -61,6 +55,5 @@ void EventAction::EndOfEventAction(const G4Event*)
 
   double elap_time = time_end_ - time_on_;
 
-  SimData::GetInstance()->GetElapTime()[id] += elap_time;
-
+  SimData::GetInstance()->GetTotElapTime()[id] += elap_time;
 }

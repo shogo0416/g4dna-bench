@@ -59,5 +59,7 @@ void StackingAction::NewStage()
   double time_end = timer->TakeSplit();
 
   double elap_time = time_end - time_on;
-  SimData::GetInstance()->GetElapTimeChem()[id] += elap_time;
+  SimData::GetInstance()->GetTotElapTimeChem()[id] += elap_time;
+  SimData::GetInstance()->GetElapTimeChem()[id] = elap_time;
+
 }

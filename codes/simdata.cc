@@ -34,6 +34,7 @@
 #include "G4MoleculeTable.hh"
 #include "G4DNAMolecularReactionTable.hh"
 #include "G4H2O.hh"
+#include "G4Version.hh"
 #if G4VERSION_NUMBER >= 1070
 #include "G4FakeMolecule.hh"
 #endif
@@ -246,7 +247,10 @@ void SimData::Setup()
     gval_buff_[i].resize(::matrix_size, 0.0);
   }
 
+  tsi_buff_pre_.resize(num_thread_);
   tsi_buff_.resize(num_thread_);
+
+  ci_buff_.resize(num_thread_);
 
   header_.resize(::num_mole_kind + 1);
   header_[0] = "Time_ps";
@@ -255,7 +259,8 @@ void SimData::Setup()
   num_abort_event_.resize(num_thread_, 0);
   num_chem_event_.resize(num_thread_, 0);
 
-  elap_time_.resize(num_thread_, 0.0);
+  tot_elap_time_.resize(num_thread_, 0.0);
+  tot_elap_time_chem_.resize(num_thread_, 0.0);
   elap_time_chem_.resize(num_thread_, 0.0);
 
   num_phys_step_.resize(num_thread_, 0);
@@ -378,8 +383,8 @@ void SimData::Performance(int id)
 
   if (!performance_each_thread_) { return; }
 
-  double elap_time = elap_time_[id];
-  double elap_time_chem = elap_time_chem_[id];
+  double elap_time = tot_elap_time_[id];
+  double elap_time_chem = tot_elap_time_chem_[id];
   double elap_time_phys = elap_time - elap_time_chem;
 
   int num_event_chem  = num_chem_event_[id];
@@ -394,8 +399,15 @@ void SimData::Performance(int id)
 
   int num_phys_step = num_phys_step_[id];
   int num_chem_step = num_chem_step_[id];
-  double avg_time_phys_step = elap_time_phys / num_phys_step;
-  double avg_time_chem_step = elap_time_chem / num_chem_step;
+  double avg_time_phys_step = elap_time_phys / num_phys_step * 1000.0;
+  double avg_time_chem_step = elap_time_chem / num_chem_step * 1000.0;
+
+  int nmol = 0;
+  auto ci = ci_buff_[id];
+  for (auto x : ci) {
+    for (auto y : x.species) { nmol += y.second; }
+  }
+  double avg_time_species = elap_time_chem / nmol * 1000.0;
 
   std::cout << " Thread #" << id << std::endl;
   std::cout << " - Total Event: " << num_event << " (Abort: " << num_event_abort
@@ -416,22 +428,28 @@ void SimData::Performance(int id)
   std::cout << "   - Chemistry: " << num_chem_step << std::endl;
 
   std::cout << " - Elapsed Time per Step:" << std::endl;
-  std::cout << "   - Physics:   " << avg_time_phys_step * 1000.0
+  std::cout << "   - Physics:   " << avg_time_phys_step
             << " msec/step" << std::endl;
-  std::cout << "   - Chemistry: " << avg_time_chem_step * 1000.0
+  std::cout << "   - Chemistry: " << avg_time_chem_step
             << " msec/step" << std::endl;
+
+  std::cout << " - Elapsed Time per Species" << std::endl;
+  std::cout << "   - # of species: " << nmol << std::endl;
+  std::cout << "   - Throughput:   " << avg_time_species
+            << " msec/species" << std::endl;
 
   std::cout << std::endl;
 
   std::string title = "thread" + std::to_string(id);
 
   js_[title] = {
-    {"event_number",           {num_event, num_event_abort, num_event_chem}},
-    {"elapsed_time",           {elap_time, elap_time_phys, elap_time_chem}},
-    {"elapsed_time_per_event", {avg_time_phys, avg_time_chem}},
-    {"throughput",             {thr_phys, thr_chem}},
-    {"step_number",            {num_phys_step, num_chem_step}},
-    {"elapsed_time_per_step",  {avg_time_phys_step, avg_time_chem_step}}
+    {"event_number",             {num_event, num_event_abort, num_event_chem}},
+    {"elapsed_time",             {elap_time, elap_time_phys, elap_time_chem}},
+    {"elapsed_time_per_event",   {avg_time_phys, avg_time_chem}},
+    {"throughput",               {thr_phys, thr_chem}},
+    {"step_number",              {num_phys_step, num_chem_step}},
+    {"elapsed_time_per_step",    {avg_time_phys_step, avg_time_chem_step}},
+    {"elapsed_time_per_species", {nmol, avg_time_species}}
   };
 
 }
@@ -459,8 +477,28 @@ void SimData::SaveBenchmarkResult()
     {"throughput", throughput}
   };
 
+
+  std::vector<int> mole_number;
+  std::vector<double> proc_time;
+
+  for (int id = 0; id < num_thread_; id++) {
+    auto ci = ci_buff_[id];
+    for (auto x : ci) {
+      int num = 0;
+      for (auto y : x.species) { num += y.second; }
+      proc_time.push_back(x.proc_time);
+      mole_number.push_back(num);
+    }
+  }
+
+  js_["chemistry_stage"] = {
+    {"mole_number", mole_number},
+    {"proc_time",   proc_time}
+  };
+
   // save benchmark result
   std::ofstream fout(fname_bench_);
   fout << std::setw(4) << js_ << std::endl;
   fout.close();
+
 }

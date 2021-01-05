@@ -32,7 +32,7 @@
 
 class EventAction : public G4UserEventAction {
 public:
-  EventAction();
+  EventAction() = default;
   virtual ~EventAction() = default;
 
   virtual void BeginOfEventAction(const G4Event*);

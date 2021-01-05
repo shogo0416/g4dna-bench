@@ -45,6 +45,29 @@ TimeStepAction::TimeStepAction()
 }
 
 //------------------------------------------------------------------------------
+void TimeStepAction::UserPreTimeStepAction()
+{
+#ifdef G4MULTITHREADED
+  int id = G4Threading::G4GetThreadId();
+#else
+  constexpr int id = 0;
+#endif
+
+  const double time = G4Scheduler::Instance()->GetGlobalTime();
+  if (time > 1.0 * picosecond) { return; }
+
+  Reset();
+
+  auto track_holder = G4ITTrackHolder::Instance();
+  auto list = track_holder->GetMainList();
+
+  for (auto x : *list) { Count(x); }
+
+  TimeStepInfo tsi = {time, mcounter_};
+  SimData::GetInstance()->PushTimeStepInfo(id, tsi, true);
+}
+
+//------------------------------------------------------------------------------
 void TimeStepAction::UserPostTimeStepAction()
 {
 
@@ -61,9 +84,7 @@ void TimeStepAction::UserPostTimeStepAction()
   auto track_holder = G4ITTrackHolder::Instance();
   auto list = track_holder->GetMainList();
 
-  for (auto x : *list) {
-    Count(x);
-  }
+  for (auto x : *list) { Count(x); }
 
   const double time = G4Scheduler::Instance()->GetGlobalTime();
 
