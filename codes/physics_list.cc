@@ -31,23 +31,35 @@
 #include "G4PhysicsConstructorRegistry.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4EmDNAPhysics.hh"
+#if G4VERSION_NUMBER >= 1010
 #include "G4EmDNAPhysics_option1.hh"
+#endif
+#if G4VERSION_NUMBER >= 1020
 #include "G4EmDNAPhysics_option2.hh"
 #include "G4EmDNAPhysics_option3.hh"
 #include "G4EmDNAPhysics_option4.hh"
 #include "G4EmDNAPhysics_option5.hh"
+#endif
+#if G4VERSION_NUMBER >= 1040
 #include "G4EmDNAPhysics_option6.hh"
+#endif
+#if G4VERSION_NUMBER >= 1030
 #include "G4EmDNAPhysics_option7.hh"
+#endif
+#if G4VERSION_NUMBER >= 1050
 #include "G4EmDNAPhysics_option8.hh"
-#include "G4EmDNAChemistry.hh"
-#include "G4EmDNAChemistry_option1.hh"
+#endif
 
+#include "G4EmDNAChemistry.hh"
+#if G4VERSION_NUMBER >= 1050
+#include "G4EmDNAChemistry_option1.hh"
+#endif
 #if G4VERSION_NUMBER >= 1060
 #include "G4EmDNAChemistry_option2.hh"
 #endif
-
 #if G4VERSION_NUMBER >= 1070
 #include "G4EmDNAChemistry_option3.hh"
+
 #endif
 
 #if G4VERSION_NUMBER < 1060
@@ -114,25 +126,54 @@ PhysicsList* PhysicsList::GetInstance()
 //------------------------------------------------------------------------------
 void PhysicsList::SetPhysics(const std::string& name)
 {
-  if (name == "G4EmDNAPhysics") {
+  if (name == "G4EmDNAPhysics")
+  {
     phys_list_ = new G4EmDNAPhysics();
-  } else if (name == "G4EmDNAPhysics_option1") {
+  }
+#if G4VERSION_NUMBER >= 1010
+  else if (name == "G4EmDNAPhysics_option1")
+  {
     phys_list_ = new G4EmDNAPhysics_option1();
-  } else if (name == "G4EmDNAPhysics_option2") {
+  }
+#endif
+#if G4VERSION_NUMBER >= 1020
+  else if (name == "G4EmDNAPhysics_option2")
+  {
     phys_list_ = new G4EmDNAPhysics_option2();
-  } else if (name == "G4EmDNAPhysics_option3") {
+  }
+  else if (name == "G4EmDNAPhysics_option3")
+  {
     phys_list_ = new G4EmDNAPhysics_option3();
-  } else if (name == "G4EmDNAPhysics_option4") {
+  }
+  else if (name == "G4EmDNAPhysics_option4")
+  {
     phys_list_ = new G4EmDNAPhysics_option4();
-  } else if (name == "G4EmDNAPhysics_option5") {
+  }
+  else if (name == "G4EmDNAPhysics_option5")
+  {
     phys_list_ = new G4EmDNAPhysics_option5();
-  } else if (name == "G4EmDNAPhysics_option6") {
+  }
+#endif
+#if G4VERSION_NUMBER >= 1040
+  else if (name == "G4EmDNAPhysics_option6")
+  {
     phys_list_ = new G4EmDNAPhysics_option6();
-  } else if (name == "G4EmDNAPhysics_option7") {
+  }
+#endif
+#if G4VERSION_NUMBER >= 1030
+  else if (name == "G4EmDNAPhysics_option7")
+  {
     phys_list_ = new G4EmDNAPhysics_option7();
-  } else if (name == "G4EmDNAPhysics_option8") {
+  }
+#endif
+#if G4VERSION_NUMBER >= 1050
+  else if (name == "G4EmDNAPhysics_option8")
+  {
     phys_list_ = new G4EmDNAPhysics_option8();
-  } else {
+  }
+#endif
+  else
+  {
     std::cerr << "[ERROR] Set unknown list (name: " << name << ")" <<std::endl;
     std::exit(EXIT_FAILURE);
   }
@@ -145,10 +186,12 @@ void PhysicsList::SetChemistry(const std::string& name)
   {
     chem_list_ = new G4EmDNAChemistry();
   }
+#if G4VERSION_NUMBER >= 1050
   else if (name == "G4EmDNAChemistry_option1")
   {
     chem_list_ = new G4EmDNAChemistry_option1();
   }
+#endif
 #if G4VERSION_NUMBER >= 1060
   else if (name == "G4EmDNAChemistry_option2")
   {

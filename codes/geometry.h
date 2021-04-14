@@ -33,6 +33,7 @@
 #include "G4LogicalVolume.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4Material.hh"
+#include "G4ThreeVector.hh"
 #include <string>
 
 class Geometry : public G4VUserDetectorConstruction {
@@ -47,7 +48,7 @@ public:
   virtual void ConstructSDandField();
 
   void SetPhantomSize(double x, double y, double z);
-  double* GetPhantomSize();
+  G4ThreeVector GetPhantomSize();
 
   void DebugMode(bool in);
 
@@ -56,7 +57,7 @@ private:
   static Geometry* instance_;
 
   bool debug_;
-  double psize_[3];
+  G4ThreeVector psize_;
   G4VPhysicalVolume* ppv_;
 
   void Print();
@@ -65,13 +66,11 @@ private:
 //==============================================================================
 inline void Geometry::SetPhantomSize(double x, double y, double z)
 {
-  psize_[0] = x;
-  psize_[1] = y;
-  psize_[2] = z;
+  psize_.set(x, y, z);
 }
 
 //------------------------------------------------------------------------------
-inline double* Geometry::GetPhantomSize()
+inline G4ThreeVector Geometry::GetPhantomSize()
 {
   return psize_;
 }

@@ -66,9 +66,9 @@ G4VPhysicalVolume* Geometry::Construct()
 
   // set up phantom volume
   auto psol = new G4Box("Phantom",
-                        psize_[0] * 0.5,
-                        psize_[1] * 0.5,
-                        psize_[2] * 0.5);
+                        psize_.x() * 0.5,
+                        psize_.y() * 0.5,
+                        psize_.z() * 0.5);
 
   // make a logical volume
   auto plv = new G4LogicalVolume(psol, water, "Phantom");

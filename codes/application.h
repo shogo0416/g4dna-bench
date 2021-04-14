@@ -49,6 +49,9 @@ public:
   double GetKillEnergyUppLim() const;
   double GetKillEnergyLowLim() const;
 
+  void SetSeed(int seed);
+  void SetOutputFile(const std::string& output);
+
 private:
   Application();
   static Application* instance_;
@@ -60,6 +63,8 @@ private:
   double kill_eupp_;
   double kill_elow_;
 
+  int seed_;
+  std::string output_;
 };
 
 //==============================================================================
@@ -90,6 +95,18 @@ inline double Application::GetKillEnergyUppLim() const
 inline double Application::GetKillEnergyLowLim() const
 {
   return kill_elow_;
+}
+
+//------------------------------------------------------------------------------
+inline void Application::SetSeed(int seed)
+{
+  seed_ = seed;
+}
+
+//------------------------------------------------------------------------------
+inline void Application::SetOutputFile(const std::string& output)
+{
+  output_ = output;
 }
 
 #endif // APPLICATION_H_

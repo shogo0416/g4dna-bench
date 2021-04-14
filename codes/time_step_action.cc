@@ -36,6 +36,7 @@
 #include "G4Molecule.hh"
 #include "G4MoleculeCounter.hh"
 #include "G4Step.hh"
+#include "G4Version.hh"
 
 //------------------------------------------------------------------------------
 TimeStepAction::TimeStepAction()
@@ -71,7 +72,13 @@ void TimeStepAction::UserPreTimeStepAction()
 void TimeStepAction::UserPostTimeStepAction()
 {
 
-  if (G4MoleculeCounter::InUse()) { return; }
+#if G4VERSION_NUMBER >= 1020
+  const bool inuse = G4MoleculeCounter::InUse();
+#else
+  const bool inuse = G4MoleculeCounter::Instance()->InUse();
+#endif
+
+  if (inuse) { return; }
 
 #ifdef G4MULTITHREADED
   int id = G4Threading::G4GetThreadId();
@@ -138,11 +145,11 @@ void TimeStepAction::CheckBoundary(bool in)
 
   if (!check_boundary_) { return; }
 
-  double* box_size = Geometry::GetInstance()->GetPhantomSize();
+  auto box_size = Geometry::GetInstance()->GetPhantomSize();
 
-  upp_bound_x_ = box_size[0] * 0.5;
-  upp_bound_y_ = box_size[1] * 0.5;
-  upp_bound_z_ = box_size[2] * 0.5;
+  upp_bound_x_ = box_size.x() * 0.5;
+  upp_bound_y_ = box_size.y() * 0.5;
+  upp_bound_z_ = box_size.z() * 0.5;
   low_bound_x_ = -1.0 * upp_bound_x_;
   low_bound_y_ = -1.0 * upp_bound_y_;
   low_bound_z_ = -1.0 * upp_bound_z_;

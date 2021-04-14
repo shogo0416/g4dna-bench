@@ -42,14 +42,28 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <mutex>
+#include <iomanip>
 
 namespace {
 
-constexpr int num_time_bin = 60;
+#if G4VERSION_NUMBER < 1030
+
+const int num_time_bin   = 60;
+const int num_time_point = num_time_bin + 1;
+const double low_tlim    = 1.0 * picosecond;
+const double upp_tlim    = 999999.0 * picosecond;
+const double bin_width   = log10(upp_tlim / low_tlim) / num_time_bin;
+
+#else
+
+constexpr int num_time_bin   = 60;
 constexpr int num_time_point = num_time_bin + 1;
-constexpr double low_tlim = 1.0 * picosecond;
-constexpr double upp_tlim = 999999.0 * picosecond;
-constexpr double bin_width = log10(upp_tlim / low_tlim) / num_time_bin;
+constexpr double low_tlim    = 1.0 * picosecond;
+constexpr double upp_tlim    = 999999.0 * picosecond;
+constexpr double bin_width   = log10(upp_tlim / low_tlim) / num_time_bin;
+
+#endif
 
 static int num_mole_kind;
 static int matrix_size;
@@ -220,14 +234,22 @@ void SimData::Setup()
     score_time_[i] = t;
   }
 
+#if G4VERSION_NUMBER >= 1020
   auto miterator = G4MoleculeTable::Instance()->GetConfigurationIterator();
+#else
+  auto miterator = G4MoleculeTable::Instance()->GetDefintionIterator();
+#endif
 
   int counter = 0;
   while ((miterator)()) {
 
     auto val = miterator.value();
 
+#if G4VERSION_NUMBER >= 1020
     if (::check_molecule_type(val->GetDefinition())) { continue; }
+#else
+    if (::check_molecule_type(val)) { continue; }
+#endif
 
     auto name = val->GetName();
     if (mole_map_.count(name)) { continue; }

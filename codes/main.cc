@@ -48,8 +48,10 @@ void print_usage()
   const char* usage = R"(
     [Usage] g4dna-banch <options>
     [Options]
-      -h, --help             print this information
-      -c, --conf <file_name> set configuration file [defualt: conf.json]
+      -h, --help               print this information
+      -c, --conf   <file_name> set configuration file [defualt: conf.json]
+      -s, --seed   <val>       set seed for random number generation
+      -o, --output <file_name> set output file name
   )";
 
   std::cout << usage << std::endl;
@@ -65,13 +67,18 @@ int main(int argc, char** argv)
 {
 
   struct option opts [] = {
-    {"help",  no_argument,       nullptr, 'h'},
-    {"conf",  required_argument, nullptr, 'c'},
-    {nullptr, 0,                 nullptr,  0},
+    {"help",   no_argument,       nullptr, 'h'},
+    {"conf",   required_argument, nullptr, 'c'},
+    {"seed",   required_argument, nullptr, 's'},
+    {"output", required_argument, nullptr, 'o'},
+    {nullptr,  0,                 nullptr,  0},
   };
 
-  std::string conf_file = "conf.json";
-  const char* optstr = "hc:";
+  int seed = -1;
+  std::string conf_file   = "conf.json";
+  std::string output_file = "";
+
+  const char* optstr = "hc:s:o:";
   int opt, index;
   while ((opt = getopt_long(argc, argv, optstr, opts, &index)) != -1) {
     switch (opt) {
@@ -81,10 +88,18 @@ int main(int argc, char** argv)
       case 'c':
         conf_file = static_cast<std::string>(optarg);
         break;
+      case 's':
+        seed = atoi(optarg);
+        break;
+      case 'o':
+        output_file = static_cast<std::string>(optarg);
+        break;
     }
   }
 
   auto app = Application::GetInstance();
+  if (seed > 0) { app->SetSeed(seed); }
+  if (output_file.length() > 0) { app->SetOutputFile(output_file); }
   app->Setup(conf_file);
 
 #ifdef G4MULTITHREADED

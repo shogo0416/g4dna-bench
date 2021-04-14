@@ -29,6 +29,7 @@
 #include "simdata.h"
 #include "G4Run.hh"
 #include "G4Threading.hh"
+#include "G4Version.hh"
 
 //------------------------------------------------------------------------------
 void RunAction::BeginOfRunAction(const G4Run*)
@@ -41,7 +42,13 @@ void RunAction::EndOfRunAction(const G4Run*)
 
 #ifdef G4MULTITHREADED
 
-  if (G4Threading::IsMasterThread()) { return; }
+#if G4VERSION_NUMBER >= 1020
+  const bool is_master = G4Threading::IsMasterThread();
+#else
+  const bool is_master = G4Threading::IsWorkerThread();
+#endif
+
+  if (is_master) { return; }
 
   int id = G4Threading::G4GetThreadId();
   SimData::GetInstance()->SaveSimulationResult(id);

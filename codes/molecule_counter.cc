@@ -35,6 +35,7 @@
 #include "G4MoleculeTable.hh"
 #include "G4Threading.hh"
 #include "G4Molecule.hh"
+#include "G4Version.hh"
 
 namespace {
 
@@ -53,6 +54,7 @@ int find_lower_bound(const std::vector<TimeStepInfo>& info, double x)
   if (upp < 0) { upp = 0; }
   return upp;
 }
+
 //------------------------------------------------------------------------------
 int interpolate(double t, double t1, double t2, int n1, int n2)
 {
@@ -95,6 +97,7 @@ G4bool MoleculeCounter::ProcessHits(G4Step* step, G4TouchableHistory*)
 //------------------------------------------------------------------------------
 void MoleculeCounter::Initialize(G4HCofThisEvent*)
 {
+  // nothing to do...
 }
 
 //------------------------------------------------------------------------------
@@ -116,7 +119,13 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
   static auto score_time = simdata_->GetScoreTime();
   double edep_factor = 100.0 / (simdata_->GetEdep(id) / eV);
 
-  if (G4MoleculeCounter::InUse()) {
+#if G4VERSION_NUMBER >= 1020
+  const bool inuse = G4MoleculeCounter::InUse();
+#else
+  const bool inuse = G4MoleculeCounter::Instance()->InUse();
+#endif
+
+  if (inuse) {
 
     auto counter = G4MoleculeCounter::Instance();
     auto species = counter->GetRecordedMolecules();
@@ -127,7 +136,12 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
     }
 
     for (auto mol : *species) {
+
+#if G4VERSION_NUMBER >= 1020
       std::string name = mol->GetName();
+#else
+      std::string name = mol.GetName();
+#endif
       int tid = 0;
       for (auto t : score_time) {
         int nmol = counter->GetNMoleculesAtTime(mol, t);
@@ -159,10 +173,8 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
         int n1 = tsi[id1].species[name];
         int n2 = tsi[id2].species[name];
         int n  = ::interpolate(t, t1, t2, n1, n2);
-
         double gval = n * edep_factor;
         simdata_->GValue(id, tid, name, gval);
-
       }
 
       tid++;
@@ -191,7 +203,14 @@ void MoleculeCounter::clear()
   constexpr int id = 0;
 #endif
   simdata_->ResetEdep(id);
-  if (G4MoleculeCounter::InUse()) {
+
+#if G4VERSION_NUMBER >= 1020
+  const bool inuse = G4MoleculeCounter::InUse();
+#else
+  const bool inuse = G4MoleculeCounter::Instance()->InUse();
+#endif
+
+  if (inuse) {
     G4MoleculeCounter::Instance()->ResetCounter();
   } else {
     simdata_->ClearTimeStepInfo(id);
