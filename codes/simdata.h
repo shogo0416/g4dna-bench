@@ -28,12 +28,10 @@
 #ifndef SIMDATA_H_
 #define SIMDATA_H_
 #include "globals.hh"
+#include "json.hpp"
 #include <vector>
 #include <string>
 #include <map>
-
-#include "json.hpp"
-using json = nlohmann::json;
 
 //==============================================================================
 
@@ -136,7 +134,7 @@ private:
   std::vector<int> num_phys_step_;
   std::vector<int> num_chem_step_;
 
-  json js_;
+  nlohmann::ordered_json js_;
 };
 
 //==============================================================================
