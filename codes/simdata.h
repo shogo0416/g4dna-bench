@@ -85,6 +85,7 @@ public:
 
   void OutputResultForEachThread(bool in);
   void OutputPerformanceForEachThread(bool in);
+  void OutputEventInfo(bool in);
 
   std::vector<int>& GetNumPhysStep();
   std::vector<int>& GetNumChemStep();
@@ -127,6 +128,7 @@ private:
 
   bool result_each_thread_;
   bool performance_each_thread_;
+  bool dump_event_info_;
 
   std::map<std::string, int> mole_map_;
   std::vector<std::string> header_;
@@ -219,6 +221,12 @@ inline void SimData::OutputResultForEachThread(bool in)
 inline void SimData::OutputPerformanceForEachThread(bool in)
 {
   performance_each_thread_ = in;
+}
+
+//------------------------------------------------------------------------------
+inline void SimData::OutputEventInfo(bool in)
+{
+  dump_event_info_ = in;
 }
 
 //------------------------------------------------------------------------------

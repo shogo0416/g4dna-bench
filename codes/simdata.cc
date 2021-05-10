@@ -204,6 +204,7 @@ SimData::SimData()
   num_thread_ = 1;
   result_each_thread_ = false;
   performance_each_thread_ = true;
+  dump_event_info_ = false;
 }
 
 //------------------------------------------------------------------------------
@@ -499,24 +500,27 @@ void SimData::SaveBenchmarkResult()
     {"throughput", throughput}
   };
 
+  if (dump_event_info_) {
 
-  std::vector<int> mole_number;
-  std::vector<double> proc_time;
+    std::vector<int> mole_number;
+    std::vector<double> proc_time;
 
-  for (int id = 0; id < num_thread_; id++) {
-    auto ci = ci_buff_[id];
-    for (auto x : ci) {
-      int num = 0;
-      for (auto y : x.species) { num += y.second; }
-      proc_time.push_back(x.proc_time);
-      mole_number.push_back(num);
+    for (int id = 0; id < num_thread_; id++) {
+      auto ci = ci_buff_[id];
+      for (auto x : ci) {
+        int num = 0;
+        for (auto y : x.species) { num += y.second; }
+        proc_time.push_back(x.proc_time);
+        mole_number.push_back(num);
+      }
     }
-  }
 
-  js_["chemistry_stage"] = {
-    {"mole_number", mole_number},
-    {"proc_time",   proc_time}
-  };
+    js_["chemistry_stage"] = {
+      {"mole_number", mole_number},
+      {"proc_time",   proc_time}
+    };
+
+  }
 
   // save benchmark result
   std::ofstream fout(fname_bench_);
