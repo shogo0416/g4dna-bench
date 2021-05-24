@@ -77,29 +77,46 @@ constexpr double dm3 = dm * dm * dm;
 constexpr double rate_unit = dm3 / (mole * s);
 
 //------------------------------------------------------------------------------
+void show_line(std::stringstream& message)
+{
+  message <<
+"------------------------------------------------------------------------------"
+  << std::endl;
+}
+
+//------------------------------------------------------------------------------
+void show_value(const std::string& kind, const int precision, const double val,
+                const std::string& unit, std::stringstream& message,
+                bool exponential = false)
+{
+  if (exponential) {
+    message << kind << ": " << std::scientific << std::setprecision(precision);
+  } else {
+    message << kind << ": " << std::fixed << std::setprecision(precision);
+  }
+  message << val << " " << unit;
+  message << std::defaultfloat;
+}
+
+//------------------------------------------------------------------------------
 void print_chemical_reaction()
 {
-
-  auto pname = PhysicsList::GetInstance()->GetChemistry()->GetPhysicsName();
-//  if (pname != "G4EmDNAChemistry_option3") { return; }
-
-  std::cout << "[Message] " << pname << " is set for the chemistry stage."
-            << std::endl;
+  constexpr bool exponential = true;
 
   auto tab = G4DNAMolecularReactionTable::GetReactionTable();
   auto datalist = tab->GetVectorOfReactionData();
 
   std::stringstream ss;
 
-  ss << std::endl;
+  ss << "[Message] Chemical reactions" << std::endl;
 
   for (auto& x : datalist) {
 
     auto reac1 = x->GetReactant1()->GetName();
     auto reac2 = x->GetReactant2()->GetName();
 
-    ss << "--------------------------------------------------------------------"
-       << std::endl;
+    show_line(ss);
+
     ss << reac1 << " + " << reac2 << " -> ";
 
     int num_prod = x->GetNbProducts();
@@ -141,28 +158,58 @@ void print_chemical_reaction()
 
     if (type == 6) {
 
-      ss << "--> Type: " << type << ", k_obs: " << k_obs * s << " s-1";
+      ss << "--> Type: " << type << ", ";
+
+      show_value("k_obs", 2, k_obs * s, "s^-1", ss, exponential);
+
 
     } else {
 
-      ss << "--> Type: " << type << ", k_obs: " << k_obs / rate_unit
-         << " (M*s)-1, Reff: " << Reff << " nm, ";
+      ss << "--> Type: " << type << ", ";
+
+      show_value("k_obs", 2, k_obs / rate_unit, "(M*s)^-1, ", ss, exponential);
+
+      show_value("Reff", 2, Reff, "nm, ", ss);
 
       if (type == 1) {
-        ss << "Preac: " << prob;
+
+        show_value("Preac", 3, prob * 100.0, "%", ss);
+
       } else if (type == 2) {
         double alpha = 1.0 / sigma * k_act / k_obs;
-        ss << "k_dif: " << k_dif / rate_unit << " (M*s)-1, ";
-        ss << "k_act: " << k_act / rate_unit << " (M*s)-1, ";
-        ss << "Preac: " << prob << ", ";
-        ss << "alpha: " << alpha / (1.0 / nm) << " nm-1";
+
+        show_value("k_dif", 2, k_dif / rate_unit, "(M*s)^-1, ",
+                   ss, exponential);
+
+        ss << "\n    ";
+
+        show_value("k_act", 2, k_act / rate_unit, "(M*s)^-1, ",
+                   ss, exponential);
+
+        show_value("Preac", 3, prob * 100.0, "%, ", ss);
+
+        show_value("alpha", 3, alpha / (1.0 / nm), "nm^-1", ss);
+
       } else if (type == 3) {
-        ss << ", rc: " << rc / nm << " nm ";
-        ss << "Preac: " << prob;
+
+        show_value("rc", 2, rc / nm, "nm,", ss);
+
+        ss << "\n    ";
+
+        show_value("Preac", 3, prob * 100.0, "%", ss);
+
       } else if (type == 4) {
-        ss << "k_dif: " << k_dif / rate_unit << " (M*s)-1, ";
-        ss << "k_act: " << k_act / rate_unit << " (M*s)-1, ";
-        ss << "Preac: " << prob;
+
+        show_value("k_dif", 2, k_dif / rate_unit, "(M*s)^-1, ",
+                   ss, exponential);
+
+        ss << "\n    ";
+
+        show_value("k_act", 2, k_act / rate_unit, "(M*s)^-1, ",
+                   ss, exponential);
+
+        show_value("Preac", 3, prob * 100.0, "%", ss);
+
       }
 
     }
@@ -170,6 +217,8 @@ void print_chemical_reaction()
     ss << std::endl;
 
   }
+
+  show_line(ss);
 
   std::cout << ss.str() << std::endl;
 }

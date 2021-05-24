@@ -59,11 +59,9 @@
 #include "json.hpp"
 #include <fstream>
 
-using json = nlohmann::json;
-
 namespace {
 
-static json js;
+nlohmann::ordered_json js;
 
 //------------------------------------------------------------------------------
 void print_parameters()
