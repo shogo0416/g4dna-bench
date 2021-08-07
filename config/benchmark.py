@@ -2,8 +2,8 @@
 import os
 
 EVENT_NUM_BASE = 10000
-THREAD_NUM_MIN = 1
-THREAD_NUM_MAX = 10
+THREAD_CONF = [1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+BINARY = '../../../bin/chem-bench-10.7.2'
 
 #-------------------------------------------------------------------------------
 template_conf = '''\
@@ -46,7 +46,7 @@ def run_sim(event_num, thread_num):
 
     log_file = 'run_' + str(thread_num) + 'threads.log'
 
-    command = '../bin/chem-bench'
+    command = BINARY
     command += ' -c ' + conf_file
     command += ' > ' + log_file
     print(command)
@@ -57,7 +57,7 @@ def run_sim(event_num, thread_num):
 
 #-------------------------------------------------------------------------------
 def main():
-    for x in range(THREAD_NUM_MIN, THREAD_NUM_MAX + 1):
+    for x in THREAD_CONF:
         run_sim(x * EVENT_NUM_BASE, x)
 
 
