@@ -25243,8 +25243,8 @@ This operator implements a user-defined string literal for JSON objects. It
 can be used by adding `"_json"` to a string literal and returns a JSON object
 if no parse error occurred.
 
-@param[in] s  a string representation of a JSON object
-@param[in] n  the length of string @a s
+@param[in] _s  a string representation of a JSON object
+@param[in] _n  the length of string @a _s
 @return a JSON object
 
 @since version 1.0.0
@@ -25262,8 +25262,8 @@ This operator implements a user-defined string literal for JSON Pointers. It
 can be used by adding `"_json_pointer"` to a string literal and returns a JSON pointer
 object if no parse error occurred.
 
-@param[in] s  a string representation of a JSON Pointer
-@param[in] n  the length of string @a s
+@param[in] _s  a string representation of a JSON Pointer
+@param[in] _n  the length of string @a _s
 @return a JSON pointer object
 
 @since version 2.0.0
