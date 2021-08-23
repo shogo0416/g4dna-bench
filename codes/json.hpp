@@ -11564,13 +11564,13 @@ class json_pointer
     Create a JSON pointer according to the syntax described in
     [Section 3 of RFC6901](https://tools.ietf.org/html/rfc6901#section-3).
 
-    @param[in] s  string representing the JSON pointer; if omitted, the empty
+    @param[in] _s  string representing the JSON pointer; if omitted, the empty
                   string is assumed which references the whole JSON value
 
-    @throw parse_error.107 if the given JSON pointer @a s is nonempty and does
+    @throw parse_error.107 if the given JSON pointer @a _s is nonempty and does
                            not begin with a slash (`/`); see example below
 
-    @throw parse_error.108 if a tilde (`~`) in the given JSON pointer @a s is
+    @throw parse_error.108 if a tilde (`~`) in the given JSON pointer @a _s is
     not followed by `0` (representing `~`) or `1` (representing `/`); see
     example below
 
@@ -11579,8 +11579,8 @@ class json_pointer
 
     @since version 2.0.0
     */
-    explicit json_pointer(const std::string& s = "")
-        : reference_tokens(split(s))
+    explicit json_pointer(const std::string& _s = "")
+        : reference_tokens(split(_s))
     {}
 
     /*!
@@ -12632,7 +12632,7 @@ namespace detail
 template<typename CharType> struct output_adapter_protocol
 {
     virtual void write_character(CharType c) = 0;
-    virtual void write_characters(const CharType* s, std::size_t length) = 0;
+    virtual void write_characters(const CharType* _s, std::size_t length) = 0;
     virtual ~output_adapter_protocol() = default;
 };
 
@@ -12655,9 +12655,9 @@ class output_vector_adapter : public output_adapter_protocol<CharType>
     }
 
     JSON_HEDLEY_NON_NULL(2)
-    void write_characters(const CharType* s, std::size_t length) override
+    void write_characters(const CharType* _s, std::size_t length) override
     {
-        std::copy(s, s + length, std::back_inserter(v));
+        std::copy(_s, _s + length, std::back_inserter(v));
     }
 
   private:
@@ -12669,8 +12669,8 @@ template<typename CharType>
 class output_stream_adapter : public output_adapter_protocol<CharType>
 {
   public:
-    explicit output_stream_adapter(std::basic_ostream<CharType>& s) noexcept
-        : stream(s)
+    explicit output_stream_adapter(std::basic_ostream<CharType>& _s) noexcept
+        : stream(_s)
     {}
 
     void write_character(CharType c) override
@@ -12679,9 +12679,9 @@ class output_stream_adapter : public output_adapter_protocol<CharType>
     }
 
     JSON_HEDLEY_NON_NULL(2)
-    void write_characters(const CharType* s, std::size_t length) override
+    void write_characters(const CharType* _s, std::size_t length) override
     {
-        stream.write(s, static_cast<std::streamsize>(length));
+        stream.write(_s, static_cast<std::streamsize>(length));
     }
 
   private:
@@ -12693,8 +12693,8 @@ template<typename CharType, typename StringType = std::basic_string<CharType>>
 class output_string_adapter : public output_adapter_protocol<CharType>
 {
   public:
-    explicit output_string_adapter(StringType& s) noexcept
-        : str(s)
+    explicit output_string_adapter(StringType& _s) noexcept
+        : str(_s)
     {}
 
     void write_character(CharType c) override
@@ -12703,9 +12703,9 @@ class output_string_adapter : public output_adapter_protocol<CharType>
     }
 
     JSON_HEDLEY_NON_NULL(2)
-    void write_characters(const CharType* s, std::size_t length) override
+    void write_characters(const CharType* _s, std::size_t length) override
     {
-        str.append(s, length);
+        str.append(_s, length);
     }
 
   private:
@@ -12719,11 +12719,11 @@ class output_adapter
     output_adapter(std::vector<CharType>& vec)
         : oa(std::make_shared<output_vector_adapter<CharType>>(vec)) {}
 
-    output_adapter(std::basic_ostream<CharType>& s)
-        : oa(std::make_shared<output_stream_adapter<CharType>>(s)) {}
+    output_adapter(std::basic_ostream<CharType>& _s)
+        : oa(std::make_shared<output_stream_adapter<CharType>>(_s)) {}
 
-    output_adapter(StringType& s)
-        : oa(std::make_shared<output_string_adapter<CharType, StringType>>(s)) {}
+    output_adapter(StringType& _s)
+        : oa(std::make_shared<output_string_adapter<CharType, StringType>>(_s)) {}
 
     operator output_adapter_t<CharType>()
     {
@@ -15486,13 +15486,13 @@ class serializer
 
   public:
     /*!
-    @param[in] s  output stream to serialize to
+    @param[in] _s  output stream to serialize to
     @param[in] ichar  indentation character to use
     @param[in] error_handler_  how to react on decoding errors
     */
-    serializer(output_adapter_t<char> s, const char ichar,
+    serializer(output_adapter_t<char> _s, const char ichar,
                error_handler_t error_handler_ = error_handler_t::strict)
-        : o(std::move(s))
+        : o(std::move(_s))
         , loc(std::localeconv())
         , thousands_sep(loc->thousands_sep == nullptr ? '\0' : std::char_traits<char>::to_char_type(* (loc->thousands_sep)))
         , decimal_point(loc->decimal_point == nullptr ? '\0' : std::char_traits<char>::to_char_type(* (loc->decimal_point)))
