@@ -252,7 +252,7 @@ SimData::SimData()
   fname_bench_ = "benchmark.json";
   num_thread_ = 1;
   result_each_thread_ = false;
-  performance_each_thread_ = true;
+  benchmark_threads_ = false;
   dump_event_info_ = false;
 }
 
@@ -461,7 +461,7 @@ void SimData::SaveSimulationResult(int id)
 void SimData::Performance(int id)
 {
 
-  if (!performance_each_thread_) { return; }
+  if (!benchmark_threads_) { return; }
 
   double elap_time = tot_elap_time_[id];
   double elap_time_chem = tot_elap_time_chem_[id];
@@ -563,20 +563,50 @@ void SimData::SaveBenchmarkResult()
   int num_event = Application::GetInstance()->GetEventNumber();
 
   auto timer = TimeHistory::GetTimeHistory();
-  double elap_time = timer->GetTime("BeamEnd") - timer->GetTime("BeamOn");
+  double elap_time = timer->GetTime("RunEnd") - timer->GetTime("RunOn");
   double throughput = double(num_event) / elap_time * 60.0;
 
-  std::cout << std::endl;
-  std::cout << " - Total Event Number: "    << num_event << std::endl;
-  std::cout << " - Total Elapsed Time: " << elap_time<< " sec" << std::endl;
-  std::cout << "   --> Throughput: " << throughput << " events/min."
-            << std::endl;
-  std::cout << std::endl;
+  double gval_OH[2] = { GetGValue(0, 0, "OH^0"),
+                        GetGValue(0, num_time_point - 1, "OH^0") };
+
+  double gval_eaq[2] = { GetGValue(0, 0, "e_aq^-1"),
+                         GetGValue(0, num_time_point - 1, "e_aq^-1") };
+
+  double gval_H2O2[2] = { GetGValue(0, 0, "H2O2^0"),
+                          GetGValue(0, num_time_point - 1, "H2O2^0") };
+
+  std::stringstream msg;
+
+  msg << "\n================================================================\n";
+  msg << " Run summary\n";
+  msg << " - Thread Number: " << num_thread_ << "\n";
+  msg << " - Total Event Number: " << num_event << "\n";
+  msg << " - Total Elapsed Time: " << elap_time<< " sec\n";
+  msg << " - Throughput: " << throughput << " events/min.\n";
+  msg << " *** Physics Regression (G-value)\n";
+  msg << " - Hydroxyl radical: " << gval_OH[0] << ", " << gval_OH[1] << "\n";
+  msg << " - Solvated electron: " << gval_eaq[0] << ", " << gval_eaq[1] << "\n";
+  msg << " - H2O2: " << gval_H2O2[0] << ", " << gval_H2O2[1] << "\n";
+  msg << "================================================================\n";
+
+  std::cout << msg.str() << std::endl;
 
   js_["summary"] = {
+    {"thread_number", num_thread_},
     {"event_number", num_event},
     {"elapsed_time", elap_time},
-    {"throughput", throughput}
+    {"throughput", throughput},
+    {"gvalue", {
+      {"hydroxyl_radical", {
+        {"chem_start", gval_OH[0]}, {"chem_end", gval_OH[1]}
+      }},
+      {"solvated_electron", {
+        {"chem_start", gval_eaq[0]}, {"chem_end", gval_eaq[1]}
+      }},
+      {"H2O2", {
+        {"chem_start", gval_H2O2[0]}, {"chem_end", gval_H2O2[1]}
+      }}
+    }}
   };
 
   if (dump_event_info_) {
@@ -603,7 +633,7 @@ void SimData::SaveBenchmarkResult()
 
   // save benchmark result
   std::ofstream fout(fname_bench_);
-  fout << std::setw(4) << js_ << std::endl;
+  fout << std::setw(2) << js_ << std::endl;
   fout.close();
 
 }

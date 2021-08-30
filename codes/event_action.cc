@@ -29,31 +29,53 @@
 #include "timehistory.h"
 #include "simdata.h"
 #include "G4Threading.hh"
+#include "G4Event.hh"
 
 namespace {
 
 static auto timer = TimeHistory::GetTimeHistory();
+static auto simdata = SimData::GetInstance();
 
 } // end of anonymous namespace
 
 //==============================================================================
-void EventAction::BeginOfEventAction(const G4Event*)
+EventAction::EventAction()
+    : check_counter_{1000}
 {
-  time_on_ = ::timer->TakeSplit();
 }
 
 //------------------------------------------------------------------------------
-void EventAction::EndOfEventAction(const G4Event*)
+void EventAction::BeginOfEventAction(const G4Event*)
 {
-  time_end_ = ::timer->TakeSplit();
+  if (!::simdata->ThreadBenchmarkTestIsEnabled()) { return; }
+  start_time_ = ::timer->TakeSplit();
+}
+
+//------------------------------------------------------------------------------
+void EventAction::EndOfEventAction(const G4Event* event)
+{
+
+  if (::simdata->ThreadBenchmarkTestIsEnabled()) {
+
+    stop_time_ = ::timer->TakeSplit();
 
 #ifdef G4MULTITHREADED
-  int id = G4Threading::G4GetThreadId();
+    int id = G4Threading::G4GetThreadId();
 #else
-  constexpr int id = 0;
+    constexpr int id = 0;
 #endif
 
-  double elap_time = time_end_ - time_on_;
+    double elap_time = stop_time_ - start_time_;
 
-  SimData::GetInstance()->GetTotElapTime()[id] += elap_time;
+    ::simdata->GetTotElapTime()[id] += elap_time;
+
+  }
+
+  int event_id = event->GetEventID();
+
+  if (event_id % check_counter_ == 0 && event_id != 0) {
+    std::cout << "[MESSAGE] event-loop check point: "
+              << event_id << " events processed." << std::endl;
+  }
+
 }

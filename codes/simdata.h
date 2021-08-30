@@ -85,7 +85,11 @@ public:
   void Performance(int id);
 
   void OutputResultForEachThread(bool in);
-  void OutputPerformanceForEachThread(bool in);
+//  void OutputPerformanceForEachThread(bool in);
+
+  void RecordBenchmarkScoreForThreads(bool in);
+  bool ThreadBenchmarkTestIsEnabled();
+
   void OutputEventInfo(bool in);
 
   std::vector<int>& GetNumPhysStep();
@@ -128,7 +132,7 @@ private:
   std::vector<double> elap_time_chem_;
 
   bool result_each_thread_;
-  bool performance_each_thread_;
+  bool benchmark_threads_;
   bool dump_event_info_;
 
   std::map<std::string, int> mole_map_;
@@ -219,11 +223,22 @@ inline void SimData::OutputResultForEachThread(bool in)
 }
 
 //------------------------------------------------------------------------------
-inline void SimData::OutputPerformanceForEachThread(bool in)
+/*inline void SimData::OutputPerformanceForEachThread(bool in)
 {
-  performance_each_thread_ = in;
+  benchmark_threads_ = in;
+}*/
+
+//------------------------------------------------------------------------------
+inline void SimData::RecordBenchmarkScoreForThreads(bool in)
+{
+  benchmark_threads_ = in;
 }
 
+//------------------------------------------------------------------------------
+inline bool SimData::ThreadBenchmarkTestIsEnabled()
+{
+  return benchmark_threads_;
+}
 //------------------------------------------------------------------------------
 inline void SimData::OutputEventInfo(bool in)
 {

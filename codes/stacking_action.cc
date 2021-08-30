@@ -26,11 +26,18 @@
   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ==============================================================================*/
 #include "stacking_action.h"
-#include "timehistory.h"
 #include "simdata.h"
+#include "timehistory.h"
 #include "G4StackManager.hh"
 #include "G4DNAChemistryManager.hh"
 #include "G4Threading.hh"
+
+namespace {
+
+static auto timer = TimeHistory::GetTimeHistory();
+static auto simdata = SimData::GetInstance();
+
+} // end of anonymous namespace
 
 //------------------------------------------------------------------------------
 StackingAction::StackingAction()
@@ -49,17 +56,20 @@ void StackingAction::NewStage()
   constexpr int id = 0;
 #endif
 
-  static auto timer = TimeHistory::GetTimeHistory();
+  double start_time{0.0}, stop_time{0.0};
 
-  double time_on = timer->TakeSplit();
+  bool benchmark_threads = ::simdata->ThreadBenchmarkTestIsEnabled();
+
+  if (benchmark_threads) { start_time = ::timer->TakeSplit(); }
 
   // run chemical stage
   G4DNAChemistryManager::Instance()->Run();
 
-  double time_end = timer->TakeSplit();
+  if (!benchmark_threads) { return; }
 
-  double elap_time = time_end - time_on;
-  SimData::GetInstance()->GetTotElapTimeChem()[id] += elap_time;
-  SimData::GetInstance()->GetElapTimeChem()[id] = elap_time;
+  stop_time = ::timer->TakeSplit();
 
+  double elap_time = stop_time - start_time;
+  ::simdata->GetTotElapTimeChem()[id] += elap_time;
+  ::simdata->GetElapTimeChem()[id] = elap_time;
 }

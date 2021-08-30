@@ -278,5 +278,6 @@ void Application::Setup(const std::string& conf_file)
   sd->SetFileName(::js["output_file"]);
   sd->SetBenchmarkFileName(::js["benchmark_file"]);
   sd->SetThreadNumber(num_thread_);
+  sd->RecordBenchmarkScoreForThreads(::js["benchmark_for_threads"]);
 
 }

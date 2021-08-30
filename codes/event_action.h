@@ -32,14 +32,23 @@
 
 class EventAction : public G4UserEventAction {
 public:
-  EventAction() = default;
+  EventAction();
   virtual ~EventAction() = default;
 
   virtual void BeginOfEventAction(const G4Event*);
-  virtual void EndOfEventAction(const G4Event*);
+  virtual void EndOfEventAction(const G4Event* event);
+
+  void SetCheckCounter(int in);
+
 private:
-  double time_on_;
-  double time_end_;
+  int check_counter_;
+  double start_time_;
+  double stop_time_;
 };
+//==============================================================================
+inline void EventAction::SetCheckCounter(int in)
+{
+  check_counter_ = in;
+}
 
 #endif // EVENT_ACTION_H_
