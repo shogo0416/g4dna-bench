@@ -27,6 +27,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+//
+// modified argument definitions for some function in order to avoid
+// warning messagee by Shogo OKADA, 2021.8.23(Mon)
+//
+
 #ifndef INCLUDE_NLOHMANN_JSON_HPP_
 #define INCLUDE_NLOHMANN_JSON_HPP_
 
