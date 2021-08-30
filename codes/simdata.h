@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2021 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -70,6 +70,7 @@ public:
   double GetEdep(int id) const;
 
   void GValue(int id, int tid, const std::string& name, double gval);
+  double GetGValue(int id, int tid, const std::string& name);
 
   void CountAbortEvent(int id);
   void CountChemEvent(int id);

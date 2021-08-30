@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2021 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@
 
 namespace {
 
+//------------------------------------------------------------------------------
 void print_usage()
 {
 

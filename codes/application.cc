@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2021 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -66,20 +66,19 @@ nlohmann::ordered_json js;
 //------------------------------------------------------------------------------
 void print_parameters()
 {
+  std::stringstream ss;
 
-  std::cout << "---------------------------------------------------------------"
-            << std::endl;
-  std::cout << " Parameters (g4dna-bench)" << std::endl;
-  std::cout << "---------------------------------------------------------------"
-            << std::endl;
+  ss << "-------------------------------------------------------------------\n";
+  ss << " Parameters for chem-bench\n";
+  ss << "-------------------------------------------------------------------\n";
 
   for (auto x : js.items()) {
-    std::cout << " - " << x.key() << " : " << x.value() << std::endl;
+    ss << " - " << x.key() << " : " << x.value() << "\n";
   }
 
-  std::cout << "---------------------------------------------------------------"
-            << std::endl;
-  std::cout << std::endl;
+  ss << "-------------------------------------------------------------------\n";
+
+  std::cout << ss.str() << std::endl;
 }
 
 //------------------------------------------------------------------------------
@@ -112,14 +111,15 @@ void set_solvation_model(const std::string& name)
 #endif
   else
   {
-    std::cerr << "[ERROR] Unknown model was set for electron solvation "
-              << "process (name: " << name << ")" << std::endl;
-    std::cerr << "--> Supported types models: "
-              << "Ritchie1994, Terrisol1990, Meesungnoen2002"
+    std::stringstream ss;
+    ss << "[ERROR] Unknown model was set for electron solvation process "
+       << "(name: " << name << ")\n";
+    ss << "--> Supported models: Ritchie1994, Terrisol1990, Meesungnoen2002"
 #if G4VERSION_NUMBER >= 1060
-              << ", Meesungnoen2002_amorphous, and Kreipl2009"
+       << ", Meesungnoen2002_amorphous, and Kreipl2009"
 #endif
-              << std::endl;
+       << "\n";
+    std::cout << ss.str() << std::endl;
     std::exit(EXIT_FAILURE);
   }
   G4EmParameters::Instance()->SetDNAeSolvationSubType(type);

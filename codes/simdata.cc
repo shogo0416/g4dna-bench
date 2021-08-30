@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2021 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -364,6 +364,14 @@ void SimData::GValue(int id, int tid, const std::string& name, double gval)
 }
 
 //------------------------------------------------------------------------------
+double SimData::GetGValue(int id, int tid, const std::string& name)
+{
+  int mid = mole_map_[name];
+  int idx = tid * ::num_mole_kind + mid;
+  return gval_buff_[id][idx];
+}
+
+//------------------------------------------------------------------------------
 void SimData::Merge()
 {
 
@@ -479,49 +487,71 @@ void SimData::Performance(int id)
   for (auto x : ci) {
     for (auto y : x.species) { nmol += y.second; }
   }
-  double avg_time_species = elap_time_chem / nmol * 1000.0;
+  double avg_time_mol = elap_time_chem / nmol * 1000.0;
 
-  std::cout << " Thread #" << id << std::endl;
-  std::cout << " - Total Event: " << num_event << " (Abort: " << num_event_abort
-            << ", Chemistry: " << num_event_chem << ")" << std::endl;
+  std::stringstream ss;
 
-  std::cout << " - Total Elapsed Time: " << elap_time << " sec" << std::endl;
-  std::cout << "   - Physics:   " << elap_time_phys << " sec ("
-            << avg_time_phys << " sec/event)" << std::endl;
-  std::cout << "   - Chemistry: " << elap_time_chem << " sec ("
-            << avg_time_chem << " sec/event)" << std::endl;
+  ss << " Thread #" << id << std::endl;
+  ss << " - Total Event: " << num_event << " (Abort: " << num_event_abort
+     << ", Chemistry: " << num_event_chem << ")" << std::endl;
 
-  std::cout << " - Throughput:" << std::endl;
-  std::cout << "   - Physics:   " << thr_phys << " events/min." << std::endl;
-  std::cout << "   - Chemistry: " << thr_chem << " events/min." << std::endl;
+  ss << " - Total Elapsed Time: " << elap_time << " sec" << std::endl;
+  ss << "   - Physics:   " << elap_time_phys << " sec ("
+     << avg_time_phys << " sec/event)" << std::endl;
+  ss << "   - Chemistry: " << elap_time_chem << " sec ("
+     << avg_time_chem << " sec/event)" << std::endl;
 
-  std::cout << " - Number of Steps:" << std::endl;
-  std::cout << "   - Physics:   " << num_phys_step << std::endl;
-  std::cout << "   - Chemistry: " << num_chem_step << std::endl;
+  ss << " - Throughput:" << std::endl;
+  ss << "   - Physics:   " << thr_phys << " events/min." << std::endl;
+  ss << "   - Chemistry: " << thr_chem << " events/min." << std::endl;
 
-  std::cout << " - Elapsed Time per Step:" << std::endl;
-  std::cout << "   - Physics:   " << avg_time_phys_step
-            << " msec/step" << std::endl;
-  std::cout << "   - Chemistry: " << avg_time_chem_step
-            << " msec/step" << std::endl;
+  ss << " - Number of Steps:" << std::endl;
+  ss << "   - Physics:   " << num_phys_step << std::endl;
+  ss << "   - Chemistry: " << num_chem_step << std::endl;
 
-  std::cout << " - Elapsed Time per Species" << std::endl;
-  std::cout << "   - # of species: " << nmol << std::endl;
-  std::cout << "   - Throughput:   " << avg_time_species
-            << " msec/species" << std::endl;
+  ss << " - Elapsed Time per Step:" << std::endl;
+  ss << "   - Physics:   " << avg_time_phys_step << " msec/step" << std::endl;
+  ss << "   - Chemistry: " << avg_time_chem_step << " msec/step" << std::endl;
 
-  std::cout << std::endl;
+  ss << " - Elapsed Time per Molecule" << std::endl;
+  ss << "   - # of molecule: " << nmol << std::endl;
+  ss << "   - Throughput:   " << avg_time_mol << " msec/molecule" << std::endl;
+
+  std::cout << ss.str() << std::endl;
 
   std::string title = "thread" + std::to_string(id);
 
   js_[title] = {
-    {"event_number",             {num_event, num_event_abort, num_event_chem}},
-    {"elapsed_time",             {elap_time, elap_time_phys, elap_time_chem}},
-    {"elapsed_time_per_event",   {avg_time_phys, avg_time_chem}},
-    {"throughput",               {thr_phys, thr_chem}},
-    {"step_number",              {num_phys_step, num_chem_step}},
-    {"elapsed_time_per_step",    {avg_time_phys_step, avg_time_chem_step}},
-    {"elapsed_time_per_species", {nmol, avg_time_species}}
+    {"event_number", {
+      {"total", num_event},
+      {"abort", num_event_abort},
+      {"chemistry_stage", num_event_chem}
+    }},
+    {"elapsed_time", {
+      {"total", elap_time},
+      {"physics_stage", elap_time_phys},
+      {"chemistry_stage", elap_time_chem}
+    }},
+    {"elapsed_time_per_event", {
+      {"physics_stage",   avg_time_phys},
+      {"chemistry_stage", avg_time_chem}
+    }},
+    {"throughput", {
+      {"physics_stage", thr_phys},
+      {"chemistry_stage", thr_chem}
+    }},
+    {"step_number", {
+      {"physics_stage", num_phys_step},
+      {"chemistry_stage", num_chem_step}
+    }},
+    {"elapsed_time_per_step", {
+      {"physics_stage", avg_time_phys_step},
+      {"chemistry_stage", avg_time_chem_step}
+    }},
+    {"elapsed_time_per_molecule", {
+      {"molecule_number", nmol},
+      {"throughput", avg_time_mol}
+    }}
   };
 
 }
@@ -543,7 +573,7 @@ void SimData::SaveBenchmarkResult()
             << std::endl;
   std::cout << std::endl;
 
-  js_["all"] = {
+  js_["summary"] = {
     {"event_number", num_event},
     {"elapsed_time", elap_time},
     {"throughput", throughput}
