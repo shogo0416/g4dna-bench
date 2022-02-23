@@ -9,7 +9,7 @@ set(APP_NAME chem-bench)
 
 #-------------------------------------------------------------------------------
 # Set the project name
-project(${APP_NAME} C CXX)
+project(${APP_NAME} CXX)
 
 #-------------------------------------------------------------------------------
 # Find Geant4 package

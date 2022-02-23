@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2021 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2022 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ void print_usage()
 {
 
   const char* usage = R"(
-    [Usage] g4dna-banch <options>
+    [Usage] chem-bench <options>
     [Options]
       -h, --help               print this information
       -c, --conf   <file_name> set configuration file [defualt: conf.json]
@@ -99,16 +99,20 @@ int main(int argc, char** argv)
   }
 
   auto app = Application::GetInstance();
-  if (seed > 0) { app->SetSeed(seed); }
+
+  app->LoadConfigFile(conf_file);
+
   if (output_file.length() > 0) { app->SetOutputFile(output_file); }
-  app->Setup(conf_file);
+
+  app->SetupRandomEngine(seed);
 
 #ifdef G4MULTITHREADED
-  auto run = G4MTRunManager::GetMasterRunManager();
-  run->SetNumberOfThreads(app->GetThreadNumber());
+  auto run = new G4MTRunManager();
 #else
-  auto run = G4RunManager::GetRunManager();
+  auto run = new G4RunManager();
 #endif
+
+  app->Setup();
 
   run->SetUserInitialization(app);
 
@@ -136,5 +140,5 @@ int main(int argc, char** argv)
   // in the main() program !
   delete run;
 
-  return 0;
+  std::exit(EXIT_SUCCESS);
 }

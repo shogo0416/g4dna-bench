@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2021 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2022 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -140,7 +140,6 @@ Application::Application()
   primary_removal_ = false;
   kill_elow_ = DBL_MAX;
   kill_eupp_ = DBL_MAX;
-  seed_ = -1;
   output_ = "";
 }
 
@@ -212,16 +211,10 @@ void Application::Build() const
 }
 
 //------------------------------------------------------------------------------
-void Application::Setup(const std::string& conf_file)
+void Application::LoadConfigFile(const std::string& conf_file)
 {
+   std::ifstream fin(conf_file.c_str());
 
-#ifdef G4MULTITHREADED
-  auto run = new G4MTRunManager();
-#else
-  auto run = new G4RunManager();
-#endif
-
-  std::ifstream fin(conf_file.c_str());
   if (fin.fail()) {
     std::cerr << "[ERROR] Failed to open configuration file (name: "
               << conf_file << ")" << std::endl;
@@ -229,8 +222,21 @@ void Application::Setup(const std::string& conf_file)
   }
 
   fin >> ::js;
+}
 
-  if (seed_ != -1) { ::js["random_seed"] = seed_; }
+//------------------------------------------------------------------------------
+void Application::SetupRandomEngine(long seed)
+{
+  if (seed != -1) { ::js["random_seed"] = seed; }
+//  G4Random::setTheEngine(new CLHEP::MTwistEngine);
+//  G4Random::setTheEngine(new CLHEP::RanecuEngine);
+  G4Random::setTheEngine(new CLHEP::MixMaxRng());
+  G4Random::setTheSeed(::js["random_seed"].get<long>());
+}
+
+//------------------------------------------------------------------------------
+void Application::Setup()
+{
   if (output_.length() > 0) { ::js["output_file"] = output_; }
 
   ::print_parameters();
@@ -239,10 +245,12 @@ void Application::Setup(const std::string& conf_file)
   num_event_  = ::js["event_number"];
   num_thread_ = ::js["thread_number"];
 
-  // setup event number processing, thread number, and seed
-//  G4Random::setTheEngine(new CLHEP::MTwistEngine);
-  G4Random::setTheEngine(new CLHEP::RanecuEngine);
-  G4Random::setTheSeed(::js["random_seed"]);
+#ifdef G4MULTITHREADED
+  auto run = G4MTRunManager::GetMasterRunManager();
+  run->SetNumberOfThreads(num_thread_);
+#else
+  auto run = G4RunManager::GetRunManager();
+#endif
 
   // setup water phantom
   auto target_size_x = ::js["target_size"][0].get<double>() * um;

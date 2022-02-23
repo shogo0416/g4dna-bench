@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2021 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2022 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,10 @@ public:
 
   virtual void BuildForMaster() const;
   virtual void Build() const;
-  void Setup(const std::string& conf_file);
+
+  void LoadConfigFile(const std::string& conf_file);
+  void SetupRandomEngine(long seed);
+  void Setup();
 
   int GetEventNumber() const;
   int GetThreadNumber() const;
@@ -49,7 +52,6 @@ public:
   double GetKillEnergyUppLim() const;
   double GetKillEnergyLowLim() const;
 
-  void SetSeed(int seed);
   void SetOutputFile(const std::string& output);
 
 private:
@@ -63,7 +65,6 @@ private:
   double kill_eupp_;
   double kill_elow_;
 
-  int seed_;
   std::string output_;
 };
 
@@ -95,12 +96,6 @@ inline double Application::GetKillEnergyUppLim() const
 inline double Application::GetKillEnergyLowLim() const
 {
   return kill_elow_;
-}
-
-//------------------------------------------------------------------------------
-inline void Application::SetSeed(int seed)
-{
-  seed_ = seed;
 }
 
 //------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2021 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2022 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -85,11 +85,8 @@ public:
   void Performance(int id);
 
   void OutputResultForEachThread(bool in);
-//  void OutputPerformanceForEachThread(bool in);
-
   void RecordBenchmarkScoreForThreads(bool in);
   bool ThreadBenchmarkTestIsEnabled();
-
   void OutputEventInfo(bool in);
 
   std::vector<int>& GetNumPhysStep();
@@ -223,12 +220,6 @@ inline void SimData::OutputResultForEachThread(bool in)
 }
 
 //------------------------------------------------------------------------------
-/*inline void SimData::OutputPerformanceForEachThread(bool in)
-{
-  benchmark_threads_ = in;
-}*/
-
-//------------------------------------------------------------------------------
 inline void SimData::RecordBenchmarkScoreForThreads(bool in)
 {
   benchmark_threads_ = in;
@@ -239,6 +230,7 @@ inline bool SimData::ThreadBenchmarkTestIsEnabled()
 {
   return benchmark_threads_;
 }
+
 //------------------------------------------------------------------------------
 inline void SimData::OutputEventInfo(bool in)
 {

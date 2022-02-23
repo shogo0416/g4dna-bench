@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2021 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2022 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,7 @@ private:
   double start_time_;
   double stop_time_;
 };
+
 //==============================================================================
 inline void EventAction::SetCheckCounter(int in)
 {

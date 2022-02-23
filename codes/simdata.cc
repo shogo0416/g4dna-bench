@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2021 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2022 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -350,7 +350,6 @@ void SimData::Setup()
 //------------------------------------------------------------------------------
 void SimData::GValue(int id, int tid, const std::string& name, double gval)
 {
-
   int mid = mole_map_[name];
   int idx = tid * ::num_mole_kind + mid;
 
@@ -376,7 +375,10 @@ void SimData::Merge()
 {
 
   for (int id = 0; id < num_thread_; id++) {
-    double factor = 1.0 / static_cast<double>(num_chem_event_[id]);
+    auto& num_event = num_chem_event_[id];
+    if (num_event == 0) { continue; }
+
+    double factor = 1.0 / static_cast<double>(num_event);
     auto& gval = gval_buff_[id];
     for (auto& x : gval) {
       x *= factor;
