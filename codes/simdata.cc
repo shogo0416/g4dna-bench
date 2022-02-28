@@ -47,7 +47,7 @@
 
 namespace {
 
-#if G4VERSION_NUMBER < 1030
+#if G4VERSION_NUMBER < 1030 || defined(__clang__)
 
 const int num_time_bin   = 60;
 const int num_time_point = num_time_bin + 1;
