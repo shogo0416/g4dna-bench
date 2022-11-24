@@ -373,16 +373,17 @@ double SimData::GetGValue(int id, int tid, const std::string& name)
 //------------------------------------------------------------------------------
 void SimData::Merge()
 {
-
+  int num_thread{0};
   for (int id = 0; id < num_thread_; id++) {
+    // check event number processed by each worker thread
     auto& num_event = num_chem_event_[id];
     if (num_event == 0) { continue; }
 
     double factor = 1.0 / static_cast<double>(num_event);
     auto& gval = gval_buff_[id];
-    for (auto& x : gval) {
-      x *= factor;
-    }
+    for (auto& x : gval) { x *= factor; }
+
+    num_thread++; // count a worker thread which processed events
   }
 
   if (num_thread_ == 1) { return; }
@@ -390,16 +391,15 @@ void SimData::Merge()
   auto& gval0 = gval_buff_[0];
 
   for (int id = 1; id < num_thread_; id++) {
+    if (num_chem_event_[id] == 0) { continue; }
     auto& gval = gval_buff_[id];
     for (int i = 0; i < ::matrix_size; i++) {
       gval0[i] += gval[i];
     }
   }
 
-  double factor = 1.0 / static_cast<double>(num_thread_);
-  for (auto& x: gval0) {
-    x *= factor;
-  }
+  double factor = 1.0 / static_cast<double>(num_thread);
+  for (auto& x: gval0) { x *= factor; }
 
 }
 
