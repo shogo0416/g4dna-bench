@@ -100,31 +100,38 @@ for it in ${threads[@]}; do
   # set a simulation log file
   log_file="run_${it}mt.log"
 
-  # run simulation
-  command="$binary -c conf_bench.json"
-  echo -e "\n[MT$it]"$command
-  $command >> $log_file
+  while :
+  do
 
-  if [ -f $output_file ]; then
-    echo "--> Succeeded to run the simulation"
+    # run simulation
+    command="$binary -c conf_bench.json"
+    echo -e "\n[MT$it]"$command
+    $command >> $log_file
 
-    # make a directory to store simulation results
-    dirname="sim_${it}mt"
-    if [ ! -d $dirname ]; then
-      mkdir $dirname
+    if [ -f $output_file ]; then
+      echo "--> Succeeded to run the simulation"
+
+      # make a directory to store simulation results
+      dirname="sim_${it}mt"
+      if [ ! -d $dirname ]; then
+        mkdir $dirname
+      fi
+
+      #put simulation results to the directory
+      outputs=($output_file $benchmark_file $log_file)
+      for x in ${outputs[@]}
+      do
+        if [ -f $x ]; then
+          mv $x $dirname
+        fi
+      done
+
+      break
+
     fi
 
-    #put simulation results to the directory
-    outputs=($output_file $benchmark_file $log_file)
-    for x in ${outputs[@]}
-    do
-      if [ -f $x ]; then
-        mv $x $dirname
-      fi
-    done
+    echo "--> Failed to run the simulation.. Try again."
 
-  else
-    echo "--> Failed to run the simulation"
-  fi
+  done
 
 done
