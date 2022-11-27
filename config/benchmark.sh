@@ -101,13 +101,14 @@ for it in ${threads[@]}; do
   # set a simulation log file
   log_file="run_${it}mt.log"
 
+  counter=0
   while :
   do
 
     # run simulation
     command="$binary -c conf_bench.json"
     echo -e "\n[MT$it]"$command
-    $command >> $log_file
+    $command 2>&1 > $log_file
 
     if [ -f $output_file ]; then
       echo "--> Succeeded to run the simulation"
@@ -129,6 +130,14 @@ for it in ${threads[@]}; do
 
       break
 
+    fi
+
+    $((counter++))
+
+    if [ $counter -gt 20 ]; then
+      counter=0
+      echo "--> Stop the simulation."
+      break
     fi
 
     echo "--> Failed to run the simulation.. Try again."
