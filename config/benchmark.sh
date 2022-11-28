@@ -108,7 +108,7 @@ for it in ${threads[@]}; do
     # run simulation
     command="$binary -c conf_bench.json"
     echo -e "\n[MT$it]"$command
-    $command 2>&1 > $log_file
+    $command > $log_file
 
     if [ -f $output_file ]; then
       echo "--> Succeeded to run the simulation"
