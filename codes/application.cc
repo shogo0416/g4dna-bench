@@ -164,7 +164,6 @@ void Application::Build() const
     G4MoleculeCounter::Instance()->DontRegister(G4H2O::Definition());
     G4MoleculeCounter::Instance()->CheckTimeForConsistency(false);
   }
-  SimData::GetInstance()->Setup();
 
   if (!G4Threading::IsMultithreadedApplication()) {
     G4DNAChemistryManager::Instance()->ResetCounterWhenRunEnds(false);
@@ -197,7 +196,6 @@ void Application::Build() const
   auto tsa = new TimeStepAction();
   tsa->CheckBoundary(check_boundary);
   G4Scheduler::Instance()->SetUserAction(tsa);
-
 }
 
 //------------------------------------------------------------------------------

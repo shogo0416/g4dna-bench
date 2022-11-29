@@ -38,11 +38,11 @@
 #if G4VERSION_NUMBER >= 1070
 #include "G4FakeMolecule.hh"
 #endif
+#include "G4Threading.hh"
 
 #include <string>
 #include <sstream>
 #include <fstream>
-#include <mutex>
 #include <iomanip>
 
 namespace {
@@ -67,8 +67,6 @@ constexpr double bin_width   = log10(upp_tlim / low_tlim) / num_time_bin;
 
 static int num_mole_kind;
 static int matrix_size;
-
-std::mutex mtx;
 
 #if G4VERSION_NUMBER >= 1070
 
@@ -266,17 +264,8 @@ SimData* SimData::GetInstance()
 //------------------------------------------------------------------------------
 void SimData::Setup()
 {
-  ::mtx.lock();
-
-  static bool setup = false;
-
-  if (setup) {
-    ::mtx.unlock();
-    return;
-  }
-
   score_time_.resize(::num_time_point);
-  double exponent = 0.0;
+  double exponent{0.0};
   for (int i = 0; i < ::num_time_point; i++) {
     if (i == 0) { exponent = log10(::low_tlim); }
     else { exponent += ::bin_width; }
@@ -286,10 +275,10 @@ void SimData::Setup()
 
   auto miterator = G4MoleculeTable::Instance()->GetConfigurationIterator();
 
-  int counter = 0;
+  int counter{0};
   while ((miterator)()) {
 
-    auto val = miterator.value();
+    const auto val = miterator.value();
 
     if (::check_molecule_type(val->GetDefinition())) { continue; }
 
@@ -330,13 +319,10 @@ void SimData::Setup()
   num_phys_step_.resize(num_thread_, 0);
   num_chem_step_.resize(num_thread_, 0);
 
-  setup = true;
-
 #if G4VERSION_NUMBER >= 1070
   ::print_chemical_reaction();
 #endif
 
-  ::mtx.unlock();
 }
 
 //------------------------------------------------------------------------------

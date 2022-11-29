@@ -129,6 +129,10 @@ int main(int argc, char** argv)
   // initialization
   run->Initialize();
 
+  // setup for SimData
+  auto sd = SimData::GetInstance();
+  sd->GetInstance()->Setup();
+
   auto timer = TimeHistory::GetTimeHistory();
 
   // start simulation
@@ -140,7 +144,6 @@ int main(int argc, char** argv)
   timer->TakeSplit("BeamEnd");
   timer->ShowClock("[MESSAGE] End:");
 
-  auto sd = SimData::GetInstance();
   sd->SaveSimulationResult();
   sd->SaveBenchmarkResult();
 
