@@ -37,6 +37,7 @@
 #include "step_action.h"
 #include "time_step_action.h"
 
+#include "G4Version.hh"
 #if G4VERSION_NUMBER >= 1100
 #include "G4RunManagerFactory.hh"
 #else
@@ -54,7 +55,6 @@
 
 #include "G4EmParameters.hh"
 #include "G4SystemOfUnits.hh"
-#include "G4Version.hh"
 #include "G4Scheduler.hh"
 #include "CLHEP/Random/MTwistEngine.h"
 
