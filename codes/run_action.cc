@@ -50,19 +50,8 @@ void RunAction::EndOfRunAction(const G4Run*)
   }
 
 #ifdef G4MULTITHREADED
-
-/*
-#if G4VERSION_NUMBER >= 1020
-  const bool is_master = G4Threading::IsMasterThread();
-#else
-  const bool is_master = G4Threading::IsWorkerThread();
-#endif
-
-  if (is_master) { return; }
-*/
   int id = G4Threading::G4GetThreadId();
   SimData::GetInstance()->SaveSimulationResult(id);
-
 #else
   constexpr int id = 0;
 #endif

@@ -5,6 +5,7 @@ A benchmark application for Geant4-DNA water radiolysis simulation
 [![geant4](https://img.shields.io/badge/geant4-10.5-blue.svg)](http://www.geant4.org/)
 [![geant4](https://img.shields.io/badge/geant4-10.6-green.svg)](http://www.geant4.org/)
 [![geant4](https://img.shields.io/badge/geant4-10.7-orange.svg)](http://www.geant4.org/)
+[![geant4](https://img.shields.io/badge/geant4-11.0-red.svg)](http://www.geant4.org/)
 
 ## Setup Geant4 enviroment variables
 Set Geant4 environment variables to specify the paths for data tables before compiling and running the application.

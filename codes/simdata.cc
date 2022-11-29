@@ -47,7 +47,7 @@
 
 namespace {
 
-#if G4VERSION_NUMBER < 1030 || defined(__clang__)
+#if defined(__clang__)
 
 const int num_time_bin   = 60;
 const int num_time_point = num_time_bin + 1;
@@ -284,22 +284,14 @@ void SimData::Setup()
     score_time_[i] = t;
   }
 
-#if G4VERSION_NUMBER >= 1020
   auto miterator = G4MoleculeTable::Instance()->GetConfigurationIterator();
-#else
-  auto miterator = G4MoleculeTable::Instance()->GetDefintionIterator();
-#endif
 
   int counter = 0;
   while ((miterator)()) {
 
     auto val = miterator.value();
 
-#if G4VERSION_NUMBER >= 1020
     if (::check_molecule_type(val->GetDefinition())) { continue; }
-#else
-    if (::check_molecule_type(val)) { continue; }
-#endif
 
     auto name = val->GetName();
     if (mole_map_.count(name)) { continue; }

@@ -26,11 +26,17 @@
   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ==============================================================================*/
 #include "globals.hh"
+#include "G4Version.hh"
 
+#if G4VERSION_NUMBER >= 1100
+#include "G4RunManagerFactory.hh"
+#else
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
 #else
 #include "G4RunManager.hh"
+#endif
+
 #endif
 
 #include "application.h"
@@ -106,11 +112,15 @@ int main(int argc, char** argv)
 
   app->SetupRandomEngine(seed);
 
+#if G4VERSION_NUMBER >= 1100
+  auto run = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
+#else
 #ifdef G4MULTITHREADED
   auto run = new G4MTRunManager();
 #else
   auto run = new G4RunManager();
 #endif
+#endif // G4VERSION_NUMBER >= 1100
 
   app->Setup();
 

@@ -37,18 +37,20 @@
 #include "step_action.h"
 #include "time_step_action.h"
 
+#if G4VERSION_NUMBER >= 1100
+#include "G4RunManagerFactory.hh"
+#else
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
 #else
 #include "G4RunManager.hh"
 #endif
+#endif
+
 #include "G4MoleculeCounter.hh"
 #include "G4DNAChemistryManager.hh"
 #include "G4H2O.hh"
-
-#if G4VERSION_NUMBER >= 1050
 #include "G4DNAModelSubType.hh"
-#endif
 
 #include "G4EmParameters.hh"
 #include "G4SystemOfUnits.hh"
@@ -82,8 +84,6 @@ void print_parameters()
 }
 
 //------------------------------------------------------------------------------
-#if G4VERSION_NUMBER >= 1050
-
 void set_solvation_model(const std::string& name)
 {
   G4DNAModelSubType type = fDNAUnknownModel;
@@ -125,8 +125,6 @@ void set_solvation_model(const std::string& name)
   G4EmParameters::Instance()->SetDNAeSolvationSubType(type);
 }
 
-#endif // G4VERSION_NUMBER >= 1050
-
 } // end of anonymous namespace
 
 //==============================================================================
@@ -154,9 +152,7 @@ Application* Application::GetInstance()
 void Application::BuildForMaster() const
 {
   SetUserAction(new RunAction());
-#if G4VERSION_NUMBER >= 1020
   G4DNAChemistryManager::Instance()->ResetCounterWhenRunEnds(false);
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -164,20 +160,14 @@ void Application::Build() const
 {
   bool use = ::js["use_molecule_counter"];
   if (use) {
-#if G4VERSION_NUMBER >= 1020
     G4MoleculeCounter::Use();
-#else
-    G4MoleculeCounter::Instance()->Use();
-#endif
     G4MoleculeCounter::Instance()->DontRegister(G4H2O::Definition());
     G4MoleculeCounter::Instance()->CheckTimeForConsistency(false);
   }
   SimData::GetInstance()->Setup();
 
   if (!G4Threading::IsMultithreadedApplication()) {
-#if G4VERSION_NUMBER >= 1020
     G4DNAChemistryManager::Instance()->ResetCounterWhenRunEnds(false);
-#endif
   }
 
   auto pkind  = ::js["beam_particle"];
@@ -228,8 +218,6 @@ void Application::LoadConfigFile(const std::string& conf_file)
 void Application::SetupRandomEngine(long seed)
 {
   if (seed != -1) { ::js["random_seed"] = seed; }
-//  G4Random::setTheEngine(new CLHEP::MTwistEngine);
-//  G4Random::setTheEngine(new CLHEP::RanecuEngine);
   G4Random::setTheEngine(new CLHEP::MixMaxRng());
   G4Random::setTheSeed(::js["random_seed"].get<long>());
 }
@@ -245,11 +233,16 @@ void Application::Setup()
   num_event_  = ::js["event_number"];
   num_thread_ = ::js["thread_number"];
 
+#if G4VERSION_NUMBER >= 1100
+  auto run = G4RunManager::GetRunManager();
+  run->SetNumberOfThreads(num_thread_);
+#else
 #ifdef G4MULTITHREADED
   auto run = G4MTRunManager::GetMasterRunManager();
   run->SetNumberOfThreads(num_thread_);
 #else
   auto run = G4RunManager::GetRunManager();
+#endif
 #endif
 
   // setup water phantom
@@ -275,11 +268,9 @@ void Application::Setup()
   kill_elow_ = ::js["kill_energy"][0].get<double>() * keV;
   kill_eupp_ = ::js["kill_energy"][1].get<double>() * keV;
 
-#if G4VERSION_NUMBER >= 1050
   // setup electron solvation model
   auto mname = ::js["ele_solvation_model"];
   ::set_solvation_model(mname);
-#endif
 
   // setup output file name
   auto sd = SimData::GetInstance();

@@ -119,13 +119,7 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
   static auto score_time = simdata_->GetScoreTime();
   double edep_factor = 100.0 / (simdata_->GetEdep(id) / eV);
 
-#if G4VERSION_NUMBER >= 1020
-  const bool inuse = G4MoleculeCounter::InUse();
-#else
-  const bool inuse = G4MoleculeCounter::Instance()->InUse();
-#endif
-
-  if (inuse) {
+  if (G4MoleculeCounter::InUse()) {
 
     auto counter = G4MoleculeCounter::Instance();
     auto species = counter->GetRecordedMolecules();
@@ -137,11 +131,8 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
 
     for (auto mol : *species) {
 
-#if G4VERSION_NUMBER >= 1020
       std::string name = mol->GetName();
-#else
-      std::string name = mol.GetName();
-#endif
+
       int tid = 0;
       for (auto t : score_time) {
         int nmol = counter->GetNMoleculesAtTime(mol, t);
@@ -204,13 +195,7 @@ void MoleculeCounter::clear()
 #endif
   simdata_->ResetEdep(id);
 
-#if G4VERSION_NUMBER >= 1020
-  const bool inuse = G4MoleculeCounter::InUse();
-#else
-  const bool inuse = G4MoleculeCounter::Instance()->InUse();
-#endif
-
-  if (inuse) {
+  if (G4MoleculeCounter::InUse()) {
     G4MoleculeCounter::Instance()->ResetCounter();
   } else {
     simdata_->ClearTimeStepInfo(id);
