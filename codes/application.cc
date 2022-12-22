@@ -160,7 +160,11 @@ void Application::Build() const
 {
   bool use = ::js["use_molecule_counter"];
   if (use) {
+#if G4VERSION_NUMBER >= 1110
+    G4MoleculeCounter::Instance()->Use();
+#else
     G4MoleculeCounter::Use();
+#endif
     G4MoleculeCounter::Instance()->DontRegister(G4H2O::Definition());
     G4MoleculeCounter::Instance()->CheckTimeForConsistency(false);
   }

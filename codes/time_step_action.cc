@@ -71,9 +71,11 @@ void TimeStepAction::UserPreTimeStepAction()
 //------------------------------------------------------------------------------
 void TimeStepAction::UserPostTimeStepAction()
 {
-
+#if G4VERSION_NUMBER >= 1110
+  const bool inuse = G4MoleculeCounter::Instance()->InUse();
+#else
   const bool inuse = G4MoleculeCounter::InUse();
-
+#endif
   if (inuse) { return; }
 
 #ifdef G4MULTITHREADED
