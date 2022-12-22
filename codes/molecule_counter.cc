@@ -205,7 +205,7 @@ void MoleculeCounter::clear()
 #if G4VERSION_NUMBER >= 1110
   auto inuse = counter->InUse();
 #else
-  auto inuse = G4MoleculeCounter::Inuse();
+  auto inuse = G4MoleculeCounter::InUse();
 #endif
 
   if (inuse) {
