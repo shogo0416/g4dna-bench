@@ -8,7 +8,7 @@ base_event=10000
 threads=(1 2 4 8 14 20 24 28)
 #threads=(1 2 4 6 8 10 12)
 
-g4version="10.7.4"
+g4version="11.1.0"
 
 binary="../bin/chem-bench"
 
@@ -80,7 +80,12 @@ else
 fi
 
 # set Geant4 environment
-source $HOME/setenv-geant4.sh $g4version MT
+g4major_version=($(echo $g4version | cut -d '.' -f 1))
+if [ $g4major_version == 11 ]; then
+  source $HOME/setenv-geant4.sh $g4version
+else
+  source $HOME/setenv-geant4.sh $g4version MT
+fi
 
 echo -e "\n[MESSAGE] Benchmark Mode: ${sim_mode}-scaling"
 
