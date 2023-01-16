@@ -38,18 +38,19 @@ public:
   virtual void BeginOfEventAction(const G4Event*);
   virtual void EndOfEventAction(const G4Event* event);
 
-  void SetCheckCounter(int in);
+  void SetTermFrequency(int in);
 
 private:
-  int check_counter_;
+  int term_frequency_;
   double start_time_;
   double stop_time_;
 };
 
 //==============================================================================
-inline void EventAction::SetCheckCounter(int in)
+inline void EventAction::SetTermFrequency(int in)
 {
-  check_counter_ = in;
+  if (in <= 0) { return; } // set default value
+  term_frequency_ = in;
 }
 
 #endif // EVENT_ACTION_H_

@@ -192,7 +192,13 @@ void Application::Build() const
   SetUserAction(pgen);
 
   SetUserAction(new StepAction());
-  SetUserAction(new EventAction());
+
+  auto event_action = new EventAction();
+  if (::js.contains("term_frequency")) {
+    event_action->SetTermFrequency(::js["term_frequency"].get<int>());
+  }
+  SetUserAction(event_action);
+
   SetUserAction(new RunAction());
   SetUserAction(new StackingAction());
 

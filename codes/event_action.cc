@@ -40,7 +40,7 @@ static auto simdata = SimData::GetInstance();
 
 //==============================================================================
 EventAction::EventAction()
-    : check_counter_{1000}
+    : term_frequency_{1000}
 {
 }
 
@@ -73,7 +73,7 @@ void EventAction::EndOfEventAction(const G4Event* event)
 
   int event_id = event->GetEventID();
 
-  if (event_id % check_counter_ == 0 && event_id != 0) {
+  if (event_id % term_frequency_ == 0 && event_id != 0) {
     std::cout << "[MESSAGE] event-loop check point: "
               << event_id << " events processed." << std::endl;
   }

@@ -38,7 +38,8 @@ cat << EOF > conf_bench.json
   "check_boundary"        : false,
   "output_file"           : "$3",
   "benchmark_file"        : "$4",
-  "benchmark_for_threads" : false
+  "benchmark_for_threads" : false,
+  "term_frequency"        : $5
 }
 EOF
 }
@@ -101,9 +102,10 @@ for it in ${threads[@]}; do
 
   output_file="gval_${it}mt.csv"
   benchmark_file="benchmark_${it}mt.json"
+  term_freq=$((event_num / 10))
 
   # make a configuration file
-  make_config_file $event_num $it $output_file $benchmark_file
+  make_config_file $event_num $it $output_file $benchmark_file $term_freq
 
   # set a simulation log file
   log_file="run_${it}mt.log"
