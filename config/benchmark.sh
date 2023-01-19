@@ -22,6 +22,7 @@ cat << EOF > conf_bench.json
   "random_seed"           : 123456789,
   "event_number"          : $1,
   "thread_number"         : $2,
+  "cpu_affinity"          : false,
   "beam_particle"         : "e-",
   "beam_ion_Z"            : 0,
   "beam_ion_A"            : 0,

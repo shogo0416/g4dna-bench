@@ -241,13 +241,28 @@ void Application::Setup()
   num_event_  = ::js["event_number"];
   num_thread_ = ::js["thread_number"];
 
+  bool cpu_affinity{false};
+  if (::js.contains("cpu_affinity")) {
+    cpu_affinity = ::js["cpu_affinity"].get<bool>();
+  }
+
+#ifndef G4MULTITHREADED
+  if (num_thread_ != 1 || cpu_affinity) {
+    std::cerr << "[ERROR] Multi-threading is not supported." << std::endl;
+    std::exit("EXIT_FAILURE");
+  }
+#endif
+
+
 #if G4VERSION_NUMBER >= 1100
   auto run = G4RunManager::GetRunManager();
   run->SetNumberOfThreads(num_thread_);
+//  if (cpu_affinity) { run->SetPinAffinity(num_thread_); }
 #else
 #ifdef G4MULTITHREADED
   auto run = G4MTRunManager::GetMasterRunManager();
   run->SetNumberOfThreads(num_thread_);
+  if (cpu_affinity) { run->SetPinAffinity(num_thread_); }
 #else
   auto run = G4RunManager::GetRunManager();
 #endif

@@ -56,7 +56,7 @@ void print_usage()
     [Usage] chem-bench <options>
     [Options]
       -h, --help               print this information
-      -c, --conf   <file_name> set configuration file [defualt: conf.json]
+      -c, --conf   <file_name> set configuration file [default: conf.json]
       -s, --seed   <val>       set seed for random number generation
       -o, --output <file_name> set output file name
   )";
@@ -64,6 +64,16 @@ void print_usage()
   std::cout << usage << std::endl;
 
   std::exit(EXIT_SUCCESS);
+}
+
+//------------------------------------------------------------------------------
+template <typename T> T lexical_cast(char* optarg)
+{
+  T val;
+  std::stringstream ss;
+  ss << optarg;
+  ss >> val;
+  return val;
 }
 
 } // end of anonymous namespace
@@ -74,16 +84,16 @@ int main(int argc, char** argv)
 {
 
   struct option opts [] = {
-    {"help",   no_argument,       nullptr, 'h'},
-    {"conf",   required_argument, nullptr, 'c'},
-    {"seed",   required_argument, nullptr, 's'},
-    {"output", required_argument, nullptr, 'o'},
-    {nullptr,  0,                 nullptr,  0},
+    {"help",     no_argument,       nullptr, 'h'},
+    {"conf",     required_argument, nullptr, 'c'},
+    {"seed",     required_argument, nullptr, 's'},
+    {"output",   required_argument, nullptr, 'o'},
+    {nullptr,    0,                 nullptr,  0},
   };
 
-  int seed = -1;
-  std::string conf_file   = "conf.json";
-  std::string output_file = "";
+  int seed{-1};
+  std::string conf_file{"conf.json"};
+  std::string output_file{""};
 
   const char* optstr = "hc:s:o:";
   int opt, index;
@@ -93,16 +103,19 @@ int main(int argc, char** argv)
         ::print_usage();
         break;
       case 'c':
-        conf_file = static_cast<std::string>(optarg);
+        conf_file = ::lexical_cast<std::string>(optarg);
         break;
       case 's':
-        seed = atoi(optarg);
+        seed = ::lexical_cast<int>(optarg);
         break;
       case 'o':
-        output_file = static_cast<std::string>(optarg);
+        output_file = ::lexical_cast<std::string>(optarg);
         break;
     }
   }
+
+#ifndef G4MULTITHREADED
+#endif
 
   auto app = Application::GetInstance();
 
