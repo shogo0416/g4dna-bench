@@ -25,6 +25,13 @@ set(CMAKE_BUILD_TYPE "Release")
 include(${Geant4_USE_FILE})
 
 #-------------------------------------------------------------------------------
+# cross-compile
+if(DEFINED CMAKE_TOOLCHAIN_FILE)
+  message("-- Enabled cross-complie with ${CMAKE_CXX_COMPILER_ID}")
+  message("-- CXX Flags : ${CMAKE_CXX_FLAGS}")
+endif()
+
+#-------------------------------------------------------------------------------
 add_executable(${APP_NAME})
 
 target_sources(${APP_NAME} PRIVATE
