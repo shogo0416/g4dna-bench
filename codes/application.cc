@@ -249,7 +249,7 @@ void Application::Setup()
 #ifndef G4MULTITHREADED
   if (num_thread_ != 1 || cpu_affinity) {
     std::cerr << "[ERROR] Multi-threading is not supported." << std::endl;
-    std::exit("EXIT_FAILURE");
+    std::exit(EXIT_FAILURE);
   }
 #endif
 
