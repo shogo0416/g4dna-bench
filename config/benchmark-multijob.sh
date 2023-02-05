@@ -3,8 +3,11 @@
 # event number
 event_num=10000
 
-# jon number
+# job number
 job_num=5
+
+# job start id
+job_start=0
 
 # seed for random number generator
 seed=123456789
@@ -50,24 +53,8 @@ EOF
 }
 
 #-------------------------------------------------------------------------------
-# function to show help
-#-------------------------------------------------------------------------------
-show_help() {
-cat << EOF
-Usage: benchmark.sh <option>
-
-Options:
-  help       show this help
-  strong     run simulation with strong-scaling
-  weak       run simulation with weak-scaling
-
-EOF
-}
-
-#-------------------------------------------------------------------------------
 # main
 #-------------------------------------------------------------------------------
-
 # set Geant4 environment
 G4DIR=/opt/geant4/${compiler}/${g4version}
 source $G4DIR/bin/geant4.sh
@@ -88,7 +75,8 @@ $G4DIR
 $G4DATA"
 
 RANDOM=$seed
-for ((i=0; i<$job_num; i++)); do
+job_end=$((job_start + job_num))
+for ((i=$job_start; i<$job_end; i++)); do
 
   job_id=$((i + 1))
 
@@ -110,6 +98,7 @@ for ((i=0; i<$job_num; i++)); do
 
 done
 
+# for Mac
 if [ "$(uname)" == "Darwin" ]; then
   unset DYLD_LIBRARY_PATH
 fi
