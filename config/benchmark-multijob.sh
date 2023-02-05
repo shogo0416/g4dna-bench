@@ -73,6 +73,11 @@ G4DIR=/opt/geant4/${compiler}/${g4version}
 source $G4DIR/bin/geant4.sh
 G4DATA=$(env | grep G4)
 
+# for Mac
+if [ "$(uname)" == "Darwin" ]; then
+  export DYLD_LIBRARY_PATH=$G4DIR/lib:$DYLD_LIBRARY_PATH
+fi
+
 echo "
 [MESSAGE] Set environment for Geant4 Version $G4VERSION
 
@@ -104,3 +109,7 @@ for ((i=0; i<$job_num; i++)); do
   $command > $log_file &
 
 done
+
+if [ "$(uname)" == "Darwin" ]; then
+  unset DYLD_LIBRARY_PATH
+fi
