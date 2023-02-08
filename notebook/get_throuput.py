@@ -82,7 +82,7 @@ def main(olympic_style=False):
     ax.bar_label(p, label_type='center',fmt='%.2f')
     ax.set_xlabel("Throughput (#History/min)")
 
-    plt.show()
+    #plt.show()
     plt.savefig("throughput.pdf")
 
 #===============================================================================
