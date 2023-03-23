@@ -33,7 +33,7 @@ cat << EOF > config_p20MeV_no$1.json
   "event_number"          : $3,
   "thread_number"         : 30,
   "cpu_affinity"          : false,
-  "beam_particle"         : "e-",
+  "beam_particle"         : "proton",
   "beam_ion_Z"            : 0,
   "beam_ion_A"            : 0,
   "beam_energy"           : 20000,
