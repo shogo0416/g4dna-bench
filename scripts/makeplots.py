@@ -249,7 +249,7 @@ def make_gvalue_plot(df, pdfname='gval.pdf', negative=False):
 #===============================================================================
 # main function
 #===============================================================================
-def main(file_type, score_time):
+def main(score_time):
 
     m = MakeDataFrameFromCSV()
     m.input_files(glob.glob("./result*.csv"))
@@ -270,8 +270,7 @@ def main(file_type, score_time):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="Make G-value plots")
-    parser.add_argument('-f', '--file_type',  default='csv')
     parser.add_argument('-s', '--score_time', default=-1.0, type=float)
     args = parser.parse_args()
 
-    main(args.file_type, args.score_time)
+    main(args.score_time)
