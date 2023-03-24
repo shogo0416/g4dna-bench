@@ -89,7 +89,7 @@ for ((i=$job_start; i<$job_end; i++)); do
   job_id=$((i + 1))
 
   rng_seed=$RANDOM
-  output_file="gval_no${job_id}.csv"
+  output_file="result_gval_no${job_id}.csv"
   benchmark_file="benchmark_no${job_id}.json"
   term_freq=$((event_num / 10))
 

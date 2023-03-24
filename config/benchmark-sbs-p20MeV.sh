@@ -27,7 +27,7 @@ dirname="p20MeV"
 # function to make a configuration file with json format
 #-------------------------------------------------------------------------------
 make_config_file() {
-cat << EOF > config_p20MeV_no$1.json
+cat << EOF > config_no$1.json
 {
   "random_seed"           : $2,
   "event_number"          : $3,
@@ -89,18 +89,18 @@ for ((i=$job_start; i<$job_end; i++)); do
   job_id=$((i + 1))
 
   rng_seed=$RANDOM
-  output_file="gval_p20MeV_no${job_id}.csv"
-  benchmark_file="benchmark_p20MeV_no${job_id}.json"
+  output_file="result_gval_no${job_id}.csv"
+  benchmark_file="benchmark_no${job_id}.json"
   term_freq=$((event_num / 10))
 
   # make a configuration file
   make_config_file ${job_id} $rng_seed $event_num $output_file $benchmark_file $term_freq
 
   # set a simulation log file
-  log_file="run_p20MeV_no${job_id}.log"
+  log_file="run_no${job_id}.log"
 
   # run simulation
-  command="$binary -c config_p20MeV_no${job_id}.json"
+  command="$binary -c config_no${job_id}.json"
   echo -e "\n[JOB#${job_id}]"$command
   $command > $log_file
 
