@@ -23,6 +23,9 @@ binary="../../bin/chem-bench"
 # directory name
 dirname="e750keV"
 
+# multi-job
+multijob=false
+
 #-------------------------------------------------------------------------------
 # function to make a configuration file with json format
 #-------------------------------------------------------------------------------
@@ -31,7 +34,7 @@ cat << EOF > conf_bench_no$1.json
 {
   "random_seed"           : $2,
   "event_number"          : $3,
-  "thread_number"         : 30,
+  "thread_number"         : 14,
   "cpu_affinity"          : false,
   "beam_particle"         : "e-",
   "beam_ion_Z"            : 0,
@@ -78,8 +81,10 @@ $G4DIR
 $G4DATA"
 
 # make directory
-if [ ! -d $dirname ]; then
-  mkdir $dirname
+if ! "$multijob" ; then
+  if [ ! -d $dirname ]; then
+    mkdir $dirname
+  fi
 fi
 
 RANDOM=$seed
@@ -102,7 +107,12 @@ for ((i=$job_start; i<$job_end; i++)); do
   # run simulation
   command="$binary -c conf_bench_no${job_id}.json"
   echo -e "\n[JOB#${job_id}]"$command
-  $command > $log_file
+  if "$multijob" ; then
+    $command > $log_file &
+    continue
+  else
+    $command > $log_file
+  fi
 
   if [ -f $output_file ]; then
     echo "--> Succeeded to run the simulation"
