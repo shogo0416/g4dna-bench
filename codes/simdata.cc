@@ -443,94 +443,65 @@ void SimData::Performance(int id)
 
   if (!benchmark_threads_) { return; }
 
-  double elap_time = tot_elap_time_[id];
-  double elap_time_chem = tot_elap_time_chem_[id];
-  double elap_time_phys = elap_time - elap_time_chem;
+  auto elap_time = tot_elap_time_[id];
+  auto elap_time_chem = tot_elap_time_chem_[id];
+  auto elap_time_phys = elap_time - elap_time_chem;
 
-  int num_event_chem  = num_chem_event_[id];
-  int num_event_abort = num_abort_event_[id];
-  int num_event = num_event_abort + num_event_chem;
+  auto num_event_chem  = num_chem_event_[id];
+  auto num_event_abort = num_abort_event_[id];
+  auto num_event = num_event_abort + num_event_chem;
 
-  double avg_time_phys = elap_time_phys / num_event;
-  double avg_time_chem = elap_time_chem / num_event_chem;
+  auto eps = static_cast<double>(num_event) / elap_time * 60.0;
+  auto eps_phys = static_cast<double>(num_event) / elap_time_phys * 60.0;
+  auto eps_chem = static_cast<double>(num_event_chem) / elap_time_chem * 60.0;
 
-  double thr_phys = 60.0 / avg_time_phys;
-  double thr_chem = 60.0 / avg_time_chem;
-
-  int num_phys_step = num_phys_step_[id];
-  int num_chem_step = num_chem_step_[id];
-  double avg_time_phys_step = elap_time_phys / num_phys_step * 1000.0;
-  double avg_time_chem_step = elap_time_chem / num_chem_step * 1000.0;
-
-  int nmol = 0;
+  int nmol{0};
   auto ci = ci_buff_[id];
   for (auto x : ci) {
     for (auto y : x.species) { nmol += y.second; }
   }
-  double avg_time_mol = elap_time_chem / nmol * 1000.0;
+
+  auto mps = static_cast<double>(nmol) / elap_time_chem;
+  auto avg_nmol = static_cast<double>(nmol) / num_event_chem;
 
   std::stringstream ss;
 
-  ss << " Thread #" << id << std::endl;
-  ss << " - Total Event: " << num_event << " (Abort: " << num_event_abort
-     << ", Chemistry: " << num_event_chem << ")" << std::endl;
-
-  ss << " - Total Elapsed Time: " << elap_time << " sec" << std::endl;
-  ss << "   - Physics:   " << elap_time_phys << " sec ("
-     << avg_time_phys << " sec/event)" << std::endl;
-  ss << "   - Chemistry: " << elap_time_chem << " sec ("
-     << avg_time_chem << " sec/event)" << std::endl;
-
-  ss << " - Throughput:" << std::endl;
-  ss << "   - Physics:   " << thr_phys << " events/min." << std::endl;
-  ss << "   - Chemistry: " << thr_chem << " events/min." << std::endl;
-
-  ss << " - Number of Steps:" << std::endl;
-  ss << "   - Physics:   " << num_phys_step << std::endl;
-  ss << "   - Chemistry: " << num_chem_step << std::endl;
-
-  ss << " - Elapsed Time per Step:" << std::endl;
-  ss << "   - Physics:   " << avg_time_phys_step << " msec/step" << std::endl;
-  ss << "   - Chemistry: " << avg_time_chem_step << " msec/step" << std::endl;
-
-  ss << " - Elapsed Time per Molecule" << std::endl;
-  ss << "   - # of molecule: " << nmol << std::endl;
-  ss << "   - Throughput:   " << avg_time_mol << " msec/molecule" << std::endl;
+  ss << " [Run Summary : Thread #" << id << "]" << std::endl;
+  ss << " * Event Number: " << num_event << std::endl;
+  ss << " * Simulation Time : " << elap_time << " sec" << std::endl;
+  ss << "     -> EPS Score  : " << eps << " Events/min" << std::endl;
+  ss << " * Physics Stage" << std::endl;
+  ss << "   - Event Number  : " << num_event << std::endl;
+  ss << "   - Elapsed Time  : " << elap_time_phys << " sec" << std::endl;
+  ss << "     -> EPS Score  : " << eps_phys << " Events/min" << std::endl;
+  ss << " * Chemistry Stage" << std::endl;
+  ss << "   - Event Number  : " << num_event_chem
+     << " (Abort Events : " << num_event_abort << ")" << std::endl;
+  ss << "   - Molecule Number @1ps : " << nmol
+     << " (Average : " << avg_nmol << " /Event)" << std::endl;
+  ss << "   - Elapsed Time  : " << elap_time_chem << " sec" << std::endl;
+  ss << "     -> EPS Score  : " << eps_chem << " Events/min" << std::endl;
+  ss << "     -> MPS Score  : " << mps << " Molecules/sec" << std::endl;
 
   std::cout << ss.str() << std::endl;
 
   std::string title = "thread" + std::to_string(id);
 
   js_[title] = {
-    {"event_number", {
-      {"total", num_event},
-      {"abort", num_event_abort},
-      {"chemistry_stage", num_event_chem}
+    {"EventNumber", num_event},
+    {"SimulationTime", elap_time},
+    {"EPSScore", eps},
+    {"PhysicsStage", {
+      {"EventNumber", num_event},
+      {"ElapsedTime", elap_time_phys},
+      {"EPSScore", eps_phys}
     }},
-    {"elapsed_time", {
-      {"total", elap_time},
-      {"physics_stage", elap_time_phys},
-      {"chemistry_stage", elap_time_chem}
-    }},
-    {"elapsed_time_per_event", {
-      {"physics_stage",   avg_time_phys},
-      {"chemistry_stage", avg_time_chem}
-    }},
-    {"throughput", {
-      {"physics_stage", thr_phys},
-      {"chemistry_stage", thr_chem}
-    }},
-    {"step_number", {
-      {"physics_stage", num_phys_step},
-      {"chemistry_stage", num_chem_step}
-    }},
-    {"elapsed_time_per_step", {
-      {"physics_stage", avg_time_phys_step},
-      {"chemistry_stage", avg_time_chem_step}
-    }},
-    {"elapsed_time_per_molecule", {
-      {"molecule_number", nmol},
-      {"throughput", avg_time_mol}
+    {"ChemistryStage", {
+      {"EventNumber", num_event_chem},
+      {"MoleculeNumber", nmol},
+      {"ElapsedTime", elap_time_chem},
+      {"EPSScore", eps_chem},
+      {"MPSScore", mps}
     }}
   };
 
