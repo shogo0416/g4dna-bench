@@ -33,33 +33,16 @@ import glob
 import json
 import numpy as np
 
-#===============================================================================
-# Main Function
-#===============================================================================
-def main(chem):
-
-    files = glob.glob('benchmark_*.json')
-    if len(files) == 0:
-        print("[ERROR] No benchmark files found. Stop the process.")
-        return
-
-    eps = []
-    for x in files:
-        with open(x) as f:
-            js = json.load(f)
-            if chem:
-                eps.append(js['thread0']['ChemistryStage']['EPSScore'])
-            else:
-                eps.append(js['summary']['throughput'])
+#-------------------------------------------------------------------------------
+def cal_avg_eps(eps):
 
     num = len(eps)
     if num == 0:
         print("[ERROR] Could not get EPS scores. Stop the process.")
         return
-    else:
-        print(f"[MESSAGE] {num} files are loaded.")
 
     eps = np.array(eps)
+
     if num > 4:
         eps = np.sort(eps)
         mean = np.mean(eps[1:num-1])
@@ -68,11 +51,60 @@ def main(chem):
         mean = np.mean(eps)
         stddev = np.std(eps)
 
+    return mean, stddev
+
+#===============================================================================
+# Main Function
+#===============================================================================
+def main(detail):
+
+    files = glob.glob('benchmark_*.json')
+    if len(files) == 0:
+        print("[ERROR] No benchmark files found. Stop the process.")
+        return
+
+    print(f"[MESSAGE] {len(files)} files are loaded.")
+
+    if detail:
+
+        eps = {'all': [], 'phys': [], 'chem': []}
+        for x in files:
+            with open(x) as f:
+                js = json.load(f)
+                eps['all'].append(js['thread0']['EPSScore'])
+                eps['phys'].append(js['thread0']['PhysicsStage']['EPSScore'])
+                eps['chem'].append(js['thread0']['ChemistryStage']['EPSScore'])
+
+        print("[MESSAGE] Average EPS Scores:")
+
+        for key in eps:
+            mean, stddev = cal_avg_eps(eps[key])
+
+            msg = ""
+            if key == 'phys':
+                msg = "- Physics Stage   : "
+            elif key == 'chem':
+                msg = "- Chemistry Stage : "
+            else:
+                msg = "- Two Stages      : "
+            msg += f"{mean} +/- {stddev} Events/min"
+
+            print(msg)
+        return
+
+    eps = []
+    for x in files:
+        with open(x) as f:
+            js = json.load(f)
+            eps.append(js['summary']['throughput'])
+
+    mean, stddev = cal_avg_eps(eps)
+
     print(f"[MESSAGE] Average EPS Score: {mean} +/- {stddev} Events/min")
 
 #-------------------------------------------------------------------------------
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Get EPS Score")
-    parser.add_argument('-c', '--chem', action='store_true')
+    parser.add_argument('-d', '--detail',  action='store_true')
     args = parser.parse_args()
-    main(args.chem)
+    main(args.detail)
