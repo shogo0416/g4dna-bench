@@ -28,6 +28,7 @@
   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================
 """
+import argparse
 import glob
 import json
 import numpy as np
@@ -35,7 +36,7 @@ import numpy as np
 #===============================================================================
 # Main Function
 #===============================================================================
-def main():
+def main(chem):
 
     files = glob.glob('benchmark_*.json')
     if len(files) == 0:
@@ -46,9 +47,10 @@ def main():
     for x in files:
         with open(x) as f:
             js = json.load(f)
-            if 'summary' in js.keys():
-                if 'throughput' in js['summary'].keys():
-                    eps.append(js['summary']['throughput'])
+            if chem:
+                eps.append(js['thread0']['ChemistryStage']['EPSScore'])
+            else:
+                eps.append(js['summary']['throughput'])
 
     num = len(eps)
     if num == 0:
@@ -70,4 +72,7 @@ def main():
 
 #-------------------------------------------------------------------------------
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description="Get EPS Score")
+    parser.add_argument('-c', '--chem', action='store_true')
+    args = parser.parse_args()
+    main(args.chem)
