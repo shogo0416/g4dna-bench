@@ -28,10 +28,10 @@
 #===============================================================================
 
 # event number
-event_num=500
+event_num=200
 
 # job number
-job_num=8
+job_num=1
 
 # job start id
 job_start=0
@@ -43,21 +43,25 @@ seed=123456789
 compiler=""
 
 # Geant4 version number
-g4version="11.1.1"
+#g4version="11.1.1"
+g4version="10.7.4-mt"
 
 binary="../../bin/chem-bench"
+
+# label for output files
+label="p20MeV"
 
 # directory name
 dirname="p20MeV"
 
 # multi-job
-multijob=true
+multijob=false
 
 #-------------------------------------------------------------------------------
 # function to make a configuration file with json format
 #-------------------------------------------------------------------------------
 make_config_file() {
-cat << EOF > config_no$1.json
+cat << EOF > config_bench_${label}_no$1.json
 {
   "random_seed"           : $2,
   "event_number"          : $3,
@@ -127,18 +131,18 @@ for ((i=$job_start; i<$job_end; i++)); do
   job_id=$((i + 1))
 
   rng_seed=$RANDOM
-  output_file="result_gval_no${job_id}.csv"
-  benchmark_file="benchmark_no${job_id}.json"
+  output_file="result_gval_${label}_no${job_id}.csv"
+  benchmark_file="benchmark_${label}_no${job_id}.json"
   term_freq=$((event_num / 10))
 
   # make a configuration file
   make_config_file ${job_id} $rng_seed $event_num $output_file $benchmark_file $term_freq
 
   # set a simulation log file
-  log_file="run_no${job_id}.log"
+  log_file="run_${label}_no${job_id}.log"
 
   # run simulation
-  command="$binary -c config_no${job_id}.json"
+  command="$binary -c config_bench_${label}_no${job_id}.json"
   echo -e "\n[JOB#${job_id}]"$command
   if "$multijob"; then
     $command > $log_file &
