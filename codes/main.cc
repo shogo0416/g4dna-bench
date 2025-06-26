@@ -35,9 +35,10 @@
 #include "G4MTRunManager.hh"
 #else
 #include "G4RunManager.hh"
-#endif
+#endif // G4MULTITHREADED
+#endif // G4VERSION_NUMBER
 
-#endif
+#include "G4UImanager.hh"
 
 #include "application.h"
 #include "timehistory.h"
@@ -55,10 +56,11 @@ void print_usage()
   const char* usage = R"(
     [Usage] chem-bench <options>
     [Options]
-      -h, --help               print this information
-      -c, --conf   <file_name> set configuration file [default: conf.json]
-      -s, --seed   <val>       set seed for random number generation
-      -o, --output <file_name> set output file name
+      -h, --help              print this information
+      -c, --conf   <filename> set configuration file [default: conf.json]
+      -s, --seed   <val>      set seed for random number generation
+      -o, --output <filename> set output filename
+      -m, --macro  <filename> set macro file
   )";
 
   std::cout << usage << std::endl;
@@ -82,20 +84,21 @@ template <typename T> T lexical_cast(char* optarg)
 // main function
 int main(int argc, char** argv)
 {
-
   struct option opts [] = {
-    {"help",     no_argument,       nullptr, 'h'},
-    {"conf",     required_argument, nullptr, 'c'},
-    {"seed",     required_argument, nullptr, 's'},
-    {"output",   required_argument, nullptr, 'o'},
-    {nullptr,    0,                 nullptr,  0},
+    {"help",   no_argument,       nullptr, 'h'},
+    {"conf",   required_argument, nullptr, 'c'},
+    {"seed",   required_argument, nullptr, 's'},
+    {"output", required_argument, nullptr, 'o'},
+    {"macro",  required_argument, nullptr, 'm'},
+    {nullptr,  0,                 nullptr,  0},
   };
 
   int seed{-1};
-  std::string conf_file{"conf.json"};
-  std::string output_file{""};
+  std::string config{"conf.json"};
+  std::string output{""};
+  std::string macro{""};
 
-  const char* optstr = "hc:s:o:";
+  const char* optstr = "hc:s:o:m:";
   int opt, index;
   while ((opt = getopt_long(argc, argv, optstr, opts, &index)) != -1) {
     switch (opt) {
@@ -103,13 +106,16 @@ int main(int argc, char** argv)
         ::print_usage();
         break;
       case 'c':
-        conf_file = ::lexical_cast<std::string>(optarg);
+        config = ::lexical_cast<std::string>(optarg);
         break;
       case 's':
-        seed = ::lexical_cast<int>(optarg);
+        seed   = ::lexical_cast<int>(optarg);
         break;
       case 'o':
-        output_file = ::lexical_cast<std::string>(optarg);
+        output = ::lexical_cast<std::string>(optarg);
+        break;
+      case 'm':
+        macro  = ::lexical_cast<std::string>(optarg);
         break;
     }
   }
@@ -119,9 +125,9 @@ int main(int argc, char** argv)
 
   auto app = Application::GetInstance();
 
-  app->LoadConfigFile(conf_file);
+  app->LoadConfigFile(config);
 
-  if (output_file.length() > 0) { app->SetOutputFile(output_file); }
+  if (output.length() > 0) { app->SetOutputFile(output); }
 
   app->SetupRandomEngine(seed);
 
@@ -137,10 +143,17 @@ int main(int argc, char** argv)
 
   app->Setup();
 
+  auto ui_manager = G4UImanager::GetUIpointer();
+
   run->SetUserInitialization(app);
 
   // initialization
   run->Initialize();
+
+  if (macro.length() > 0) {
+    const std::string command = "/control/execute ";
+    ui_manager->ApplyCommand(command + macro);
+  }
 
   // setup for SimData
   auto sd = SimData::GetInstance();
