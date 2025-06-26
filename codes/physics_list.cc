@@ -27,7 +27,6 @@
 ==============================================================================*/
 #include "physics_list.h"
 
-#include "G4Version.hh"
 #include "G4PhysicsConstructorRegistry.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4EmDNAPhysics.hh"
@@ -44,6 +43,11 @@
 #include "G4EmDNAChemistry_option1.hh"
 #include "G4EmDNAChemistry_option2.hh"
 #include "G4EmDNAChemistry_option3.hh"
+
+#if G4VERSION_NUMBER >= 1130
+#include "G4EmParameters.hh"
+#include "G4ChemTimeStepModel.hh"
+#endif
 
 #if G4VERSION_NUMBER < 1060
 
@@ -149,6 +153,25 @@ void PhysicsList::SetChemistry(const std::string& name)
     std::exit(EXIT_FAILURE);
   }
 }
+
+//------------------------------------------------------------------------------
+#if G4VERSION_NUMBER >= 1130
+void PhysicsList::SetTimeStepModel(const std::string& name)
+{
+  auto* emp = G4EmParameters::Instance();
+  if (name == "SBS") {
+    emp->SetTimeStepModel(G4ChemTimeStepModel::SBS);
+  } else if (name == "IRT") {
+    emp->SetTimeStepModel(G4ChemTimeStepModel::IRT);
+  } else if (name == "IRT_syn") {
+    emp->SetTimeStepModel(G4ChemTimeStepModel::IRT_syn);
+  } else {
+    std::cerr << "[ERROR] Set unknown parameter (name: " << name << ")"
+              << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
+}
+#endif
 
 //------------------------------------------------------------------------------
 void PhysicsList::ConstructProcess()

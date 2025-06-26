@@ -35,7 +35,7 @@ threads=(1 2 4 8 16 20 24 28 32)
 #threads=(1 2 4 8 14 20 24 28)
 #threads=(1 2 4 6 8 10 12)
 
-g4version="11.2.2"
+g4version="11.3.2"
 binary="../../bin/chem-bench"
 
 config_file="config_bench.json"
@@ -61,6 +61,7 @@ cat << EOF > ${config_file}
   "kill_energy"           : [75.0, 75.1],
   "phys_list"             : "G4EmDNAPhysics_option8",
   "chem_list"             : "G4EmDNAChemistry_option3",
+  "time_step_model"       : "IRT",
   "ele_solvation_model"   : "Meesungnoen2002",
   "use_molecule_counter"  : false,
   "check_boundary"        : false,

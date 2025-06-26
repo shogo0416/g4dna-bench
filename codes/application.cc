@@ -278,12 +278,15 @@ void Application::Setup()
   run->SetUserInitialization(geom);
 
   // setup physics list
+  auto plist = PhysicsList::GetInstance();
   auto physlist = ::js["phys_list"];
   auto chemlist = ::js["chem_list"];
-
-  auto plist = PhysicsList::GetInstance();
   plist->SetPhysics(physlist);
   plist->SetChemistry(chemlist);
+#if G4VERSION_NUMBER >= 1130
+  auto time_step_model = ::js["time_step_model"];
+  plist->SetTimeStepModel(time_step_model);
+#endif
   run->SetUserInitialization(plist);
 
   // for primary removal

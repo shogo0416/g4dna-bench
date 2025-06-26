@@ -30,6 +30,7 @@
 #include "globals.hh"
 #include "G4VModularPhysicsList.hh"
 #include "G4VUserChemistryList.hh"
+#include "G4Version.hh"
 #include <string>
 
 class G4VPhysicsConstructor;
@@ -44,6 +45,10 @@ public:
 
   void SetPhysics(const std::string& name);
   void SetChemistry(const std::string& name);
+
+#if G4VERSION_NUMBER >= 1130
+  void SetTimeStepModel(const std::string& name);
+#endif
 
   G4VPhysicsConstructor* GetPhysics();
   G4VPhysicsConstructor* GetChemistry();
