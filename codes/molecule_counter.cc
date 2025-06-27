@@ -97,7 +97,7 @@ G4bool MoleculeCounter::ProcessHits(G4Step* step, G4TouchableHistory*)
 //------------------------------------------------------------------------------
 void MoleculeCounter::Initialize(G4HCofThisEvent*)
 {
-  // nothing to do...
+  clear();
 }
 
 //------------------------------------------------------------------------------
@@ -119,7 +119,7 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
   static auto score_time = simdata_->GetScoreTime();
   double edep_factor = 100.0 / (simdata_->GetEdep(id) / eV);
 
-  auto counter = G4MoleculeCounter::Instance();
+  auto* counter = G4MoleculeCounter::Instance();
 #if G4VERSION_NUMBER >= 1110
   auto inuse = counter->InUse();
 #else
@@ -201,7 +201,7 @@ void MoleculeCounter::clear()
 #endif
   simdata_->ResetEdep(id);
 
-  auto counter = G4MoleculeCounter::Instance();
+  auto* counter = G4MoleculeCounter::Instance();
 #if G4VERSION_NUMBER >= 1110
   auto inuse = counter->InUse();
 #else

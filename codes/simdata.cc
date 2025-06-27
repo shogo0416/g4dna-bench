@@ -224,14 +224,19 @@ void print_chemical_reaction()
 #endif // G4VERSION_NUMBER >= 1070
 
 //------------------------------------------------------------------------------
-bool check_molecule_type(const G4MoleculeDefinition* part)
+bool check_molecule_type(const G4MolecularConfiguration* mconf)
 {
   bool skip = false;
+  const G4MoleculeDefinition* part = mconf->GetDefinition();
 
   if (part == G4H2O::Definition()) { skip = true; }
 
 #if G4VERSION_NUMBER >= 1070
   if (part == G4FakeMolecule::Definition()) { skip = true; }
+#endif
+
+#if G4VERSION_NUMBER >= 1130
+  if (mconf->GetName() == "O^0") { skip = true; }
 #endif
 
   return skip;
@@ -278,11 +283,11 @@ void SimData::Setup()
   int counter{0};
   while ((miterator)()) {
 
-    const auto val = miterator.value();
+    const G4MolecularConfiguration* mconf = miterator.value();
 
-    if (::check_molecule_type(val->GetDefinition())) { continue; }
+    if (::check_molecule_type(mconf)) { continue; }
 
-    auto name = val->GetName();
+    auto name = mconf->GetName();
     if (mole_map_.count(name)) { continue; }
 
     mole_map_.insert(std::pair<std::string, int>(name, counter));
@@ -306,7 +311,7 @@ void SimData::Setup()
   ci_buff_.resize(num_thread_);
 
   header_.resize(::num_mole_kind + 1);
-  header_[0] = "Time_ps";
+  header_[0] = "Time(ps)";
   for (auto x: mole_map_) { header_[x.second + 1] = x.first; }
 
   num_abort_event_.resize(num_thread_, 0);
