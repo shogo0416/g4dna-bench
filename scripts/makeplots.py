@@ -65,26 +65,27 @@ uM    = umole / dm3
 NA    = 6.02214179e+23 / mole # Avogadro number
 PI    = 3.14159265358979323846
 
-LABEL = {'H^0'   : 'H',   'H_2^0'  : 'H2',   'H2O2^0' : 'H2O2', 'H3O^1': 'H3Op',
-         'HO_2^0': 'HO2', 'HO_2^-1': 'HO2m', 'O^0'    : 'O',    'O_2^0': 'O2',
-         'O_2^-1': 'O2m', 'O_3^0'  : 'O3',   'O_3^-1' : 'O3m',   'OH^0': 'OH',
-         'OH^-1' : 'OHm', 'O^-1'   : 'Om',   'e_aq^-1': 'e_aq'}
+LABEL = {'H^0'   : 'H',   'H_2^0'  : 'H2',  'H2O2^0' : 'H2O2', 'H3O^1': 'H3Op',
+         'HO_2^0': 'HO2', 'HO_2°^0': 'HO2', 'HO_2^-1': 'HO2m', 'O^0'  : 'O',
+         '°O^0'  : 'O',   'O_2^0'  : 'O2',  'O_2^-1' : 'O2m',  'O_3^0': 'O3',
+         'O_3^-1': 'O3m', 'OH^0'   : 'OH',  '°OH^0'  : 'OH',   'OH^-1': 'OHm',
+         'O^-1'  : 'Om',  'e_aq^-1': 'e_aq'}
 
-TITLE = {"e_aq": "$\mathrm{e}_{\mathrm{aq}}^{-}$",
-         "H3Op": "$\mathrm{H}_3\mathrm{O}^{+}$",
-         "OH"  : "$^{\cdot}\mathrm{OH}$",
-         "OHm" : "$\mathrm{OH}^{-}$",
-         "H2"  : "$\mathrm{H}_2$",
-         "H2O2": "$\mathrm{H}_2\mathrm{O}_2$",
-         "H"   : "$\mathrm{H}^{\cdot}$",
-         "O"   : "$\mathrm{O(3P)}$",
-         "Om"  : "$\mathrm{O}^{\cdot-}$",
-         "O2"  : "$\mathrm{O}_2$",
-         "O2m" : "$\mathrm{O}_2^{-}$",
-         "O3"  : "$\mathrm{O}_3$",
-         "O3m" : "$\mathrm{O}_3^{-}$",
-         "HO2" : "$\mathrm{HO}_2^{\cdot}$",
-         "HO2m": "$\mathrm{HO}_2^{\cdot-}$"}
+TITLE = {"e_aq": r"$\mathrm{e}_{\mathrm{aq}}^{-}$",
+         "H3Op": r"$\mathrm{H}_3\mathrm{O}^{+}$",
+         "OH"  : r"$^{\cdot}\mathrm{OH}$",
+         "OHm" : r"$\mathrm{OH}^{-}$",
+         "H2"  : r"$\mathrm{H}_2$",
+         "H2O2": r"$\mathrm{H}_2\mathrm{O}_2$",
+         "H"   : r"$\mathrm{H}^{\cdot}$",
+         "O"   : r"$\mathrm{O(3P)}$",
+         "Om"  : r"$\mathrm{O}^{\cdot-}$",
+         "O2"  : r"$\mathrm{O}_2$",
+         "O2m" : r"$\mathrm{O}_2^{-}$",
+         "O3"  : r"$\mathrm{O}_3$",
+         "O3m" : r"$\mathrm{O}_3^{-}$",
+         "HO2" : r"$\mathrm{HO}_2^{\cdot}$",
+         "HO2m": r"$\mathrm{HO}_2^{\cdot-}$"}
 
 FIG_SIZE_X = 8
 FIG_SIZE_Y = 5
@@ -137,7 +138,7 @@ class MakeDataFrameFromCSV():
             counter = self._merge(file, counter)
 
         self.df /= counter
-        self.df = self.df.rename(columns={'Time_ps' : 'time'})
+        self.df = self.df.rename(columns={'Time(ps)' : 'time'})
         self.df = self.df.rename(columns=LABEL)
 
     #---------------------------------------------------------------------------
@@ -187,7 +188,7 @@ def get_gvalue(df, score_time=-1.0):
     sum1 = HO2 + O2
     sum2 = HO2 + O2m
 
-    print(f"[MESSAGE] G(H2O2): {H2O2} G(HO2+O2): {sum1}, G(HO2+O2-): {sum2}")
+    print(f"[MESSAGE] G(H2O2): {H2O2:.2f} G(HO2+O2): {sum1:.2f}, G(HO2+O2-): {sum2:.2f}")
 
     gvals = [eaq, OH, H, H2, H2O2, HO2, O2, O2m, sum1, sum2]
     header = "eaq, OH, H, H2, H2O2, HO2, O2, O2m, HO2+O2, HO2+O2m"
@@ -238,6 +239,7 @@ def make_gvalue_plot(df, pdfname='gval.pdf', negative=False):
     def get_plot_title(key):
         if key in TITLE:
             return TITLE[key]
+        print(key)
         return key
 
     with PdfPages(pdfname) as pdf:
