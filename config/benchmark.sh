@@ -151,7 +151,7 @@ for it in ${threads[@]}; do
     event_num=$((it * base_event))
   fi
 
-  output_file="gval_${it}mt.csv"
+  output_file="result_${it}mt.csv"
   benchmark_file="benchmark_${it}mt.json"
   term_freq=$((event_num / 10))
 
