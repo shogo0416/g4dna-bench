@@ -107,7 +107,7 @@ private:
 
   void Merge();
 
-  std::string fname_;
+  std::string fname_gval_;
   std::string fname_bench_;
 
   int num_thread_;
@@ -144,7 +144,7 @@ private:
 //==============================================================================
 inline void SimData::SetFileName(const std::string& fname)
 {
-  fname_ = fname;
+  fname_gval_ = fname;
 }
 
 //------------------------------------------------------------------------------

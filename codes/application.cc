@@ -36,6 +36,7 @@
 #include "simdata.h"
 #include "step_action.h"
 #include "time_step_action.h"
+#include "dna_chemistry.h"
 
 #include "G4Version.hh"
 #if G4VERSION_NUMBER >= 1100
@@ -233,26 +234,22 @@ void Application::SetupRandomEngine(long seed)
 //------------------------------------------------------------------------------
 void Application::Setup()
 {
-  if (output_.length() > 0) { ::js["output_file"] = output_; }
-
   ::print_parameters();
 
-  // setup event number processing and thread number
+  // ---------------------------------------------------------------------------
+  //  setup for event number processing and thread number
   num_event_  = ::js["event_number"];
   num_thread_ = ::js["thread_number"];
 
-  bool cpu_affinity{false};
-  if (::js.contains("cpu_affinity")) {
-    cpu_affinity = ::js["cpu_affinity"].get<bool>();
-  }
-
+  // ---------------------------------------------------------------------------
+  //  setup for cpu affinity
+  bool cpu_affinity = ::js.value("cpu_affinity", false);
 #ifndef G4MULTITHREADED
   if (num_thread_ != 1 || cpu_affinity) {
     std::cerr << "[ERROR] Multi-threading is not supported." << std::endl;
     std::exit(EXIT_FAILURE);
   }
 #endif
-
 
 #if G4VERSION_NUMBER >= 1100
   auto run = G4RunManager::GetRunManager();
@@ -265,10 +262,11 @@ void Application::Setup()
   if (cpu_affinity) { run->SetPinAffinity(num_thread_); }
 #else
   auto run = G4RunManager::GetRunManager();
-#endif
-#endif
+#endif // G4MULTITHREADED
+#endif // G4VERSION_NUMBER >= 1100
 
-  // setup water phantom
+  // ---------------------------------------------------------------------------
+  //  setup for geometry of water phantom
   auto target_size_x = ::js["target_size"][0].get<double>() * um;
   auto target_size_y = ::js["target_size"][1].get<double>() * um;
   auto target_size_z = ::js["target_size"][2].get<double>() * um;
@@ -277,30 +275,46 @@ void Application::Setup()
   geom->SetPhantomSize(target_size_x, target_size_y, target_size_z);
   run->SetUserInitialization(geom);
 
-  // setup physics list
-  auto plist = PhysicsList::GetInstance();
-  auto physlist = ::js["phys_list"];
-  auto chemlist = ::js["chem_list"];
-  plist->SetPhysics(physlist);
-  plist->SetChemistry(chemlist);
+  // ---------------------------------------------------------------------------
+  //  setup for physics simulation
+  auto physconfs = ::js["physics_configs"];
+  auto physopt   = physconfs.value("physics_option", "G4EmDNAPhysics_option8");
+  auto* plist    = PhysicsList::GetInstance();
+  plist->SetPhysics(physopt);
+
 #if G4VERSION_NUMBER >= 1130
-  auto time_step_model = ::js["time_step_model"];
+  // multiple ionisation processes
+  auto enable_mioni = physconfs.value("enable_multiple_ionisation", false);
+  plist->EnableMultipleIonisation(enable_mioni);
+#endif
+
+  // setup for primary removal
+  auto killer_confs = physconfs["primary_removal_configs"];
+  primary_removal_  = killer_confs["enabled"];
+  kill_elow_ = killer_confs["kill_energy"][0].get<double>() * keV;
+  kill_eupp_ = killer_confs["kill_energy"][1].get<double>() * keV;
+
+  // setup for electron solvation model [default: Meesungnoen2002]
+  auto ele_solvation_model = physconfs.value("electron_solvation_model",
+                                             "Meesungnoen2002");
+  ::set_solvation_model(ele_solvation_model);
+
+  // ---------------------------------------------------------------------------
+  //  setup for chemistry simulation
+  auto chemconfs = ::js["chemistry_configs"];
+  auto chemopt   = chemconfs.value("chemistry_option",
+                                   "G4EmDNAChemistry_option3");
+  plist->SetChemistry(chemopt);
+#if G4VERSION_NUMBER >= 1130
+  auto time_step_model = chemconfs.value("time_step_model", "IRT");
   plist->SetTimeStepModel(time_step_model);
 #endif
   run->SetUserInitialization(plist);
 
-  // for primary removal
-  primary_removal_ = ::js["primary_removal"];
-  kill_elow_ = ::js["kill_energy"][0].get<double>() * keV;
-  kill_eupp_ = ::js["kill_energy"][1].get<double>() * keV;
-
-  // setup electron solvation model
-  auto mname = ::js["ele_solvation_model"];
-  ::set_solvation_model(mname);
-
+  // ---------------------------------------------------------------------------
   // setup output file name
   auto sd = SimData::GetInstance();
-  sd->SetFileName(::js["output_file"]);
+  sd->SetFileName(::js["output_gval"]);
   sd->SetBenchmarkFileName(::js["benchmark_file"]);
   sd->SetThreadNumber(num_thread_);
   sd->RecordBenchmarkScoreForThreads(::js["benchmark_for_threads"]);

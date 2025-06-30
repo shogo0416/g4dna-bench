@@ -251,7 +251,7 @@ SimData* SimData::instance_ = nullptr;
 //------------------------------------------------------------------------------
 SimData::SimData()
 {
-  fname_ = "result.csv";
+  fname_gval_  = "result_gval.csv";
   fname_bench_ = "benchmark.json";
   num_thread_ = 1;
   result_each_thread_ = false;
@@ -392,6 +392,9 @@ void SimData::SaveSimulationResult(int id)
 
   if (id >= 0 && !result_each_thread_) { return; }
 
+  // ===========================================================================
+  //  save G value time profile
+  // ===========================================================================
   if (id < 0) { Merge(); }
 
   std::stringstream ss;
@@ -429,10 +432,10 @@ void SimData::SaveSimulationResult(int id)
   std::ofstream fout;
 
   if (id < 0) {
-    fout.open(fname_);
+    fout.open(fname_gval_);
   } else {
     std::string fname;
-    std::stringstream sline; sline << fname_;
+    std::stringstream sline; sline << fname_gval_;
     std::getline(sline, fname, '.');
     fname += "-th" + std::to_string(id) + ".csv";
     fout.open(fname);
@@ -440,6 +443,11 @@ void SimData::SaveSimulationResult(int id)
 
   fout << ss.str();
   fout.close();
+
+  // ===========================================================================
+  //  save energy deposit and LET for each event
+  // ===========================================================================
+
 }
 
 //------------------------------------------------------------------------------

@@ -26,6 +26,7 @@
   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ==============================================================================*/
 #include "physics_list.h"
+#include "dna_chemistry.h"
 
 #include "G4PhysicsConstructorRegistry.hh"
 #include "G4SystemOfUnits.hh"
@@ -47,6 +48,9 @@
 #if G4VERSION_NUMBER >= 1130
 #include "G4EmParameters.hh"
 #include "G4ChemTimeStepModel.hh"
+#include "G4DNADoubleIonisation.hh"
+#include "G4DNATripleIonisation.hh"
+#include "G4DNAQuadrupleIonisation.hh"
 #endif
 
 #if G4VERSION_NUMBER < 1060
@@ -91,7 +95,8 @@ PhysicsList* PhysicsList::instance_ = nullptr;
 PhysicsList::PhysicsList()
     : G4VModularPhysicsList(),
       phys_list_(nullptr),
-      chem_list_(nullptr)
+      chem_list_(nullptr),
+      enable_mioni_(false)
 {
   auto* ptab = G4ProductionCutsTable::GetProductionCutsTable();
   ptab->SetEnergyRange(100.0 * eV, 1.0 * GeV);
@@ -132,7 +137,19 @@ void PhysicsList::SetPhysics(const std::string& name)
   } else if (name == "G4EmDNAPhysics_option8") {
     phys_list_ = new G4EmDNAPhysics_option8();
   } else {
-    std::cerr << "[ERROR] Set unknown list (name: " << name << ")" <<std::endl;
+    const char* errmsg = R"(
+      [ERROR] Unknown physics options is set. Supported options are as follows:
+      - G4EmDNAPhysics
+      - G4EmDNAPhysics_option1
+      - G4EmDNAPhysics_option2
+      - G4EmDNAPhysics_option3
+      - G4EmDNAPhysics_option4
+      - G4EmDNAPhysics_option5
+      - G4EmDNAPhysics_option6
+      - G4EmDNAPhysics_option7
+      - G4EmDNAPhysics_option8
+    )";
+    std::cerr << errmsg <<std::endl;
     std::exit(EXIT_FAILURE);
   }
 }
@@ -148,6 +165,8 @@ void PhysicsList::SetChemistry(const std::string& name)
     chem_list_ = new G4EmDNAChemistry_option2();
   } else if (name == "G4EmDNAChemistry_option3") {
     chem_list_ = new G4EmDNAChemistry_option3();
+  } else if (name == "DNAChemistryOpt3") {
+    chem_list_ = new DNAChemistryOpt3();
   } else {
     std::cerr << "[ERROR] Set unknown list (name: " << name << ")" <<std::endl;
     std::exit(EXIT_FAILURE);
@@ -171,24 +190,83 @@ void PhysicsList::SetTimeStepModel(const std::string& name)
     std::exit(EXIT_FAILURE);
   }
 }
-#endif
+
+//------------------------------------------------------------------------------
+void PhysicsList::ConstructMultipleIonisationProcess()
+{
+  auto ph = G4PhysicsListHelper::GetPhysicsListHelper();
+
+  auto piter = GetParticleIterator();
+  piter->reset();
+
+  while ((*piter)()) {
+
+    auto pdef = piter->value();
+    auto pname = pdef->GetParticleName();
+
+    if (pname == "proton") {
+
+      ph->RegisterProcess(
+        new G4DNADoubleIonisation("proton_G4DNADoubleIonisation"), pdef);
+      ph->RegisterProcess(
+        new G4DNATripleIonisation("proton_G4DNATripleIonisation"), pdef);
+      ph->RegisterProcess(
+        new G4DNAQuadrupleIonisation("proton_G4DNAQuadrupleIonisation"), pdef);
+
+    } else if (pname == "alpha") {
+
+      ph->RegisterProcess(
+        new G4DNADoubleIonisation("alpha_G4DNADoubleIonisation"), pdef);
+      ph->RegisterProcess(
+        new G4DNATripleIonisation("alpha_G4DNATripleIonisation"), pdef);
+      ph->RegisterProcess(
+        new G4DNAQuadrupleIonisation("alpha_G4DNAQuadrupleIonisation"), pdef);
+
+    } else if (pname == "GenericIon") {
+
+      // for carbon ions
+      ph->RegisterProcess(
+        new G4DNADoubleIonisation("GenericIon_G4DNADoubleIonisation"), pdef);
+      ph->RegisterProcess(
+        new G4DNATripleIonisation("GenericIon_G4DNATripleIonisation"), pdef);
+      ph->RegisterProcess(
+        new G4DNAQuadrupleIonisation("GenericIon_G4DNAQuadrupleIonisation"),
+        pdef);
+
+    }
+
+  }
+
+}
+
+#endif // G4VERSION_NUMBER >= 1130
 
 //------------------------------------------------------------------------------
 void PhysicsList::ConstructProcess()
 {
+  // setup for particle transportation
   AddTransportation();
+
+  // setup for physics processes
   phys_list_->ConstructProcess();
 #if G4VERSION_NUMBER < 1060
   if (phys_list_->GetPhysicsName() == "G4EmDNAPhysics_option8") {
     ::add_physics_process();
   }
 #endif
-  chem_list_->ConstructProcess();
+
+  // setup for multiple ionisation processes
+#if G4VERSION_NUMBER >= 1130
+  if (enable_mioni_) { ConstructMultipleIonisationProcess(); }
+#endif
+
+  // setup for chemical reactions
+  if (chem_list_) { chem_list_->ConstructProcess(); }
 }
 
 //------------------------------------------------------------------------------
 void PhysicsList::ConstructParticle()
 {
   phys_list_->ConstructParticle();
-  chem_list_->ConstructParticle();
+  if (chem_list_) { chem_list_->ConstructParticle(); }
 }

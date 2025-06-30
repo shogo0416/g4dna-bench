@@ -44,10 +44,12 @@ public:
   void operator=(PhysicsList&) = delete;
 
   void SetPhysics(const std::string& name);
+  void SetChemistry(G4VPhysicsConstructor* in);
   void SetChemistry(const std::string& name);
 
 #if G4VERSION_NUMBER >= 1130
   void SetTimeStepModel(const std::string& name);
+  void EnableMultipleIonisation(bool in);
 #endif
 
   G4VPhysicsConstructor* GetPhysics();
@@ -62,6 +64,11 @@ private:
 
   G4VPhysicsConstructor* phys_list_;
   G4VPhysicsConstructor* chem_list_;
+
+#if G4VERSION_NUMBER >= 1130
+  void ConstructMultipleIonisationProcess();
+  bool enable_mioni_;
+#endif
 };
 
 //==============================================================================
@@ -74,6 +81,18 @@ inline G4VPhysicsConstructor* PhysicsList::GetPhysics()
 inline G4VPhysicsConstructor* PhysicsList::GetChemistry()
 {
   return chem_list_;
+}
+
+//------------------------------------------------------------------------------
+inline void PhysicsList::EnableMultipleIonisation(bool in)
+{
+  enable_mioni_ = in;
+}
+
+//------------------------------------------------------------------------------
+inline void PhysicsList::SetChemistry(G4VPhysicsConstructor* in)
+{
+  chem_list_ = in;
 }
 
 #endif // PHYSICS_LIST_H_
