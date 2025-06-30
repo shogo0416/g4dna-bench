@@ -35,6 +35,7 @@ import matplotlib.ticker as ptick
 from matplotlib.backends.backend_pdf import PdfPages
 import math
 import os
+import numpy as np
 
 OUTPUT_FILENAME= "compgval.pdf"
 
@@ -44,8 +45,8 @@ INPUTS = [
 ]
 
 LABELS = [
-    "reference",
-    "target",
+    "SBS",
+    "IRT",
 ]
 
 XAXIS_LOG_SCALE = True
@@ -54,31 +55,31 @@ XAXIS_LOG_SCALE = True
 LINESTYLE = ["solid", "dashed", "dashdot", "dotted"]
 
 TITLE = {
-    "e_aq": "$\mathrm{e}_{\mathrm{aq}}^{-}$",
-    "H3Op": "$\mathrm{H}_3\mathrm{O}^{+}$",
-    "OH"  : "$^{\cdot}\mathrm{OH}$",
-    "OHm" : "$\mathrm{OH}^{-}$",
-    "H2"  : "$\mathrm{H}_2$",
-    "H2O2": "$\mathrm{H}_2\mathrm{O}_2$",
-    "H"   : "$\mathrm{H}^{\cdot}$",
-    "O"   : "$\mathrm{O(3P)}$",
-    "Om"  : "$\mathrm{O}^{\cdot-}$",
-    "O2"  : "$\mathrm{O}_2$",
-    "O2m" : "$\mathrm{O}_2^{-}$",
-    "O3"  : "$\mathrm{O}_3$",
-    "O3m" : "$\mathrm{O}_3^{-}$",
-    "HO2" : "$\mathrm{HO}_2^{\cdot}$",
-    "HO2m": "$\mathrm{HO}_2^{\cdot-}$"
+    "e_aq": r"$\mathrm{e}_{\mathrm{aq}}^{-}$",
+    "H3Op": r"$\mathrm{H}_3\mathrm{O}^{+}$",
+    "OH"  : r"$^{\cdot}\mathrm{OH}$",
+    "OHm" : r"$\mathrm{OH}^{-}$",
+    "H2"  : r"$\mathrm{H}_2$",
+    "H2O2": r"$\mathrm{H}_2\mathrm{O}_2$",
+    "H"   : r"$\mathrm{H}^{\cdot}$",
+    "O"   : r"$\mathrm{O(3P)}$",
+    "Om"  : r"$\mathrm{O}^{\cdot-}$",
+    "O2"  : r"$\mathrm{O}_2$",
+    "O2m" : r"$\mathrm{O}_2^{-}$",
+    "O3"  : r"$\mathrm{O}_3$",
+    "O3m" : r"$\mathrm{O}_3^{-}$",
+    "HO2" : r"$\mathrm{HO}_2^{\cdot}$",
+    "HO2m": r"$\mathrm{HO}_2^{\cdot-}$"
 }
 
-FIG_SIZE_X = 8
-FIG_SIZE_Y = 5
+FIG_SIZE_X = 6
+FIG_SIZE_Y = 4
 DPI = 60
 FONT_SIZE = 14
 LINE_WIDTH = 3.0
 
 XLABEL = "Time (ps)"
-YLABEL = "G-value"
+YLABEL = "G value (#molecules / 100 eV)"
 
 XTICKS = []
 
@@ -124,15 +125,21 @@ def plot(kind, title, dfs, pdf):
     if XAXIS_LOG_SCALE:
         ax.set_xticks(XTICKS)
 
-    ax.xaxis.grid(True, which = "major", linestyle = "dotted")
-    ax.yaxis.grid(True, which = "major", linestyle = "dotted")
+    ax.set_xlim(1.0, 1.0E+06)
+    ax.tick_params(axis='both', which='major', labelsize=FONT_SIZE,
+                   top=True, right=True, direction='in')
+    ax.tick_params(axis='both', which='minor',
+                   top=True, right=True, direction='in')
+    ax.xaxis.grid(True, which = "major", linestyle = "dotted", color="black")
+    ax.yaxis.grid(True, which = "major", linestyle = "dotted", color="black")
 
     ax.yaxis.set_major_formatter(ptick.ScalarFormatter(useMathText=True))
     ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
-
-
-
     ax.minorticks_on()
+
+    pos = ax.get_position()
+    ax.set_position([0.15, 0.15, pos.width * 0.95, pos.height * 0.95])
+
     pdf.savefig()
 
 #===============================================================================
@@ -148,9 +155,9 @@ def main(show_pdf):
     # setup for xlabel
     score_time = dfs[num - 1]["time"]
     num_node   = len(score_time)
-    start_time = score_time[0]
-    end_time   = score_time[num_node - 1]
-    for x in range(int(math.log10(start_time)), int(math.log10(end_time)) + 1):
+    log10_start_time = math.log10(score_time[0])
+    log10_end_time   = np.ceil(math.log10(score_time[num_node - 1]))
+    for x in range(int(log10_start_time), int(log10_end_time) + 1):
         XTICKS.append(pow(10.0, x))
 
     # make plots
