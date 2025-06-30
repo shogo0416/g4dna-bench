@@ -50,6 +50,8 @@ target_sources(${APP_NAME} PRIVATE
   ${PROJECT_SOURCE_DIR}/codes/stopwatch.cc
   ${PROJECT_SOURCE_DIR}/codes/timehistory.cc
   ${PROJECT_SOURCE_DIR}/codes/time_step_action.cc
+  ${PROJECT_SOURCE_DIR}/codes/dna_chemistry.cc
+  ${PROJECT_SOURCE_DIR}/codes/dna_dissociation_channel.cc
 )
 
 target_include_directories(${APP_NAME} PRIVATE
