@@ -403,6 +403,7 @@ void DNADissociationChannel::ConstructDissociationChannels(
   water->AddDecayChannel("SingleIonisation1",
       new G4MolecularDissociationChannel(*decCh1));
 
+#if G4VERSION_NUMBER >= 1130
   //////////////////////////////////////////////////////////////////////////////
   // DOUBLE-IONISATION
   //////////////////////////////////////////////////////////////////////////////
@@ -1197,6 +1198,7 @@ void DNADissociationChannel::ConstructDissociationChannels(
   water->NewConfigurationWithElectronOccupancy("QuadrupleIonisation45", *occ);
   water->AddDecayChannel("QuadrupleIonisation45",
                          new G4MolecularDissociationChannel(*decCh1));
+#endif // G4VERSION_NUMBER >= 1130
 
   //////////////////////////////////////////////////////////////////////////////
   // Dissociative Attachment

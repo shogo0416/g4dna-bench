@@ -94,9 +94,11 @@ PhysicsList* PhysicsList::instance_ = nullptr;
 //------------------------------------------------------------------------------
 PhysicsList::PhysicsList()
     : G4VModularPhysicsList(),
+#if G4VERSION_NUMBER >= 1130
+      enable_mioni_(false),
+#endif
       phys_list_(nullptr),
-      chem_list_(nullptr),
-      enable_mioni_(false)
+      chem_list_(nullptr)
 {
   auto* ptab = G4ProductionCutsTable::GetProductionCutsTable();
   ptab->SetEnergyRange(100.0 * eV, 1.0 * GeV);

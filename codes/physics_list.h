@@ -84,10 +84,12 @@ inline G4VPhysicsConstructor* PhysicsList::GetChemistry()
 }
 
 //------------------------------------------------------------------------------
+#if G4VERSION_NUMBER >= 1130
 inline void PhysicsList::EnableMultipleIonisation(bool in)
 {
   enable_mioni_ = in;
 }
+#endif
 
 //------------------------------------------------------------------------------
 inline void PhysicsList::SetChemistry(G4VPhysicsConstructor* in)
