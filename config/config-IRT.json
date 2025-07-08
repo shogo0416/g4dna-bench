@@ -1,0 +1,35 @@
+{
+  "random_seed"     : 123456789,
+  "event_number"    : 10000,
+  "thread_number"   : 32,
+  "cpu_affinity"    : false,
+  "beam_particle"   : "e-",
+  "beam_ion_Z"      : 0,
+  "beam_ion_A"      : 0,
+  "beam_energy"     : 750.0,
+  "beam_source_pos" : [0.0, 0.0, 0.0],
+  "beam_direction"  : [0.0, 0.0, 1.0],
+  "target_size"     : [20.0, 20.0, 20.0],
+  "physics_configs" : {
+    "physics_option"           : "G4EmDNAPhysics_option8",
+    "electron_solvation_model" : "Meesungnoen2002",
+    "use_multiple_ionisation"  : false,
+    "primary_removal_configs"  : {
+      "enabled"     : true,
+      "kill_energy" : [75.0, 75.1]
+    }
+  },
+  "chemistry_configs": {
+    "chemistry_option" : "G4EmDNAChemistry_option3",
+    "time_step_model"  : "IRT",
+    "use_alternative_B1A1_decay"   : false,
+    "use_alternative_decay_vibH2O" : false,
+    "use_g4_molecule_counter"      : true,
+    "simulation_end_time"          : 1.0E+06
+  },
+  "check_boundary"        : false,
+  "output_gval"           : "result_gval.csv",
+  "benchmark_file"        : "benchmark.json",
+  "benchmark_for_threads" : false,
+  "term_frequency"        : 1000
+}
