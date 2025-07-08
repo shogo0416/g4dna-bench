@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2022 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2025 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -36,16 +36,28 @@
 #include "G4Threading.hh"
 #include "G4Molecule.hh"
 #include "G4Version.hh"
+#if G4VERSION_NUMBER >= 1100
+#include "G4LowEnergyEmProcessSubType.hh"
+#endif
 
 namespace {
 
-constexpr bool prestep = true;
+constexpr bool kPreStep = true;
+constexpr int  kElectronPDGID = 11;
+
+#if G4VERSION_NUMBER >= 1100
+constexpr int kChargeDecrease = fLowEnergyChargeDecrease;
+constexpr int kChargeIncrease = fLowEnergyChargeIncrease;
+#else
+constexpr int kChargeDecrease = 56;
+constexpr int kChargeIncrease = 57;
+#endif
 
 //------------------------------------------------------------------------------
 int find_lower_bound(const std::vector<TimeStepInfo>& info, double x)
 {
-  int low = 0;
-  int upp = info.size();
+  auto low = 0;
+  auto upp = info.size();
   while (low <= upp) {
     int mid_bin = (low + upp) * 0.5;
     if (x < info[mid_bin].sim_time) { upp = mid_bin - 1; }
@@ -58,14 +70,14 @@ int find_lower_bound(const std::vector<TimeStepInfo>& info, double x)
 //------------------------------------------------------------------------------
 int interpolate(double t, double t1, double t2, int n1, int n2)
 {
-  int diff = n2 - n1;
+  auto diff = n2 - n1;
   if (diff == 0) { return n1; }
 
-  double a = (double)(diff) / (log10(t2) - log10(t1));
-  double b = (double)(n2) - a * log10(t2);
-  double val = round(a * log10(t) + b);
+  auto a = static_cast<double>(diff) / (log10(t2) - log10(t1));
+  auto b = static_cast<double>(n2) - a * log10(t2);
+  auto val = round(a * log10(t) + b);
 
-  return (int)(val);
+  return static_cast<int>(val);
 }
 
 } // end of anonymous namespace
@@ -73,8 +85,10 @@ int interpolate(double t, double t1, double t2, int n1, int n2)
 //==============================================================================
 
 MoleculeCounter::MoleculeCounter(G4String name, G4int depth)
-    : G4VPrimitiveScorer(name, depth)
-
+    : G4VPrimitiveScorer(name, depth),
+      edep_{0.0},
+      accum_steplen_{0.0},
+      accum_ekin_{0.0}
 {
   simdata_ = SimData::GetInstance();
 }
@@ -82,14 +96,43 @@ MoleculeCounter::MoleculeCounter(G4String name, G4int depth)
 //------------------------------------------------------------------------------
 G4bool MoleculeCounter::ProcessHits(G4Step* step, G4TouchableHistory*)
 {
-#ifdef G4MULTITHREADED
-  int id = G4Threading::G4GetThreadId();
-#else
-  constexpr int id = 0;
-#endif
-
   double edep = step->GetTotalEnergyDeposit();
-  if (edep > 0.0) { simdata_->AccumulateEdep(id, edep); }
+  if (edep > 0.0) { edep_ += edep; }
+
+  const auto track = step->GetTrack();
+
+  const bool is_primary = (step->GetTrack()->GetTrackID() == 1);
+
+  // stop process for secondary particles
+  if (!is_primary) {
+    // skip electrons
+    if (track->GetParticleDefinition()->GetPDGEncoding() == ::kElectronPDGID) {
+      return false;
+    }
+    // skip particles generated through processes other than
+    // "charge change" processes
+    const auto sub_type = track->GetCreatorProcess()->GetProcessSubType();
+    if (sub_type != ::kChargeDecrease && sub_type != ::kChargeIncrease) {
+      return false;
+    }
+  }
+
+  accum_ekin_ += edep;
+  accum_steplen_ += step->GetStepLength();
+
+  const auto sub_type
+    = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessSubType();
+
+  // skip "charge change" processes
+  if (sub_type == ::kChargeDecrease || sub_type == ::kChargeIncrease) {
+    return true;
+  }
+
+  const auto secondary = step->GetSecondaryInCurrentStep();
+  const int num = (*secondary).size();
+  for (int i = 0; i < num; i++) {
+    accum_ekin_ += (*secondary)[i]->GetKineticEnergy();
+  }
 
   return true;
 }
@@ -116,8 +159,12 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
     return;
   }
 
+  // ===========================================================================
+  //  Store G-values for each molecular species
+  // ===========================================================================
+
   static auto score_time = simdata_->GetScoreTime();
-  double edep_factor = 100.0 / (simdata_->GetEdep(id) / eV);
+  double edep_factor = 100.0 / (edep_ / eV);
 
   auto* counter = G4MoleculeCounter::Instance();
 #if G4VERSION_NUMBER >= 1110
@@ -135,9 +182,13 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
       return;
     }
 
+    const auto H3OpB = G4MoleculeTable::Instance()->GetConfiguration("H3Op(B)");
+    const auto OHmB  = G4MoleculeTable::Instance()->GetConfiguration("OHm(B)");
+
     for (auto mol : *species) {
 
-      std::string name = mol->GetName();
+      const std::string name = mol->GetName();
+      if (mol == H3OpB || mol == OHmB) { continue; }
 
       int tid = 0;
       for (auto t : score_time) {
@@ -180,8 +231,14 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
 
   }
 
+  // ===========================================================================
+  //  Store energy deposit and LET
+  // ===========================================================================
+  auto LET = (accum_ekin_ / keV) / (accum_steplen_ / um);
+  simdata_->PushLETInfo(id, std::make_pair(edep_ / eV, LET));
+
   // number of species generated at 1 ps vs process time for the chemistry stage
-  auto tsi = simdata_->GetTimeStepInfo(id, ::prestep);
+  auto tsi = simdata_->GetTimeStepInfo(id, ::kPreStep);
   auto etc = simdata_->GetElapTimeChem()[id];
   ChemInfo ci = {etc, tsi[0].species};
   simdata_->PushChemInfo(id, ci);
@@ -199,7 +256,10 @@ void MoleculeCounter::clear()
 #else
   constexpr int id = 0;
 #endif
-  simdata_->ResetEdep(id);
+
+  edep_ = 0.0;
+  accum_steplen_ = 0.0;
+  accum_ekin_ = 0.0;
 
   auto* counter = G4MoleculeCounter::Instance();
 #if G4VERSION_NUMBER >= 1110
@@ -213,7 +273,7 @@ void MoleculeCounter::clear()
   } else {
     simdata_->ClearTimeStepInfo(id);
   }
-  simdata_->ClearTimeStepInfo(id, ::prestep);
+  simdata_->ClearTimeStepInfo(id, ::kPreStep);
 }
 
 //------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2022 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2025 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,11 @@ struct ChemInfo {
 };
 
 //==============================================================================
+// first element:  energy deposit in eV
+// second element: LET in keV/um
+using LETInfo = std::pair<double, double>;
+
+//==============================================================================
 
 class SimData {
 public:
@@ -59,15 +64,13 @@ public:
 
   void Setup();
   void SetThreadNumber(int in);
+  void SetEndTime(double in);
 
   std::vector<double>& GetScoreTime();
 
-  void SetFileName(const std::string& fname);
+  void SetGValueFileName(const std::string& fname);
+  void SetLETFileName(const std::string& fname);
   void SetBenchmarkFileName(const std::string& fname);
-
-  void AccumulateEdep(int id, double edep);
-  void ResetEdep(int id);
-  double GetEdep(int id) const;
 
   void GValue(int id, int tid, const std::string& name, double gval);
   double GetGValue(int id, int tid, const std::string& name);
@@ -101,6 +104,12 @@ public:
   void PushChemInfo(int id, const ChemInfo& info);
   std::vector<ChemInfo>& GetChemInfo(int id);
 
+  void PushLETInfo(int id, const LETInfo& info);
+  std::vector<LETInfo>& GetLETInfo(int id);
+
+  void CountProcessedEvent(int id);
+  void CheckProcessedEventNumber();
+
 private:
   SimData();
   static SimData* instance_;
@@ -108,18 +117,21 @@ private:
   void Merge();
 
   std::string fname_gval_;
+  std::string fname_LET_;
   std::string fname_bench_;
 
   int num_thread_;
+  double end_time_;
   std::vector<double> score_time_;
 
-  std::vector<double> edep_buff_;
   std::vector<std::vector<double> > gval_buff_;
 
   std::vector<std::vector<TimeStepInfo> > tsi_buff_pre_;
   std::vector<std::vector<TimeStepInfo> > tsi_buff_;
 
   std::vector<std::vector<ChemInfo> > ci_buff_;
+
+  std::vector<std::vector<LETInfo> > LET_buff_;
 
   std::vector<int> num_abort_event_;
   std::vector<int> num_chem_event_;
@@ -139,12 +151,22 @@ private:
   std::vector<int> num_chem_step_;
 
   nlohmann::ordered_json js_;
+
+  std::vector<int> num_processed_event_;
+
+  int tot_num_event_processed_;
 };
 
 //==============================================================================
-inline void SimData::SetFileName(const std::string& fname)
+inline void SimData::SetGValueFileName(const std::string& fname)
 {
   fname_gval_ = fname;
+}
+
+//------------------------------------------------------------------------------
+inline void SimData::SetLETFileName(const std::string& fname)
+{
+  fname_LET_ = fname;
 }
 
 //------------------------------------------------------------------------------
@@ -166,21 +188,9 @@ inline void SimData::SetThreadNumber(int in)
 }
 
 //------------------------------------------------------------------------------
-inline void SimData::AccumulateEdep(int id, double edep)
+inline void SimData::SetEndTime(double in)
 {
-  edep_buff_[id] += edep;
-}
-
-//------------------------------------------------------------------------------
-inline void SimData::ResetEdep(int id)
-{
-  edep_buff_[id] = 0;
-}
-
-//------------------------------------------------------------------------------
-inline double SimData::GetEdep(int id) const
-{
-  return edep_buff_[id];
+  end_time_ = in;
 }
 
 //------------------------------------------------------------------------------
@@ -301,6 +311,33 @@ inline void SimData::PushChemInfo(int id, const ChemInfo& info)
 inline std::vector<ChemInfo>& SimData::GetChemInfo(int id)
 {
   return ci_buff_[id];
+}
+
+//------------------------------------------------------------------------------
+inline void SimData::PushLETInfo(int id, const LETInfo& info)
+{
+  LET_buff_[id].push_back(info);
+}
+
+//------------------------------------------------------------------------------
+inline std::vector<LETInfo>& SimData::GetLETInfo(int id)
+{
+  return LET_buff_[id];
+}
+
+//------------------------------------------------------------------------------
+inline void SimData::CountProcessedEvent(int id)
+{
+  num_processed_event_[id]++;
+}
+
+//------------------------------------------------------------------------------
+inline void SimData::CheckProcessedEventNumber()
+{
+  tot_num_event_processed_ = std::reduce(num_processed_event_.begin(),
+                                         num_processed_event_.end());
+  std::cout << "[MESSAGE] event-loop check point: "
+            << tot_num_event_processed_ << " events processed." << std::endl;
 }
 
 #endif // SIMDATA_H_

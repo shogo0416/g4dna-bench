@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2022 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2025 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -47,26 +47,11 @@
 
 namespace {
 
-#if defined(__clang__)
-
-const int num_time_bin   = 60;
-const int num_time_point = num_time_bin + 1;
-const double low_tlim    = 1.0 * picosecond;
-const double upp_tlim    = 999999.0 * picosecond;
-const double bin_width   = log10(upp_tlim / low_tlim) / num_time_bin;
-
-#else
-
-constexpr int num_time_bin   = 60;
-constexpr int num_time_point = num_time_bin + 1;
-constexpr double low_tlim    = 1.0 * picosecond;
-constexpr double upp_tlim    = 999999.0 * picosecond;
-constexpr double bin_width   = log10(upp_tlim / low_tlim) / num_time_bin;
-
-#endif
-
-static int num_mole_kind;
-static int matrix_size;
+int num_node;
+int num_mole_kind;
+int matrix_size;
+constexpr int kNumTimeBinPerOrderOfMagnitude = 10;
+constexpr double kTimeLowLim = 1.0 * picosecond;
 
 #if G4VERSION_NUMBER >= 1070
 
@@ -252,6 +237,7 @@ SimData* SimData::instance_ = nullptr;
 SimData::SimData()
 {
   fname_gval_  = "result_gval.csv";
+  fname_LET_   = "result_LET.csv";
   fname_bench_ = "benchmark.json";
   num_thread_ = 1;
   result_each_thread_ = false;
@@ -269,16 +255,25 @@ SimData* SimData::GetInstance()
 //------------------------------------------------------------------------------
 void SimData::Setup()
 {
-  score_time_.resize(::num_time_point);
+  const auto time_upplim = end_time_ - ::kTimeLowLim;
+  const auto num_bin = ::kNumTimeBinPerOrderOfMagnitude
+    * static_cast<int>(log10(round(time_upplim) / ::kTimeLowLim));
+  const auto bin_width = log10(time_upplim / ::kTimeLowLim) / num_bin;
+  ::num_node = num_bin + 1;
+
+  score_time_.resize(::num_node);
+
   double exponent{0.0};
-  for (int i = 0; i < ::num_time_point; i++) {
-    if (i == 0) { exponent = log10(::low_tlim); }
-    else { exponent += ::bin_width; }
+  for (int i = 0; i < ::num_node; i++) {
+    if (i == 0) { exponent = log10(::kTimeLowLim); }
+    else { exponent += bin_width; }
     double t = pow(10.0, exponent);
     score_time_[i] = t;
   }
 
   auto miterator = G4MoleculeTable::Instance()->GetConfigurationIterator();
+  const auto H3OpB = G4MoleculeTable::Instance()->GetConfiguration("H3Op(B)");
+  const auto OHmB  = G4MoleculeTable::Instance()->GetConfiguration("OHm(B)");
 
   int counter{0};
   while ((miterator)()) {
@@ -288,6 +283,10 @@ void SimData::Setup()
     if (::check_molecule_type(mconf)) { continue; }
 
     auto name = mconf->GetName();
+    if (mconf == H3OpB || mconf == OHmB) {
+      std::cout << ">> " << name << std::endl;
+    }
+
     if (mole_map_.count(name)) { continue; }
 
     mole_map_.insert(std::pair<std::string, int>(name, counter));
@@ -296,9 +295,8 @@ void SimData::Setup()
   }
 
   ::num_mole_kind = counter;
-  ::matrix_size = ::num_mole_kind * num_time_point;
+  ::matrix_size = ::num_mole_kind * ::num_node;
 
-  edep_buff_.resize(num_thread_, 0.0);
   gval_buff_.resize(num_thread_);
 
   for (int i = 0; i < num_thread_; i++) {
@@ -309,6 +307,8 @@ void SimData::Setup()
   tsi_buff_.resize(num_thread_);
 
   ci_buff_.resize(num_thread_);
+
+  LET_buff_.resize(num_thread_);
 
   header_.resize(::num_mole_kind + 1);
   header_[0] = "Time(ps)";
@@ -447,6 +447,23 @@ void SimData::SaveSimulationResult(int id)
   // ===========================================================================
   //  save energy deposit and LET for each event
   // ===========================================================================
+  if (id < 0) {
+
+    ss.str(""); // clear
+    ss << "EnergyDeposit(eV),LET(keV/um)" << std::endl;
+
+    for (i = 0; i < num_thread_; i++) {
+      const auto& buff = GetLETInfo(i);
+      for (const auto& x : buff) {
+        ss << x.first << "," << x.second << std::endl;
+      }
+    }
+
+    fout.open(fname_LET_);
+    fout << ss.str();
+    fout.close();
+
+  }
 
 }
 
@@ -530,14 +547,14 @@ void SimData::SaveBenchmarkResult()
   double elap_time = timer->GetTime("RunEnd") - timer->GetTime("RunOn");
   double throughput = double(num_event) / elap_time * 60.0;
 
-  double gval_OH[2] = { GetGValue(0, 0, "OH^0"),
-                        GetGValue(0, num_time_point - 1, "OH^0") };
+  double gval_OH[2]   = { GetGValue(0, 0, "OH^0"),
+                          GetGValue(0, ::num_node - 1, "OH^0") };
 
-  double gval_eaq[2] = { GetGValue(0, 0, "e_aq^-1"),
-                         GetGValue(0, num_time_point - 1, "e_aq^-1") };
+  double gval_eaq[2]  = { GetGValue(0, 0, "e_aq^-1"),
+                          GetGValue(0, ::num_node - 1, "e_aq^-1") };
 
   double gval_H2O2[2] = { GetGValue(0, 0, "H2O2^0"),
-                          GetGValue(0, num_time_point - 1, "H2O2^0") };
+                          GetGValue(0, ::num_node - 1, "H2O2^0") };
 
   std::stringstream msg;
 

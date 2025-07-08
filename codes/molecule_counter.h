@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2022 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2025 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,10 @@ public:
 
 private:
   SimData* simdata_;
+
+  double edep_;
+  double accum_steplen_;
+  double accum_ekin_;
 
 protected:
   virtual G4bool ProcessHits(G4Step*, G4TouchableHistory*);

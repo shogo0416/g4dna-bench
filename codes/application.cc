@@ -332,7 +332,9 @@ void Application::Setup()
   // ---------------------------------------------------------------------------
   // setup output file name
   auto sd = SimData::GetInstance();
-  sd->SetFileName(::js["output_gval"]);
+  sd->SetEndTime(::end_time);
+  sd->SetGValueFileName(::js["output_gval"]);
+  sd->SetLETFileName(::js["output_LET"]);
   sd->SetBenchmarkFileName(::js["benchmark_file"]);
   sd->SetThreadNumber(num_thread_);
   sd->RecordBenchmarkScoreForThreads(::js["benchmark_for_threads"]);
