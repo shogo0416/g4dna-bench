@@ -211,20 +211,22 @@ void print_chemical_reaction()
 //------------------------------------------------------------------------------
 bool check_molecule_type(const G4MolecularConfiguration* mconf)
 {
-  bool skip = false;
   const G4MoleculeDefinition* part = mconf->GetDefinition();
-
-  if (part == G4H2O::Definition()) { skip = true; }
+  if (part == G4H2O::Definition()) { return true; }
 
 #if G4VERSION_NUMBER >= 1070
-  if (part == G4FakeMolecule::Definition()) { skip = true; }
+  if (part == G4FakeMolecule::Definition()) { return true; }
 #endif
+
+  static auto H3OpB = G4MoleculeTable::Instance()->GetConfiguration("H3Op(B)");
+  static auto OHmB  = G4MoleculeTable::Instance()->GetConfiguration("OHm(B)");
+  if (mconf == H3OpB || mconf == OHmB) { return true; }
 
 #if G4VERSION_NUMBER >= 1130
-  if (mconf->GetName() == "O^0") { skip = true; }
+  if (mconf->GetName() == "O^0") { return true; }
 #endif
 
-  return skip;
+  return false;
 }
 
 } // end of anonymous namespace
@@ -272,8 +274,6 @@ void SimData::Setup()
   }
 
   auto miterator = G4MoleculeTable::Instance()->GetConfigurationIterator();
-  const auto H3OpB = G4MoleculeTable::Instance()->GetConfiguration("H3Op(B)");
-  const auto OHmB  = G4MoleculeTable::Instance()->GetConfiguration("OHm(B)");
 
   int counter{0};
   while ((miterator)()) {
@@ -283,10 +283,6 @@ void SimData::Setup()
     if (::check_molecule_type(mconf)) { continue; }
 
     auto name = mconf->GetName();
-    if (mconf == H3OpB || mconf == OHmB) {
-      std::cout << ">> " << name << std::endl;
-    }
-
     if (mole_map_.count(name)) { continue; }
 
     mole_map_.insert(std::pair<std::string, int>(name, counter));

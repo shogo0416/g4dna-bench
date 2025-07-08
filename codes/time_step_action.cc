@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2022 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2025 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,8 @@
 #include "G4MoleculeCounter.hh"
 #include "G4Step.hh"
 #include "G4Version.hh"
+#include "G4MoleculeTable.hh"
+#include "G4MolecularConfiguration.hh"
 
 //------------------------------------------------------------------------------
 TimeStepAction::TimeStepAction()
@@ -121,13 +123,22 @@ void TimeStepAction::Reset()
 //------------------------------------------------------------------------------
 void TimeStepAction::Count(G4Track* trk)
 {
-
   if (!CheckInVolume(trk)) {
     trk->SetTrackStatus(fStopAndKill);
     return;
   }
 
-  std::string name = GetMolecule(trk)->GetName();
+  auto check_molecule = [](const G4MolecularConfiguration* mconf) {
+    static auto H3OpB = G4MoleculeTable::Instance()->GetConfiguration("H3Op(B)");
+    static auto OHmB  = G4MoleculeTable::Instance()->GetConfiguration("OHm(B)");
+    if (mconf == H3OpB || mconf == OHmB) { return true; }
+    return false;
+  };
+
+  const auto mconf = GetMolecule(trk)->GetMolecularConfiguration();
+  if (check_molecule(mconf)) { return; }
+
+  const auto name = mconf->GetName();
   auto x = mcounter_.find(name);
   if (x != mcounter_.end()) {
     mcounter_[name] += 1;

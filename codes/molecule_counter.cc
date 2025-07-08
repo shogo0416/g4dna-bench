@@ -173,6 +173,13 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
   auto inuse = G4MoleculeCounter::InUse();
 #endif
 
+  auto check_molecule = [](const G4MolecularConfiguration* mconf) {
+    static auto H3OpB = G4MoleculeTable::Instance()->GetConfiguration("H3Op(B)");
+    static auto OHmB  = G4MoleculeTable::Instance()->GetConfiguration("OHm(B)");
+    if (mconf == H3OpB || mconf == OHmB) { return true; }
+    return false;
+  };
+
   if (inuse) {
 
     auto species = counter->GetRecordedMolecules();
@@ -182,14 +189,9 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
       return;
     }
 
-    const auto H3OpB = G4MoleculeTable::Instance()->GetConfiguration("H3Op(B)");
-    const auto OHmB  = G4MoleculeTable::Instance()->GetConfiguration("OHm(B)");
-
     for (auto mol : *species) {
-
+      if (check_molecule(mol)) { continue; }
       const std::string name = mol->GetName();
-      if (mol == H3OpB || mol == OHmB) { continue; }
-
       int tid = 0;
       for (auto t : score_time) {
         int nmol = counter->GetNMoleculesAtTime(mol, t);
