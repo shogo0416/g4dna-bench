@@ -254,7 +254,7 @@ def make_gvalue_plot(df, pdfname='gval.pdf', negative=False):
 def main(score_time):
 
     m = MakeDataFrameFromCSV()
-    m.input_files(glob.glob("./result*.csv"))
+    m.input_files(glob.glob("./result_gval*.csv"))
     m.make_data_frame()
 
     # save G-value time profile for each molecular species as a PDF file
