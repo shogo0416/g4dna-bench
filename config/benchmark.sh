@@ -76,9 +76,10 @@ cat << EOF > ${config_file}
   },
   "check_boundary"        : false,
   "output_gval"           : "$3",
-  "benchmark_file"        : "$4",
+  "output_LET"            : "$4",
+  "benchmark_file"        : "$5",
   "benchmark_for_threads" : false,
-  "term_frequency"        : $5
+  "term_frequency"        : $6
 }
 EOF
 }
@@ -161,12 +162,13 @@ for it in ${threads[@]}; do
     event_num=$((it * base_event))
   fi
 
-  output_file="result_gval_${it}mt.csv"
+  output_gval="result_gval_${it}mt.csv"
+  output_LET="result_LET_${it}mt.csv"
   benchmark_file="benchmark_${it}mt.json"
   term_freq=$((event_num / 10))
 
   # make a configuration file
-  make_config_file ${event_num} ${it} ${output_file} ${benchmark_file} ${term_freq}
+  make_config_file ${event_num} ${it} ${output_gval} ${output_LET} ${benchmark_file} ${term_freq}
 
   # set a simulation log file
   log_file="run_${it}mt.log"
@@ -186,7 +188,7 @@ for it in ${threads[@]}; do
   echo -e "\n[MT${it}] ${command}"
   $command > $log_file
 
-  if [ -f $output_file ]; then
+  if [ -f $output_gval ]; then
     echo "--> Succeeded to run the simulation"
 
     # make a directory to store simulation results
@@ -210,7 +212,7 @@ for it in ${threads[@]}; do
     fi
 
     #put simulation results to the directory
-    outputs=(${output_file} ${benchmark_file} ${log_file} ${config_file})
+    outputs=(${output_gval} ${output_LET} ${benchmark_file} ${log_file} ${config_file})
     for x in ${outputs[@]}
     do
       if [ -f $x ]; then
