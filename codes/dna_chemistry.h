@@ -28,22 +28,67 @@
 #ifndef DNA_CHEMISTRY_H_
 #define DNA_CHEMISTRY_H_
 
+#include "G4EmDNAChemistry.hh"
+#include "G4EmDNAChemistry_option1.hh"
+#include "G4EmDNAChemistry_option2.hh"
 #include "G4EmDNAChemistry_option3.hh"
 
-//------------------------------------------------------------------------------
-class DNAChemistry {
+//==============================================================================
+class DNABaseChemistry {
 public:
-  DNAChemistry() = default;
-  ~DNAChemistry() = default;
+  DNABaseChemistry()
+    : use_alt_B1A1_decay_{false},
+      use_alt_decay_vibH2O_{false} {}
+  ~DNABaseChemistry() = default;
+  void UseAltB1A1Decay(bool in);
+  void UseAltDecayVibH2O(bool in);
+protected:
+  bool use_alt_B1A1_decay_;
+  bool use_alt_decay_vibH2O_;
 };
 
 //------------------------------------------------------------------------------
-class DNAChemistryOpt3 : public DNAChemistry,
+inline void DNABaseChemistry::UseAltB1A1Decay(bool in)
+{
+  use_alt_B1A1_decay_ = in;
+}
+
+//------------------------------------------------------------------------------
+inline void DNABaseChemistry::UseAltDecayVibH2O(bool in)
+{
+  use_alt_decay_vibH2O_ = in;
+}
+
+//==============================================================================
+class DNAChemistry : public DNABaseChemistry,
+                     public G4EmDNAChemistry {
+public:
+  using G4EmDNAChemistry::G4EmDNAChemistry;
+  void ConstructDissociationChannels() override;
+};
+
+//==============================================================================
+class DNAChemistryOpt1 : public DNABaseChemistry,
+                         public G4EmDNAChemistry_option1 {
+public:
+  using G4EmDNAChemistry_option1::G4EmDNAChemistry_option1;
+  void ConstructDissociationChannels() override;
+};
+
+//==============================================================================
+class DNAChemistryOpt2 : public DNABaseChemistry,
+                         public G4EmDNAChemistry_option2 {
+public:
+  using G4EmDNAChemistry_option2::G4EmDNAChemistry_option2;
+  void ConstructDissociationChannels() override;
+};
+
+//==============================================================================
+class DNAChemistryOpt3 : public DNABaseChemistry,
                          public G4EmDNAChemistry_option3 {
 public:
   using G4EmDNAChemistry_option3::G4EmDNAChemistry_option3;
   void ConstructDissociationChannels() override;
-  void ConstructProcess() override;
 };
 
 #endif // DNA_CHEMISTRY_H_

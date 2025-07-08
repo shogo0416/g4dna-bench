@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2024 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2025 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -35,10 +35,9 @@ public:
   // destructor
   ~DNADissociationChannel() = default;
 
-  static void ConstructMolecule();
   static void ConstructDissociationChannels(
-    bool alternative_B1A1_decay = false,
-    bool alternative_decay_vib_excited_H2O  = false);
+    bool alt_B1A1_decay = false,
+    bool alt_decay_vibH2O  = false);
 };
 
 #endif // DNA_DISSOCIATION_CHANNEL_H_

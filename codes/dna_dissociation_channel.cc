@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2024 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2025 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -26,103 +26,32 @@
   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ==============================================================================*/
 #include "dna_dissociation_channel.h"
-
+#include "G4Version.hh"
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
-
 #include "G4DNAWaterDissociationDisplacer.hh"
 #include "G4DNAWaterExcitationStructure.hh"
-
-#include "G4MolecularConfiguration.hh"
 #include "G4MoleculeTable.hh"
-#include "G4Molecule.hh"
 #include "G4H2O.hh"
-#include "G4H2.hh"
-#include "G4Hydrogen.hh"
-#include "G4OH.hh"
-#include "G4H3O.hh"
-#include "G4Electron_aq.hh"
-#include "G4H2O2.hh"
-#include "G4O2.hh"
-#include "G4O3.hh"
-#include "G4HO2.hh"
-#include "G4Oxygen.hh"
-
-//------------------------------------------------------------------------------
-void DNADissociationChannel::ConstructMolecule()
-{
-  // Create the definition
-  G4H2O::Definition();
-  G4Hydrogen::Definition();
-  G4H3O::Definition();
-  G4OH::Definition();
-  G4Electron_aq::Definition();
-  G4H2O2::Definition();
-  G4H2::Definition();
-  G4HO2::Definition();
-  G4Oxygen::Definition();
-  G4O2::Definition();
-  G4O3::Definition();
-
-  auto mtab = G4MoleculeTable::Instance();
-  // e_aq
-  mtab->CreateConfiguration("e_aq", G4Electron_aq::Definition());
-  // H3O+
-  mtab->CreateConfiguration("H3Op", G4H3O::Definition());
-  // *OH
-  mtab->CreateConfiguration("°OH", G4OH::Definition());
-  // OH-
-  mtab->CreateConfiguration("OHm", G4OH::Definition(), -1,
-                            5.0E-09 * (m2 / s));
-  mtab->GetConfiguration("OHm")->SetMass(17.0079 * g / Avogadro * c_squared);
-  // H2
-  mtab->CreateConfiguration("H2", G4H2::Definition());
-  // H2O2
-  mtab->CreateConfiguration("H2O2", G4H2O2::Definition());
-  // H*
-  mtab->CreateConfiguration("H", G4Hydrogen::Definition());
-  // O2
-  mtab->CreateConfiguration("O2", G4O2::Definition());
-  mtab->GetConfiguration("O2")->SetVanDerVaalsRadius(0.17 * nm);
-  // *O2-
-  mtab->CreateConfiguration("O2m", G4O2::Definition(), -1, 1.75E-09 * (m2 / s));
-  mtab->GetConfiguration("O2m")->SetMass(31.99602 * g / Avogadro * c_squared);
-  mtab->GetConfiguration("O2m")->SetVanDerVaalsRadius(0.22 * nm);
-  // *HO2
-  mtab->CreateConfiguration("HO2", G4HO2::Definition());
-  mtab->GetConfiguration("HO2")->SetVanDerVaalsRadius(0.21 * nm);
-  // HO2-
-  mtab->CreateConfiguration("HO2m", G4HO2::Definition(), -1,
-                            1.4E-09 * (m2 / s));
-  mtab->GetConfiguration("HO2m")->SetMass(33.00396 * g / Avogadro * c_squared);
-  mtab->GetConfiguration("HO2m")->SetVanDerVaalsRadius(0.25 * nm);
-  // O(3P)
-  mtab->CreateConfiguration("Oxy", G4Oxygen::Definition());
-  mtab->GetConfiguration("Oxy")->SetVanDerVaalsRadius(0.20 * nm);
-  // O*-
-  mtab->CreateConfiguration("Om", G4Oxygen::Definition(), -1,
-                            2.0E-09 * (m2 / s));
-  mtab->GetConfiguration("Om")->SetMass(15.99829 * g / Avogadro * c_squared);
-  mtab->GetConfiguration("Om")->SetVanDerVaalsRadius(0.25 * nm);
-  // H2O
-  mtab->CreateConfiguration("H2O", G4H2O::Definition());
-}
 
 //------------------------------------------------------------------------------
 void DNADissociationChannel::ConstructDissociationChannels(
-  bool alternative_B1A1_decay,
-  bool alternative_decay_vib_excited_H2O)
+  bool alt_B1A1_decay, bool alt_decay_vibH2O)
 {
   auto mtab = G4MoleculeTable::Instance();
 
   // Get the molecular configuration
-  auto OH   = mtab->GetConfiguration("°OH");
-  auto OHm  = mtab->GetConfiguration("OHm");
-  auto e_aq = mtab->GetConfiguration("e_aq");
-  auto H2   = mtab->GetConfiguration("H2");
-  auto H3O  = mtab->GetConfiguration("H3Op");
-  auto H    = mtab->GetConfiguration("H");
-  auto O3P  = mtab->GetConfiguration("Oxy");
+#if G4VERSION_NUMBER >= 1130
+  auto* OH   = mtab->GetConfiguration("°OH");
+#else
+  auto* OH   = mtab->GetConfiguration("OH");
+#endif
+  auto* OHm  = mtab->GetConfiguration("OHm");
+  auto* e_aq = mtab->GetConfiguration("e_aq");
+  auto* H2   = mtab->GetConfiguration("H2");
+  auto* H3O  = mtab->GetConfiguration("H3Op");
+  auto* H    = mtab->GetConfiguration("H");
+  auto* O3P  = mtab->GetConfiguration("Oxy");
 
   // Define the decay channels
   auto water = G4H2O::Definition();
@@ -169,7 +98,7 @@ void DNADissociationChannel::ConstructDissociationChannels(
   // ===========================================================================
   //  Excitation on the fourth layer
   // ===========================================================================
-  if (alternative_B1A1_decay) {
+  if (alt_B1A1_decay) {
 
     //
     // Reference: J.Meesungnoen et. al, DOI: 10.1021/jp058037z
@@ -1223,7 +1152,7 @@ void DNADissociationChannel::ConstructDissociationChannels(
   //////////////////////////////////////////////////////////////////////////////
   const auto pH2Ovib = G4H2O::Definition()->NewConfiguration("H2Ovib");
 
-  if (alternative_decay_vib_excited_H2O) {
+  if (alt_decay_vibH2O) {
 
     //
     // Reference: J.Meesungnoen et. al, DOI: 10.1021/jp058037z

@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2022 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2025 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,6 @@
   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ==============================================================================*/
 #include "physics_list.h"
-#include "dna_chemistry.h"
 
 #include "G4PhysicsConstructorRegistry.hh"
 #include "G4SystemOfUnits.hh"

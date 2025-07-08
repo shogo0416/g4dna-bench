@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2022 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2025 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -65,6 +65,8 @@
 namespace {
 
 nlohmann::ordered_json js;
+bool   use_g4mc; // true if use G4MoleculeCounter
+double end_time; // simulation end time for chemistry simulation
 
 //------------------------------------------------------------------------------
 void print_parameters()
@@ -159,8 +161,7 @@ void Application::BuildForMaster() const
 //------------------------------------------------------------------------------
 void Application::Build() const
 {
-  bool use = ::js["use_molecule_counter"];
-  if (use) {
+  if (::use_g4mc) {
 #if G4VERSION_NUMBER >= 1110
     G4MoleculeCounter::Instance()->Use();
 #else
@@ -206,7 +207,10 @@ void Application::Build() const
   bool check_boundary = ::js["check_boundary"];
   auto tsa = new TimeStepAction();
   tsa->CheckBoundary(check_boundary);
-  G4Scheduler::Instance()->SetUserAction(tsa);
+
+  auto* scheduler = G4Scheduler::Instance();
+  scheduler->SetUserAction(tsa);
+  scheduler->SetEndTime(::end_time);
 }
 
 //------------------------------------------------------------------------------
@@ -284,8 +288,8 @@ void Application::Setup()
 
 #if G4VERSION_NUMBER >= 1130
   // multiple ionisation processes
-  auto enable_mioni = physconfs.value("enable_multiple_ionisation", false);
-  plist->EnableMultipleIonisation(enable_mioni);
+  auto use_mioni = physconfs.value("use_multiple_ionisation", false);
+  plist->EnableMultipleIonisation(use_mioni);
 #endif
 
   // setup for primary removal
@@ -305,10 +309,24 @@ void Application::Setup()
   auto chemopt   = chemconfs.value("chemistry_option",
                                    "G4EmDNAChemistry_option3");
   plist->SetChemistry(chemopt);
+
+  ::use_g4mc = chemconfs.value("use_g4_molecule_counter", false);
+  ::end_time = chemconfs.value("simulation_end_time", 1.0E+06) * ps;
+
 #if G4VERSION_NUMBER >= 1130
+  auto* chemlist = plist->GetChemistry(chemopt);
+  if (chemlist) {
+    auto alt_B1A1_decay   = chemconfs.value("use_alternative_B1A1_decay",
+                                            false);
+    auto alt_decay_vibH2O = chemconfs.value("use_alternative_decay_vibH2O",
+                                            false);
+    chemlist->UseAltB1A1Decay(alt_B1A1_decay);
+    chemlist->UseAltDecayVibH2O(alt_decay_vibH2O);
+  }
   auto time_step_model = chemconfs.value("time_step_model", "IRT");
   plist->SetTimeStepModel(time_step_model);
 #endif
+
   run->SetUserInitialization(plist);
 
   // ---------------------------------------------------------------------------

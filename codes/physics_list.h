@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2022 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2025 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,7 @@
 #include "G4VModularPhysicsList.hh"
 #include "G4VUserChemistryList.hh"
 #include "G4Version.hh"
+#include "dna_chemistry.h"
 #include <string>
 
 class G4VPhysicsConstructor;
@@ -54,6 +55,7 @@ public:
 
   G4VPhysicsConstructor* GetPhysics();
   G4VPhysicsConstructor* GetChemistry();
+  DNABaseChemistry* GetChemistry(const std::string& name);
 
   void ConstructProcess();
   void ConstructParticle();
@@ -95,6 +97,25 @@ inline void PhysicsList::EnableMultipleIonisation(bool in)
 inline void PhysicsList::SetChemistry(G4VPhysicsConstructor* in)
 {
   chem_list_ = in;
+}
+
+//------------------------------------------------------------------------------
+inline DNABaseChemistry* PhysicsList::GetChemistry(const std::string& name)
+{
+  if (name == "DNAChemistry") {
+    auto* ptr = static_cast<DNAChemistry*>(GetChemistry());
+    return static_cast<DNABaseChemistry*>(ptr);
+  } else if (name == "DNAChemistryOpt1") {
+    auto* ptr = static_cast<DNAChemistryOpt1*>(GetChemistry());
+    return static_cast<DNABaseChemistry*>(ptr);
+  } else if (name == "DNAChemistryOpt2") {
+    auto* ptr = static_cast<DNAChemistryOpt2*>(GetChemistry());
+    return static_cast<DNABaseChemistry*>(ptr);
+  } else if (name == "DNAChemistryOpt3") {
+    auto* ptr = static_cast<DNAChemistryOpt3*>(GetChemistry());
+    return static_cast<DNABaseChemistry*>(ptr);
+  }
+  return nullptr;
 }
 
 #endif // PHYSICS_LIST_H_

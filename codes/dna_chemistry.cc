@@ -27,115 +27,37 @@
 ==============================================================================*/
 #include "dna_chemistry.h"
 #include "dna_dissociation_channel.h"
-
-#include "G4DNAElectronSolvation.hh"
-#include "G4DNAVibExcitation.hh"
-#include "G4DNASancheExcitationModel.hh"
-
-#include "G4Electron.hh"
-#include "G4MoleculeTable.hh"
-//#include "G4Molecule.hh"
-#include "G4H2O.hh"
-//#include "G4FakeMolecule.hh"
-
-#include "G4DNAWaterDissociationDisplacer.hh"
-#include "G4DNABrownianTransportation.hh"
-#include "G4DNAElectronHoleRecombination.hh"
-#include "G4DNAMolecularDissociation.hh"
-
 #include "G4PhysicsConstructorFactory.hh"
-#include "G4PhysicsListHelper.hh"
-#include "G4ProcessTable.hh"
 
-namespace {
+G4_DECLARE_PHYSCONSTR_FACTORY(DNAChemistry);
+G4_DECLARE_PHYSCONSTR_FACTORY(DNAChemistryOpt1);
+G4_DECLARE_PHYSCONSTR_FACTORY(DNAChemistryOpt2);
+G4_DECLARE_PHYSCONSTR_FACTORY(DNAChemistryOpt3);
 
-void ConstructProcess()
+//------------------------------------------------------------------------------
+void DNAChemistry::ConstructDissociationChannels()
 {
-  auto* ph = G4PhysicsListHelper::GetPhysicsListHelper();
-
-  //===============================================================
-  // Extend vibrational to low energy
-  // Anyway, solvation of electrons is taken into account from 7.4 eV
-  // So below this threshold, for now, no accurate modeling is done
-  //
-  G4VProcess* process{nullptr};
-
-  auto* ptab = G4ProcessTable::GetProcessTable();
-
-  process = ptab->FindProcess("e-_G4DNAVibExcitation", "e-");
-
-  if (process) {
-    auto* vibexc = static_cast<G4DNAVibExcitation*>(process);
-    auto* sanche = static_cast<G4DNASancheExcitationModel*>(vibexc->EmModel());
-    if (sanche) { sanche->ExtendLowEnergyLimit(0.025 * eV); }
-  }
-
-  //===============================================================
-  // *** Electron Solvatation ***
-  //
-  process = ptab->FindProcess("e-_G4DNAElectronSolvation", "e-");
-
-  if (!process) {
-    ph->RegisterProcess(new G4DNAElectronSolvation("e-_G4DNAElectronSolvation"),
-                        G4Electron::Definition());
-  }
-
-  //===============================================================
-  // Define processes for molecules
-  //
-  auto* mtab = G4MoleculeTable::Instance();
-
-  G4MoleculeDefinitionIterator iterator = mtab->GetDefintionIterator();
-  iterator.reset();
-
-  while (iterator()) {
-    G4MoleculeDefinition* mdef = iterator.value();
-
-    if (mdef != G4H2O::Definition()) {
-
-      //if (model_option_ == SBS) {
-      //  ph->RegisterProcess(new G4DNABrownianTransportation(), mdef);
-      //}
-
-    } else {
-
-      // electron hole recombination process
-      auto* pm = mdef->GetProcessManager();
-      pm->AddRestProcess(new G4DNAElectronHoleRecombination(), 2);
-
-      // dissociation processes for ionized- and excited water molecules
-      // at the physico-chemical stage
-      auto* decay = new G4DNAMolecularDissociation("H2O_DNAMolecularDecay");
-      decay->SetDisplacer(mdef,
-                          new G4DNAWaterDissociationDisplacer());
-      decay->SetVerboseLevel(1);
-      pm->AddRestProcess(decay, 1);
-
-    }
-    /*
-     * Warning : end of particles and processes are needed by
-     * EM Physics builders
-     */
-  }
-
-  G4DNAChemistryManager::Instance()->Initialize();
+  DNADissociationChannel::ConstructDissociationChannels(
+    use_alt_B1A1_decay_, use_alt_decay_vibH2O_);
 }
 
-} // end of anonymous namespace
-//==============================================================================
+//------------------------------------------------------------------------------
+void DNAChemistryOpt1::ConstructDissociationChannels()
+{
+  DNADissociationChannel::ConstructDissociationChannels(
+    use_alt_B1A1_decay_, use_alt_decay_vibH2O_);
+}
 
-G4_DECLARE_PHYSCONSTR_FACTORY(DNAChemistryOpt3);
+//------------------------------------------------------------------------------
+void DNAChemistryOpt2::ConstructDissociationChannels()
+{
+  DNADissociationChannel::ConstructDissociationChannels(
+    use_alt_B1A1_decay_, use_alt_decay_vibH2O_);
+}
 
 //------------------------------------------------------------------------------
 void DNAChemistryOpt3::ConstructDissociationChannels()
 {
-#if G4VERSION_NUMBER >= 1130
-  DNADissociationChannel::ConstructDissociationChannels(false, false);
-#endif
-}
-
-//------------------------------------------------------------------------------
-void DNAChemistryOpt3::ConstructProcess()
-{
-  ::ConstructProcess();
+  DNADissociationChannel::ConstructDissociationChannels(
+    use_alt_B1A1_decay_, use_alt_decay_vibH2O_);
 }
