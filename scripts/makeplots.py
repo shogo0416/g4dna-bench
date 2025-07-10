@@ -3,7 +3,7 @@
 ================================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2021-2023 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2021-2025 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -158,6 +158,72 @@ class MakeDataFrameFromCSV():
     def get_data_frame(self):
         return self.df
 
+#===============================================================================
+class LETData():
+
+    LET = []
+
+    #---------------------------------------------------------------------------
+    def __init__(self, filelist):
+        self._load(filelist)
+
+    #---------------------------------------------------------------------------
+    def _load(self, filelist):
+        for fname  in filelist:
+            with open(fname, encoding='utf8', newline='') as fin:
+                reader = csv.reader(fin)
+                next(reader) # skip the header of each file
+                for row in reader:
+                    self.LET.append(float(row[1]))
+        print("[MESSAGE] Avg. LET: %.5f keV/um" % np.average(self.LET))
+
+    #---------------------------------------------------------------------------
+    def get_LET(self):
+        return self.LET
+
+#-------------------------------------------------------------------------------
+def make_LET_plot(x, bins, fit=False, fitmodel='Gauss', range=None):
+
+    if range == None:
+        LET_min  = min(x)
+        LET_max  = max(x)
+        LET_med  = statistics.median(x)
+
+        if LET_med * 5.0 < LET_max:
+            LET_max = LET_med * 5.0
+
+    range = [LET_min, LET_max]
+
+    weights = np.ones_like(x) / float(len(x))
+    data, bins, _ = plt.hist(x, bins=bins, range=range, weights=weights)
+    plt.xlabel('LET (keV/um)')
+
+    if fit:
+        bins = bins[:-1]
+
+        if fitmodel == 'Gauss':
+            model  = GaussianModel()
+        elif fitmodel == 'BW':
+            model = BreitWignerModel()
+
+        params = model.guess(data, x=bins[:-1])
+        result = model.fit(data, params, x=bins)
+        plt.plot(bins, result.best_fit)
+
+        mean  = result.params['center'].value
+        sigma = result.params['center'].stderr
+
+        print("[MESSAGE] FitModel: %s, LET: %.5f +/- %.5f keV/um" %
+              (fitmodel, mean, sigma))
+
+        val = np.array([[mean, sigma]])
+        np.savetxt('LET.csv', val, delimiter=',',
+                   header='Mean, Sigma (keV/um)', fmt='%.5f')
+
+    plt.minorticks_on()
+    plt.grid(linestyle='dotted')
+    plt.savefig("LET.pdf")
+
 #-------------------------------------------------------------------------------
 def get_gvalue(df, score_time=-1.0):
 
@@ -264,6 +330,12 @@ def main(score_time):
     get_gvalue(m.get_data_frame(), score_time)
 
     df = m.make_output_data_frame()
+
+    # LET
+    LET_files = glob.glob("./result_LET.*csv")
+    if len(LET_files) > 0:
+        let = LETData(LET_files)
+        make_LET_plot(x=let.get_LET(), bins=50, fit=True, fitmodel='BW')
 
     # save as pickle file
     df.to_pickle('gval.pkl')
