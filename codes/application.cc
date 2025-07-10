@@ -59,6 +59,10 @@
 #include "G4Scheduler.hh"
 #include "CLHEP/Random/MTwistEngine.h"
 
+#if G4VERSION_NUMBER >= 1140
+#include "G4MoleculeReactionCounter.hh"
+#endif
+
 #include "json.hpp"
 #include <fstream>
 
@@ -155,25 +159,54 @@ Application* Application::GetInstance()
 void Application::BuildForMaster() const
 {
   SetUserAction(new RunAction());
+#if G4VERSION_NUMBER < 1140
   G4DNAChemistryManager::Instance()->ResetCounterWhenRunEnds(false);
+#endif
 }
 
 //------------------------------------------------------------------------------
 void Application::Build() const
 {
   if (::use_g4mc) {
+
+#if G4VERSION_NUMBER >= 1140
+
+  auto* mcman = G4MoleculeCounterManager::Instance();
+  mcman->SetResetCountersBeforeEvent(true);
+  mcman->SetResetCountersBeforeRun(true);
+  mcman->SetAccumulateCounterIntoMaster(false);
+
+  constexpr double kTimePrecision = 1.0 * picosecond;
+  auto counter = std::make_unique<G4MoleculeCounter>();
+  counter->SetTimeComparer(
+    G4MoleculeCounterTimeComparer::CreateWithFixedPrecision(kTimePrecision));
+  counter->IgnoreMolecule(G4H2O::Definition());
+  mcman->RegisterCounter(std::move(counter));
+
+#else
+
 #if G4VERSION_NUMBER >= 1110
     G4MoleculeCounter::Instance()->Use();
 #else
     G4MoleculeCounter::Use();
 #endif
+
     G4MoleculeCounter::Instance()->DontRegister(G4H2O::Definition());
     G4MoleculeCounter::Instance()->CheckTimeForConsistency(false);
+
+#endif // G4VERSION_NUMBER >= 1140
+
   }
 
+#if G4VERSION_NUMBER < 1140
+  // sequential mode
   if (!G4Threading::IsMultithreadedApplication()) {
     G4DNAChemistryManager::Instance()->ResetCounterWhenRunEnds(false);
   }
+#else
+  auto* mcman = G4MoleculeCounterManager::Instance();
+  mcman->SetIsActive(false);
+#endif
 
   auto pkind  = ::js["beam_particle"];
   auto Z      = ::js["beam_ion_Z"];

@@ -163,16 +163,6 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
   //  Store G-values for each molecular species
   // ===========================================================================
 
-  static auto score_time = simdata_->GetScoreTime();
-  double edep_factor = 100.0 / (edep_ / eV);
-
-  auto* counter = G4MoleculeCounter::Instance();
-#if G4VERSION_NUMBER >= 1110
-  auto inuse = counter->InUse();
-#else
-  auto inuse = G4MoleculeCounter::InUse();
-#endif
-
   auto check_molecule = [](const G4MolecularConfiguration* mconf) {
     static auto H3OpB = G4MoleculeTable::Instance()->GetConfiguration("H3Op(B)");
     static auto OHmB  = G4MoleculeTable::Instance()->GetConfiguration("OHm(B)");
@@ -180,8 +170,40 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
     return false;
   };
 
+  static auto score_time = simdata_->GetScoreTime();
+  double edep_factor = 100.0 / (edep_ / eV);
+
+#if G4VERSION_NUMBER >= 1140
+  // ver 11.4 ~
+  auto* mcman = G4MoleculeCounterManager::Instance();
+  auto inuse  = mcman->GetIsActive();
+#else
+  // ~ ver 11.3
+  auto* counter = G4MoleculeCounter::Instance();
+#if G4VERSION_NUMBER >= 1110
+  auto inuse = counter->InUse();
+#else
+  auto inuse = G4MoleculeCounter::InUse();
+#endif // G4VERSION_NUMBER >= 1110
+#endif // G4VERSION_NUMBER >= 1140
+
   if (inuse) {
 
+#if G4VERSION_NUMBER >= 1140
+
+    auto counter = mcman->GetMoleculeCounter<G4MoleculeCounter>(0);
+    auto indices = counter->GetMapIndices();
+    if (indices.empty()) {
+      clear();
+      simdata_->CountAbortEvent(id);
+      return;
+    }
+
+    for (auto idx : indices) {
+
+    }
+
+#else
     auto species = counter->GetRecordedMolecules();
     if (species.get() == 0 || species->size() == 0) {
       clear();
@@ -200,6 +222,8 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
         tid++;
       }
     }
+
+#endif // G4VERSION_NUMBER >= 1140
 
   } else {
 
@@ -263,6 +287,15 @@ void MoleculeCounter::clear()
   accum_steplen_ = 0.0;
   accum_ekin_ = 0.0;
 
+#if G4VERSION_NUMBER >= 1140
+
+  auto* mcman = G4MoleculeCounterManager::Instance();
+  if (!mcman->GetIsActive()) {
+    simdata_->ClearTimeStepInfo(id);
+  }
+
+#else
+
   auto* counter = G4MoleculeCounter::Instance();
 #if G4VERSION_NUMBER >= 1110
   auto inuse = counter->InUse();
@@ -275,6 +308,9 @@ void MoleculeCounter::clear()
   } else {
     simdata_->ClearTimeStepInfo(id);
   }
+
+#endif // G4VERSION_NUMBER >= 1140
+
   simdata_->ClearTimeStepInfo(id, ::kPreStep);
 }
 
