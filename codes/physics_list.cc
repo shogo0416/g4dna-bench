@@ -27,6 +27,7 @@
 ==============================================================================*/
 #include "physics_list.h"
 
+#include "G4IonTable.hh"
 #include "G4PhysicsConstructorRegistry.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4EmDNAPhysics.hh"
@@ -245,6 +246,10 @@ void PhysicsList::ConstructMultipleIonisationProcess()
 //------------------------------------------------------------------------------
 void PhysicsList::ConstructProcess()
 {
+  // setup for carbon ions
+  auto* tab = G4ParticleTable::GetParticleTable()->GetIonTable();
+  tab->GetIon(6, 12, 0);
+
   // setup for particle transportation
   AddTransportation();
 
