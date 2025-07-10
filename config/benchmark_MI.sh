@@ -34,7 +34,8 @@ TOPDIR="../../"
 BIN="bin/chem-bench"
 
 # Geant4 version
-G4VERSION="11.3.2"
+#G4VERSION="11.3.2"
+G4VERSION="11.4.0-beta"
 
 # physics and chemistry lists
 PHYSLIST="G4EmDNAPhysics_option8"
@@ -129,7 +130,7 @@ cat << EOF > ${config_filename}
     "time_step_model"  : "IRT",
     "use_alternative_B1A1_decay"   : false,
     "use_alternative_decay_vibH2O" : false,
-    "use_g4_molecule_counter"      : true,
+    "use_g4_molecule_counter"      : false,
     "simulation_end_time"          : 1.0E+06
   },
   "check_boundary"        : false,
@@ -212,6 +213,8 @@ for ekin in ${energy_list[@]}; do
     ${cmd} > ${RUNLOG} 2> ${ERRLOG}
   fi
   exit_code=$?
+  outputs+=(${RUNLOG})
+  outputs+=(${ERRLOG})
 
   # move simulation results
   for x in ${outputs[@]}; do
