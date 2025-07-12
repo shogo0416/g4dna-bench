@@ -39,7 +39,7 @@ G4VERSION="11.4.0-beta"
 
 # physics and chemistry lists
 PHYSLIST="G4EmDNAPhysics_option8"
-CHEMLIST="DNAChemistryOpt3"
+CHEMLIST="G4EmDNAChemistry_option3"
 
 # event number
 EVENT_NUM=10000
@@ -51,8 +51,7 @@ THREAD_NUM=32
 declare -A ENERGY=(
   ["Proton"]="0.2 0.5 1.0 2.0 4.0 10.0 25.0 50.0 75.0 99.9"
   ["Alpha"]="0.5 1.0 3.0 6.0 10.0 20.0 48.0 100.0 200.0 399.9"
-  ["Carbon"]="6.5 8.0 10.0 12.0 18.0 24.0 32.0 40.0 48.0 96.0 120.0 240.0 480.0 960.0 1920.0 3840.0 7680.0"
-  #["Carbon"]="48.0"
+  ["Carbon"]="6.5 8.0 10.0 12.0 18.0 24.0 32.0 40.0 48.0 96.0 120.0 240.0 480.0 960.0 1920.0"
 )
 
 # particle label
@@ -347,8 +346,6 @@ else
 fi
 
 echo "[MESSAGE] Make a work directory '${workdir}.'"
-
-echo ${thread_num}
 
 # run simulation
 run_simulation ${workdir} ${event_num} ${thread_num} ${particle_kind} \
