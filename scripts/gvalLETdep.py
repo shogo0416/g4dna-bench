@@ -770,16 +770,16 @@ def get_SRIM_LET(part_type, plt):
 #-------------------------------------------------------------------------------
 def get_plot_title(mole_type):
     plot_title = {
-        'OH'        : '$^{\cdot}\mathrm{OH}$',
-        'eaq'       : '$\mathrm{e}^{-}_{\mathrm{aq}}$',
-        'H'         : '$\mathrm{H}^{\cdot}$',
-        'H2'        : '$\mathrm{H}_2$',
-        'H2O2'      : '$\mathrm{H}_2\mathrm{O}_2$',
-        'HO2'       : '$\mathrm{HO}_2^{\cdot}$',
-        'O2'        : '$\mathrm{O}_2$',
-        'O2m'       : '$\mathrm{O}_2^{\cdot-}$',
-        'HO2 + O2'  : '$\mathrm{HO}_2^{\cdot} + \mathrm{O}_2$',
-        'HO2 + O2-' : '$\mathrm{HO}_2^{\cdot} + \mathrm{O}_2^{-}$',
+        'OH'        : r'$^{\cdot}\mathrm{OH}$',
+        'eaq'       : r'$\mathrm{e}^{-}_{\mathrm{aq}}$',
+        'H'         : r'$\mathrm{H}^{\cdot}$',
+        'H2'        : r'$\mathrm{H}_2$',
+        'H2O2'      : r'$\mathrm{H}_2\mathrm{O}_2$',
+        'HO2'       : r'$\mathrm{HO}_2^{\cdot}$',
+        'O2'        : r'$\mathrm{O}_2$',
+        'O2m'       : r'$\mathrm{O}_2^{\cdot-}$',
+        'HO2 + O2'  : r'$\mathrm{HO}_2^{\cdot} + \mathrm{O}_2$',
+        'HO2 + O2-' : r'$\mathrm{HO}_2^{\cdot} + \mathrm{O}_2^{-}$',
     }
     if mole_type in plot_title:
         return plot_title[mole_type]
