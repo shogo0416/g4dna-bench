@@ -140,7 +140,7 @@ void PhysicsList::SetPhysics(const std::string& name)
     phys_list_ = new G4EmDNAPhysics_option8();
   } else {
     const char* errmsg = R"(
-      [ERROR] Unknown physics options is set. Supported options are as follows:
+      [ERROR] Unknown physics option is set. Supported options are as follows:
       - G4EmDNAPhysics
       - G4EmDNAPhysics_option1
       - G4EmDNAPhysics_option2
@@ -160,17 +160,50 @@ void PhysicsList::SetPhysics(const std::string& name)
 void PhysicsList::SetChemistry(const std::string& name)
 {
   if (name == "G4EmDNAChemistry") {
+
+#if G4VERSION_NUMBER >= 1130
+    if (enable_mioni_) { chem_list_ = new DNAChemistry(); }
+    else { chem_list_ = new G4EmDNAChemistry(); }
+#else
     chem_list_ = new G4EmDNAChemistry();
+#endif
+
   } else if (name == "G4EmDNAChemistry_option1") {
+
+#if G4VERSION_NUMBER >= 1130
+    if (enable_mioni_) { chem_list_ = new DNAChemistryOpt1(); }
+    else { chem_list_ = new G4EmDNAChemistry_option1(); }
+#else
     chem_list_ = new G4EmDNAChemistry_option1();
+#endif
+
   } else if (name == "G4EmDNAChemistry_option2") {
+
+#if G4VERSION_NUMBER >= 1130
+    if (enable_mioni_) { chem_list_ = new DNAChemistryOpt2(); }
+    else { chem_list_ = new G4EmDNAChemistry_option2(); }
+#else
     chem_list_ = new G4EmDNAChemistry_option2();
+#endif
+
   } else if (name == "G4EmDNAChemistry_option3") {
+
+#if G4VERSION_NUMBER >= 1130
+    if (enable_mioni_) { chem_list_ = new DNAChemistryOpt3(); }
+    else { chem_list_ = new G4EmDNAChemistry_option3(); }
+#else
     chem_list_ = new G4EmDNAChemistry_option3();
-  } else if (name == "DNAChemistryOpt3") {
-    chem_list_ = new DNAChemistryOpt3();
+#endif
+
   } else {
-    std::cerr << "[ERROR] Set unknown list (name: " << name << ")" <<std::endl;
+    const char* errmsg = R"(
+      [ERROR] Unknown chemistry option is set. Supported options are as follows:
+      - G4EmDNAChemistry
+      - G4EmDNAChemistry_option1
+      - G4EmDNAChemistry_option2
+      - G4EmDNAChemistry_option3
+    )";
+    std::cerr << errmsg <<std::endl;
     std::exit(EXIT_FAILURE);
   }
 }
@@ -246,7 +279,7 @@ void PhysicsList::ConstructMultipleIonisationProcess()
 //------------------------------------------------------------------------------
 void PhysicsList::ConstructProcess()
 {
-  // setup for carbon ions
+  // setup for carbon ions to avoid simulation error
   auto* tab = G4ParticleTable::GetParticleTable()->GetIonTable();
   tab->GetIon(6, 12, 0);
 
