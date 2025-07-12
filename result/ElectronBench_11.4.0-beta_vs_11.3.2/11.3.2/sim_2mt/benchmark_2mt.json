@@ -1,0 +1,22 @@
+{
+  "summary": {
+    "thread_number": 2,
+    "event_number": 10000,
+    "elapsed_time": 62.650000000000006,
+    "throughput": 9577.015163607342,
+    "gvalue": {
+      "hydroxyl_radical": {
+        "chem_start": 0.8205759330233304,
+        "chem_end": 0.6596509910265308
+      },
+      "solvated_electron": {
+        "chem_start": 4.147761243992137,
+        "chem_end": 2.8013638133559136
+      },
+      "H2O2": {
+        "chem_start": 0.03635499776117469,
+        "chem_end": 0.5456258713063615
+      }
+    }
+  }
+}
