@@ -35,7 +35,14 @@ threads=(1 2 4 8 16 20 24 28 32)
 #threads=(1 2 4 8 14 20 24 28)
 #threads=(1 2 4 6 8 10 12)
 
-g4version="11.3.2"
+# Geant4 version
+#g4version="11.3.2"
+g4version="11.4.0-beta"
+
+# physics and chemistry lists
+PHYSLIST="G4EmDNAPhysics_option8"
+CHEMLIST="G4EmDNAChemistry_option3"
+
 binary="../../bin/chem-bench"
 
 config_file="config_bench.json"
@@ -44,11 +51,18 @@ config_file="config_bench.json"
 # function to make a configuration file with json format
 #-------------------------------------------------------------------------------
 make_config_file() {
+
+# generate seed for random number generator
+local rand_min=1
+local rand_max=999999999
+local rand_seed=$(python -c \
+  "import random, time; random.seed(time.time_ns()); print(random.randint($rand_min, $rand_max))")
+
 cat << EOF > ${config_file}
 {
-  "random_seed"     : 123456789,
-  "event_number"    : $1,
-  "thread_number"   : $2,
+  "random_seed"     : ${rand_seed},
+  "event_number"    : ${1},
+  "thread_number"   : ${2},
   "cpu_affinity"    : false,
   "beam_particle"   : "e-",
   "beam_ion_Z"      : 0,
@@ -58,7 +72,7 @@ cat << EOF > ${config_file}
   "beam_direction"  : [0.0, 0.0, 1.0],
   "target_size"     : [20.0, 20.0, 20.0],
   "physics_configs" : {
-    "physics_option"           : "G4EmDNAPhysics_option8",
+    "physics_option"           : "${PHYSLIST}",
     "electron_solvation_model" : "Meesungnoen2002",
     "use_multiple_ionisation"  : false,
     "primary_removal_configs"  : {
@@ -67,19 +81,19 @@ cat << EOF > ${config_file}
     }
   },
   "chemistry_configs": {
-    "chemistry_option" : "G4EmDNAChemistry_option3",
+    "chemistry_option" : "${CHEMLIST}",
     "time_step_model"  : "IRT",
     "use_alternative_B1A1_decay"   : false,
     "use_alternative_decay_vibH2O" : false,
-    "use_g4_molecule_counter"      : true,
+    "use_g4_molecule_counter"      : false,
     "simulation_end_time"          : 1.0E+06
   },
   "check_boundary"        : false,
-  "output_gval"           : "$3",
-  "output_LET"            : "$4",
-  "benchmark_file"        : "$5",
+  "output_gval"           : "${3}",
+  "output_LET"            : "${4}",
+  "benchmark_file"        : "${5}",
   "benchmark_for_threads" : false,
-  "term_frequency"        : $6
+  "term_frequency"        : ${6}
 }
 EOF
 }
@@ -90,7 +104,7 @@ EOF
 show_help() {
 cat << EOF
 
-Usage: $0 [-h] [-s] [-w] [-f]
+Usage: $0 [-h] [-s] [-w] [-f] [-s]
 
 Options:
   -h        show this help
@@ -102,6 +116,9 @@ Options:
             [default: strong-scaling]
 
   -f        fix CPU cores
+            [default: false]
+
+  -s        show simulation progress
             [default: false]
 
 Examples:
@@ -120,8 +137,9 @@ EOF
 base_event=10000
 sim_mode="strong"
 fix_core=false
+show_progress=false
 
-while getopts "he:wf" opt; do
+while getopts "he:wfs" opt; do
   case $opt in
     h)
       show_help
@@ -135,6 +153,9 @@ while getopts "he:wf" opt; do
       ;;
     f)
       fix_core=true
+      ;;
+    s)
+      show_progress=true
       ;;
     *)
       show_help
@@ -186,7 +207,11 @@ for it in ${threads[@]}; do
     command="${binary} -c ${config_file}"
   fi
   echo -e "\n[MT${it}] ${command}"
-  $command > $log_file
+  if "$show_progress"; then
+    $command 2>&1 | tee $log_file
+  else
+    $command > $log_file
+  fi
 
   if [ -f $output_gval ]; then
     echo "--> Succeeded to run the simulation"
