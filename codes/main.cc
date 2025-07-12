@@ -1,7 +1,7 @@
 /*==============================================================================
   BSD 2-Clause License
 
-  Copyright (c) 2020-2022 Shogo OKADA (shogo.okada@kek.jp)
+  Copyright (c) 2020-2025 Shogo OKADA (shogo.okada@kek.jp)
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -57,9 +57,11 @@ void print_usage()
     [Usage] chem-bench <options>
     [Options]
       -h, --help              print this information
-      -c, --conf   <filename> set configuration file [default: conf.json]
+
+      -c, --config <filename> set configuration file
+
       -s, --seed   <val>      set seed for random number generation
-      -o, --output <filename> set output filename
+
       -m, --macro  <filename> set macro file
   )";
 
@@ -86,19 +88,17 @@ int main(int argc, char** argv)
 {
   struct option opts [] = {
     {"help",   no_argument,       nullptr, 'h'},
-    {"conf",   required_argument, nullptr, 'c'},
+    {"config", required_argument, nullptr, 'c'},
     {"seed",   required_argument, nullptr, 's'},
-    {"output", required_argument, nullptr, 'o'},
     {"macro",  required_argument, nullptr, 'm'},
     {nullptr,  0,                 nullptr,  0},
   };
 
   int seed{-1};
-  std::string config{"conf.json"};
-  std::string output{""};
+  std::string config{"config.json"};
   std::string macro{""};
 
-  const char* optstr = "hc:s:o:m:";
+  const char* optstr = "hc:s:m:";
   int opt, index;
   while ((opt = getopt_long(argc, argv, optstr, opts, &index)) != -1) {
     switch (opt) {
@@ -110,9 +110,6 @@ int main(int argc, char** argv)
         break;
       case 's':
         seed   = ::lexical_cast<int>(optarg);
-        break;
-      case 'o':
-        output = ::lexical_cast<std::string>(optarg);
         break;
       case 'm':
         macro  = ::lexical_cast<std::string>(optarg);
@@ -126,8 +123,6 @@ int main(int argc, char** argv)
   auto app = Application::GetInstance();
 
   app->LoadConfigFile(config);
-
-  if (output.length() > 0) { app->SetOutputFile(output); }
 
   app->SetupRandomEngine(seed);
 
