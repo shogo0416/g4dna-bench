@@ -1,4 +1,4 @@
-# chem-bench
+# g4dna-bench
 
 A benchmark application for Geant4-DNA water radiolysis simulation
 
@@ -44,14 +44,23 @@ $ make install
 
 ## How to run simulation
 1. Create `work` directory. Then, move there.
-2. Copy `con.json` from `config` directory.
+2. Copy `config-IRT.json` from `config` directory.
 3. Run simulation.
 ```
 $ mkdir work
 $ cd work
-$ cp ../config/conf.json .
-$ ../bin/g4dna-bench
+$ cp ../config/config-IRT.json .
+$ ../bin/chem-bench -c config-IRT.json 2>&1 | tee run.log
 ```
+4. Then, make G-value plot
+```
+$ cp ../scripts/makeplots.py .
+$ ./makeplots.py
+$ ls
+gval.pdf ...
+$ evince gval.pdf
+```
+
 ### Simulaion option
 
 ```
