@@ -20,11 +20,11 @@
     }
   },
   "chemistry_configs": {
-    "chemistry_option" : "DNAChemistryOpt3",
+    "chemistry_option" : "G4EmDNAChemistry_option3",
     "time_step_model"  : "IRT",
     "use_alternative_B1A1_decay"   : false,
     "use_alternative_decay_vibH2O" : false,
-    "use_g4_molecule_counter"      : true,
+    "use_g4_molecule_counter"      : false,
     "simulation_end_time"          : 1.0E+06
   },
   "check_boundary"        : false,
