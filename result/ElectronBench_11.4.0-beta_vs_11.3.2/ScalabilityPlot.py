@@ -40,6 +40,8 @@ import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
 
 DATASET = {
+    '11.1.3': 'Geant4 11.1.3 (IRT)',
+    '11.2.2': 'Geant4 11.2.2 (IRT)',
     '11.3.2': 'Geant4 11.3.2 (IRT)',
     '11.4.0-beta': 'Geant4 11.4.0-beta (IRT)'
 }
@@ -51,6 +53,7 @@ FIGSIZE_X = 6
 FIGSIZE_Y = 4
 DPI = 200
 FONTSIZE = 14
+FONTSIZE_LEGEND = 10
 LINEWIDTH = 3.0
 
 XLABEL = 'Thread Number'
@@ -113,7 +116,7 @@ def makeplot(scores, pdf):
     ax.xaxis.grid(True, which = "major", linestyle = "dotted", color='black')
     ax.yaxis.grid(True, which = "major", linestyle = "dotted", color='black')
 
-    ax.legend(fontsize=FONTSIZE, loc='upper right')
+    ax.legend(fontsize=FONTSIZE_LEGEND, loc='upper right')
 
     pos = ax.get_position()
     ax.set_position([0.15, 0.15, pos.width * 0.95, pos.height * 0.95])

@@ -40,11 +40,15 @@ import numpy as np
 OUTPUT_FILENAME= "compgval.pdf"
 
 INPUTS = [
+    "./11.1.3/sim_1mt/gval.pkl",
+    "./11.2.2/sim_1mt/gval.pkl",
     "./11.3.2/sim_1mt/gval.pkl",
     "./11.4.0-beta/sim_1mt/gval.pkl",
 ]
 
 LABELS = [
+    "IRT (11.1.3)",
+    "IRT (11.2.2)",
     "IRT (11.3.2)",
     "IRT (11.4.0-beta)",
 ]
