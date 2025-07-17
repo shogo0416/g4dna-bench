@@ -40,6 +40,11 @@
 #include "G4LowEnergyEmProcessSubType.hh"
 #endif
 
+#if G4VERSION_NUMBER >= 1140 || \
+   (G4VERSION_NUMBER >= 1132 && G4VERSION_REFERENCE_TAG >= 6)
+#define NEW_MOLECULE_COUNTER
+#endif
+
 namespace {
 
 constexpr bool kPreStep = true;
@@ -173,7 +178,7 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
   static auto score_time = simdata_->GetScoreTime();
   double edep_factor = 100.0 / (edep_ / eV);
 
-#if G4VERSION_NUMBER >= 1140
+#ifdef NEW_MOLECULE_COUNTER
   // ver 11.4 ~
   auto* mcman = G4MoleculeCounterManager::Instance();
   auto inuse  = mcman->GetIsActive();
@@ -185,11 +190,11 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
 #else
   auto inuse = G4MoleculeCounter::InUse();
 #endif // G4VERSION_NUMBER >= 1110
-#endif // G4VERSION_NUMBER >= 1140
+#endif // NEW_MOLECULE_COUNTER
 
   if (inuse) {
 
-#if G4VERSION_NUMBER >= 1140
+#ifdef NEW_MOLECULE_COUNTER
 
     auto counter = mcman->GetMoleculeCounter<G4MoleculeCounter>(0);
     auto indices = counter->GetMapIndices();
@@ -223,7 +228,7 @@ void MoleculeCounter::EndOfEvent(G4HCofThisEvent*)
       }
     }
 
-#endif // G4VERSION_NUMBER >= 1140
+#endif // NEW_MOLECULE_COUNTER
 
   } else {
 
@@ -287,7 +292,7 @@ void MoleculeCounter::clear()
   accum_steplen_ = 0.0;
   accum_ekin_ = 0.0;
 
-#if G4VERSION_NUMBER >= 1140
+#ifdef NEW_MOLECULE_COUNTER
 
   auto* mcman = G4MoleculeCounterManager::Instance();
   if (!mcman->GetIsActive()) {
@@ -309,7 +314,7 @@ void MoleculeCounter::clear()
     simdata_->ClearTimeStepInfo(id);
   }
 
-#endif // G4VERSION_NUMBER >= 1140
+#endif // NEW_MOLECULE_COUNTER
 
   simdata_->ClearTimeStepInfo(id, ::kPreStep);
 }

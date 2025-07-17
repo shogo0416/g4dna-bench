@@ -40,6 +40,11 @@
 #include "G4MoleculeTable.hh"
 #include "G4MolecularConfiguration.hh"
 
+#if G4VERSION_NUMBER >= 1140 || \
+   (G4VERSION_NUMBER >= 1132 && G4VERSION_REFERENCE_TAG >= 6)
+#define NEW_MOLECULE_COUNTER
+#endif
+
 //------------------------------------------------------------------------------
 TimeStepAction::TimeStepAction()
     : G4UserTimeStepAction()
@@ -73,15 +78,16 @@ void TimeStepAction::UserPreTimeStepAction()
 //------------------------------------------------------------------------------
 void TimeStepAction::UserPostTimeStepAction()
 {
-
-#if G4VERSION_NUMBER >= 1140
+#ifdef NEW_MOLECULE_COUNTER
   auto* mcman = G4MoleculeCounterManager::Instance();
   const auto inuse = mcman->GetIsActive();
-#elif G4VERSION_NUMBER >= 1110
+#else
+#if G4VERSION_NUMBER >= 1110
   const auto inuse = G4MoleculeCounter::Instance()->InUse();
 #else
   const auto inuse = G4MoleculeCounter::InUse();
-#endif
+#endif // G4VERSION_NUMBER >= 1110
+#endif // NEW_MOLECULE_COUNTER
   if (inuse) { return; }
 
 #ifdef G4MULTITHREADED
