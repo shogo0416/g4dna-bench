@@ -62,7 +62,7 @@ constexpr int kChargeIncrease = 57;
 int find_lower_bound(const std::vector<TimeStepInfo>& info, double x)
 {
   auto low = 0;
-  auto upp = info.size();
+  auto upp = static_cast<int>(info.size());
   while (low <= upp) {
     int mid_bin = (low + upp) * 0.5;
     if (x < info[mid_bin].sim_time) { upp = mid_bin - 1; }
