@@ -2,14 +2,15 @@
 
 A benchmark application for Geant4-DNA water radiolysis simulation
 
-[![geant4](https://img.shields.io/badge/geant4-10.5-blue.svg)](http://www.geant4.org/)
-[![geant4](https://img.shields.io/badge/geant4-10.6-blue.svg)](http://www.geant4.org/)
-[![geant4](https://img.shields.io/badge/geant4-10.7-blue.svg)](http://www.geant4.org/)
-[![geant4](https://img.shields.io/badge/geant4-11.0-green.svg)](http://www.geant4.org/)
-[![geant4](https://img.shields.io/badge/geant4-11.1-green.svg)](http://www.geant4.org/)
-[![geant4](https://img.shields.io/badge/geant4-11.2-green.svg)](http://www.geant4.org/)
-[![geant4](https://img.shields.io/badge/geant4-11.3-green.svg)](http://www.geant4.org/)
-[![geant4](https://img.shields.io/badge/geant4-11.4.beta-red.svg)](http://www.geant4.org/)
+[![geant4](https://img.shields.io/badge/geant4-10.5-blue.svg)](https://gitlab.cern.ch/geant4/geant4/-/releases/v10.5.1)
+[![geant4](https://img.shields.io/badge/geant4-10.6-blue.svg)](https://gitlab.cern.ch/geant4/geant4/-/releases/v10.6.3)
+[![geant4](https://img.shields.io/badge/geant4-10.7-blue.svg)](https://geant4.org/download/10.7.4.html)
+[![geant4](https://img.shields.io/badge/geant4-11.0-green.svg)](https://geant4.org/download/11.0.4.html)
+[![geant4](https://img.shields.io/badge/geant4-11.1-green.svg)](https://geant4.org/download/11.1.3.html)
+[![geant4](https://img.shields.io/badge/geant4-11.2-green.svg)](https://geant4.org/download/11.2.2.html)
+[![geant4](https://img.shields.io/badge/geant4-11.3-green.svg)](https://geant4.org/download/11.3.2.html)
+[![geant4](https://img.shields.io/badge/geant4-11.4.beta-red.svg)](https://geant4.org/download/11.4.0.beta.html)
+[![geant4](https://img.shields.io/badge/geant4-dev-red.svg)](https://gitlab.cern.ch/geant4/geant4-dev)
 
 ## Setup Geant4 enviroment variables
 Set Geant4 environment variables to specify the paths for data tables before compiling and running the application.
