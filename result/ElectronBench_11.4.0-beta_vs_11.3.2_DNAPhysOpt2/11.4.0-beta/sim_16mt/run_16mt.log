@@ -1,0 +1,809 @@
+
+**************************************************************
+ Geant4 version Name: geant4-11-04-beta-01 [MT]   (26-June-2025)
+  << in Multi-threaded mode >> 
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+
+-------------------------------------------------------------------
+ Parameters for chem-bench
+-------------------------------------------------------------------
+ - random_seed : 971661273
+ - event_number : 10000
+ - thread_number : 16
+ - cpu_affinity : false
+ - beam_particle : "e-"
+ - beam_ion_Z : 0
+ - beam_ion_A : 0
+ - beam_energy : 750.0
+ - beam_source_pos : [0.0,0.0,0.0]
+ - beam_direction : [0.0,0.0,1.0]
+ - target_size : [20.0,20.0,20.0]
+ - physics_configs : {"physics_option":"G4EmDNAPhysics_option2","electron_solvation_model":"Meesungnoen2002","use_multiple_ionisation":false,"primary_removal_configs":{"enabled":true,"kill_energy":[75.0,75.1]}}
+ - chemistry_configs : {"chemistry_option":"G4EmDNAChemistry_option3","time_step_model":"IRT","use_alternative_B1A1_decay":false,"use_alternative_decay_vibH2O":false,"use_g4_molecule_counter":false,"simulation_end_time":1000000.0}
+ - check_boundary : false
+ - output_gval : "result_gval_16mt.csv"
+ - output_LET : "result_LET_16mt.csv"
+ - benchmark_file : "benchmark_16mt.json"
+ - benchmark_for_threads : false
+ - term_frequency : 1000
+-------------------------------------------------------------------
+
+=======================================================================
+======                 Electromagnetic Physics Parameters      ========
+=======================================================================
+LPM effect enabled                                 1
+Enable creation and use of sampling tables         0
+Apply cuts on all EM processes                     0
+Use combined TransportationWithMsc                 Disabled
+Use general process                                0
+Enable linear polarisation for gamma               0
+Enable photoeffect sampling below K-shell          1
+Enable sampling of quantum entanglement            0
+X-section factor for integral approach             0.8
+Min kinetic energy for tables                      10 eV 
+Max kinetic energy for tables                      600 MeV
+Number of bins per decade of a table               20
+Verbose level                                      1
+Verbose level for worker thread                    0
+Bremsstrahlung energy threshold above which 
+  primary e+- is added to the list of secondary    100 TeV
+Bremsstrahlung energy threshold above which primary
+  muon/hadron is added to the list of secondary    100 TeV
+Positron annihilation at rest model                AllisonPositronium
+Enable 3 gamma annihilation on fly                 0
+Lowest triplet kinetic energy                      1 MeV
+Enable sampling of gamma linear polarisation       0
+5D gamma conversion model type                     0
+5D gamma conversion model on isolated ion          0
+Use RiGe 5D e+e- pair production model by muons    0
+Livermore data directory                           epics_2017
+=======================================================================
+======                 Ionisation Parameters                   ========
+=======================================================================
+Step function for e+-                              (0.2, 0.01 mm)
+Step function for muons/hadrons                    (0.1, 0.05 mm)
+Step function for light ions                       (0.1, 0.02 mm)
+Step function for general ions                     (0.1, 0.001 mm)
+Lowest e+e- kinetic energy                         0 eV 
+Lowest muon/hadron kinetic energy                  1 keV
+Use ICRU90 data                                    1
+Fluctuations of dE/dx are enabled                  1
+Type of fluctuation model for leptons and hadrons  Universal
+Use built-in Birks satuaration                     0
+Build CSDA range enabled                           0
+Use cut as a final range enabled                   0
+Enable angular generator interface                 1
+Max kinetic energy for CSDA tables                 1 GeV
+Max kinetic energy for NIEL computation            0 eV 
+Linear loss limit                                  0.01
+Read data from file for e+e- pair production by mu 0
+=======================================================================
+======                 Multiple Scattering Parameters          ========
+=======================================================================
+Type of msc step limit algorithm for e+-           2
+Type of msc step limit algorithm for muons/hadrons 0
+Msc lateral displacement for e+- enabled           1
+Msc lateral displacement for muons and hadrons     0
+Urban msc model lateral displacement alg96         1
+Range factor for msc step limit for e+-            0.08
+Range factor for msc step limit for muons/hadrons  0.2
+Geometry factor for msc step limitation of e+-     2.5
+Safety factor for msc step limit for e+-           0.6
+Skin parameter for msc step limitation of e+-      3
+Lambda limit for msc step limit for e+-            1 mm
+Use Mott correction for e- scattering              1
+Factor used for dynamic computation of angular 
+  limit between single and multiple scattering     1
+Fixed angular limit between single 
+  and multiple scattering                          3.1416 rad
+Upper energy limit for e+- multiple scattering     100 MeV
+Type of electron single scattering model           0
+Type of nuclear form-factor                        1
+Screening factor                                   1
+=======================================================================
+======                 Atomic Deexcitation Parameters          ========
+=======================================================================
+Fluorescence enabled                               1
+Directory in G4LEDATA for fluorescence data files  fluor
+Auger electron cascade enabled                     1
+PIXE atomic de-excitation enabled                  0
+De-excitation module ignores cuts                  1
+Type of PIXE cross section for hadrons             Empirical
+Type of PIXE cross section for e+-                 Livermore
+=======================================================================
+======                 DNA Physics Parameters                  ========
+=======================================================================
+Use fast sampling in DNA models                    1
+Use Stationary option in DNA models                0
+Use DNA with multiple scattering of e-             0
+Use DNA e- solvation model type                    11003
+Use DNA Chemistry model                            IRT
+=======================================================================
+
+### ===  Deexcitation model UAtomDeexcitation is activated for 1 region:
+          DefaultRegionForTheWorld  1  1  0
+### ===  Auger flag: 1
+### ===  Ignore cuts flag:   1
+
+phot:  for gamma SubType=12 BuildTable=0
+      LambdaPrime table from 200 keV to 600 MeV in 72 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+ LivermorePhElectric : Emin=    0 eV  Emax=  600 MeV  SauterGavrila Fluo
+
+compt:  for gamma SubType=13 BuildTable=1
+      Lambda table from 10 eV  to 1 MeV, 21 bins/decade, spline: 1
+      LambdaPrime table from 1 MeV to 600 MeV in 57 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   LowEPComptonModel : Emin=    0 eV  Emax=   20 MeV Fluo
+        KleinNishina : Emin=   20 MeV Emax=  600 MeV Fluo
+
+conv:  for gamma SubType=14 BuildTable=1
+      Lambda table from 1.022 MeV to 600 MeV, 28 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+     BetheHeitlerLPM : Emin=    0 eV  Emax=  600 MeV  ModifiedTsai
+
+Rayl:  for gamma SubType=11 BuildTable=1
+      Lambda table from 10 eV  to 150 keV, 21 bins/decade, spline: 0
+      LambdaPrime table from 150 keV to 600 MeV in 74 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   LivermoreRayleigh : Emin=    0 eV  Emax=  600 MeV  CullenGenerator
+
+msc:  for e-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  GoudsmitSaunderson : Emin=    1 MeV Emax=  600 MeV Nbins=60   1 MeV - 600 MeV
+          StepLim=SafetyPlus Rfact=0.08 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=3 Llim=1 mm
+
+eIoni:  for e-  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 600 MeV in 160 bins
+      Lambda tables from threshold to 600 MeV, 20 bins/decade, spline: 1
+      StepFunction=(0.2, 0.01 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        MollerBhabha : Emin=    1 MeV Emax=  600 MeV  deltaVI
+
+eBrem:  for e-  XStype:4  SubType=3
+      dE/dx and range tables from 10 eV  to 600 MeV in 160 bins
+      Lambda tables from threshold to 600 MeV, 20 bins/decade, spline: 1
+      LPM flag: 1 for E > 0.6 GeV,  VertexHighEnergyTh(GeV)= 100000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             eBremSB : Emin=    1 MeV Emax=  600 MeV  AngularGen2BS
+
+e-_G4DNAElectronSolvation:  for e- SubType=58 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNAOneStepThermalizationModel_Meesungnoen2002 : Emin=    0 eV  Emax=  7.4 eV 
+          DummyModel : Emin=  7.4 eV  Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+e-_G4DNAElastic:  for e- SubType=51 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNAChampionElasticModel : Emin=    0 eV  Emax=    1 MeV
+          DummyModel : Emin=    1 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+e-_G4DNAExcitation:  for e- SubType=52 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNABornExcitationModel : Emin=    0 eV  Emax=    1 MeV
+          DummyModel : Emin=    1 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+e-_G4DNAIonisation:  for e- SubType=53 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNABornIonisationModel : Emin=    0 eV  Emax=    1 MeV  deltaBorn Fluo
+          DummyModel : Emin=    1 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+e-_G4DNAVibExcitation:  for e- SubType=54 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNASancheExcitationModel : Emin=    0 eV  Emax=  100 eV 
+          DummyModel : Emin=  100 eV  Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+e-_G4DNAAttachment:  for e- SubType=55 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNAMeltonAttachmentModel : Emin=    0 eV  Emax=   13 eV 
+          DummyModel : Emin=   13 eV  Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+msc:  for e+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  GoudsmitSaunderson : Emin=    0 eV  Emax=  600 MeV Nbins=140 100 eV  - 600 MeV
+          StepLim=SafetyPlus Rfact=0.08 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=3 Llim=1 mm
+
+eIoni:  for e+  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 600 MeV in 160 bins
+      Lambda tables from threshold to 600 MeV, 20 bins/decade, spline: 1
+      StepFunction=(0.2, 0.01 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        MollerBhabha : Emin=    0 eV  Emax=  600 MeV  deltaVI
+
+eBrem:  for e+  XStype:4  SubType=3
+      dE/dx and range tables from 10 eV  to 600 MeV in 160 bins
+      Lambda tables from threshold to 600 MeV, 20 bins/decade, spline: 1
+      LPM flag: 1 for E > 0.6 GeV,  VertexHighEnergyTh(GeV)= 100000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             eBremSB : Emin=    0 eV  Emax=  600 MeV  AngularGen2BS
+
+annihil:  for e+ XStype:2 SubType=5 AtRestModel:Allison BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            eplus2gg : Emin=    0 eV  Emax=  600 MeV
+
+msc:  for proton  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    1 MeV Emax=  600 MeV Nbins=60   1 MeV - 600 MeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=3 Llim=1 mm
+
+hIoni:  for proton  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 600 MeV in 160 bins
+      Lambda tables from threshold to 600 MeV, 20 bins/decade, spline: 1
+      StepFunction=(0.1, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+          BetheBloch : Emin=  300 MeV Emax=  600 MeV  deltaVI
+
+proton_G4DNAElastic:  for proton SubType=51 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  DNAIonElasticModel : Emin=    0 eV  Emax=    1 MeV
+          DummyModel : Emin=    1 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+proton_G4DNAExcitation:  for proton SubType=52 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNAMillerGreenExcitationModel : Emin=    0 eV  Emax=  500 keV
+DNABornExcitationModel : Emin=  500 keV Emax=  100 MeV
+DNARPWBAExcitationModel : Emin=  100 MeV Emax=  300 MeV
+          DummyModel : Emin=  300 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+proton_G4DNAIonisation:  for proton SubType=53 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNARuddIonisationExtendedModel : Emin=    0 eV  Emax=  500 keV  deltaRudd Fluo
+DNABornIonisationModel : Emin=  500 keV Emax=  100 MeV  deltaBorn Fluo
+DNARPWBAIonisationModel : Emin=  100 MeV Emax=  300 MeV  deltaBorn Fluo
+          DummyModel : Emin=  300 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+proton_G4DNAChargeDecrease:  for proton SubType=56 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNADingfelderChargeDecreaseModel : Emin=    0 eV  Emax=  100 MeV
+          DummyModel : Emin=  100 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+msc:  for GenericIon  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    1 MeV Emax=  600 MeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=3 Llim=1 mm
+
+ionIoni:  for GenericIon  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 600 MeV in 160 bins
+      Lambda tables from threshold to 600 MeV, 20 bins/decade, spline: 1
+      StepFunction=(0.1, 0.001 mm), integ: 3, fluct: 1, linLossLim= 0.02
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+          BetheBloch : Emin=  300 MeV Emax=  600 MeV  deltaVI
+
+GenericIon_G4DNAIonisation:  for GenericIon SubType=53 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNAIonIonisationModel : Emin=    0 eV  Emax=  300 MeV
+          DummyModel : Emin=  300 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+nuclearStopping:  for GenericIon SubType=8 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   ICRU49NucStopping : Emin=    0 eV  Emax=    1 MeV
+
+msc:  for alpha  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    1 MeV Emax=  600 MeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=3 Llim=1 mm
+
+ionIoni:  for alpha  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 600 MeV in 160 bins
+      Lambda tables from threshold to 600 MeV, 20 bins/decade, spline: 1
+      StepFunction=(0.1, 0.02 mm), integ: 3, fluct: 1, linLossLim= 0.02
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+          BetheBloch : Emin=  300 MeV Emax=  600 MeV  deltaVI
+
+alpha_G4DNAElastic:  for alpha SubType=51 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  DNAIonElasticModel : Emin=    0 eV  Emax=    1 MeV
+          DummyModel : Emin=    1 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+alpha_G4DNAExcitation:  for alpha SubType=52 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNAMillerGreenExcitationModel : Emin=    0 eV  Emax=  300 MeV
+          DummyModel : Emin=  300 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+alpha_G4DNAIonisation:  for alpha SubType=53 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNARuddIonisationExtendedModel : Emin=    0 eV  Emax=  300 MeV  deltaRudd Fluo
+          DummyModel : Emin=  300 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+alpha_G4DNAChargeDecrease:  for alpha SubType=56 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNADingfelderChargeDecreaseModel : Emin=    0 eV  Emax=  300 MeV
+          DummyModel : Emin=  300 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+msc:  for alpha+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    1 MeV Emax=  600 MeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=3 Llim=1 mm
+
+hIoni:  for alpha+  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 600 MeV in 160 bins
+      Lambda tables from threshold to 600 MeV, 20 bins/decade, spline: 1
+      StepFunction=(0.1, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+          BetheBloch : Emin=  300 MeV Emax=  600 MeV  deltaVI
+
+alpha+_G4DNAElastic:  for alpha+ SubType=51 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  DNAIonElasticModel : Emin=    0 eV  Emax=    1 MeV
+          DummyModel : Emin=    1 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+alpha+_G4DNAExcitation:  for alpha+ SubType=52 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNAMillerGreenExcitationModel : Emin=    0 eV  Emax=  300 MeV
+          DummyModel : Emin=  300 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+alpha+_G4DNAIonisation:  for alpha+ SubType=53 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNARuddIonisationExtendedModel : Emin=    0 eV  Emax=  300 MeV  deltaRudd Fluo
+          DummyModel : Emin=  300 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+alpha+_G4DNAChargeIncrease:  for alpha+ SubType=57 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNADingfelderChargeIncreaseModel : Emin=    0 eV  Emax=  300 MeV
+          DummyModel : Emin=  300 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+alpha+_G4DNAChargeDecrease:  for alpha+ SubType=56 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNADingfelderChargeDecreaseModel : Emin=    0 eV  Emax=  300 MeV
+          DummyModel : Emin=  300 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+msc:  for anti_proton  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  600 MeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=3 Llim=1 mm
+
+hIoni:  for anti_proton  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 600 MeV in 160 bins
+      Lambda tables from threshold to 600 MeV, 20 bins/decade, spline: 1
+      StepFunction=(0.1, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=    2 MeV  deltaVI
+          BetheBloch : Emin=    2 MeV Emax=  600 MeV  deltaVI
+
+helium_G4DNAElastic:  for helium SubType=51 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  DNAIonElasticModel : Emin=    0 eV  Emax=    1 MeV
+          DummyModel : Emin=    1 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+helium_G4DNAExcitation:  for helium SubType=52 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNAMillerGreenExcitationModel : Emin=    0 eV  Emax=  300 MeV
+          DummyModel : Emin=  300 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+helium_G4DNAIonisation:  for helium SubType=53 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNARuddIonisationExtendedModel : Emin=    0 eV  Emax=  300 MeV  deltaRudd Fluo
+          DummyModel : Emin=  300 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+helium_G4DNAChargeIncrease:  for helium SubType=57 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNADingfelderChargeIncreaseModel : Emin=    0 eV  Emax=  300 MeV
+          DummyModel : Emin=  300 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+hydrogen_G4DNAElastic:  for hydrogen SubType=51 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  DNAIonElasticModel : Emin=    0 eV  Emax=    1 MeV
+          DummyModel : Emin=    1 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+hydrogen_G4DNAExcitation:  for hydrogen SubType=52 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNAMillerGreenExcitationModel : Emin=    0 eV  Emax=  500 keV
+          DummyModel : Emin=  500 keV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+hydrogen_G4DNAIonisation:  for hydrogen SubType=53 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNARuddIonisationExtendedModel : Emin=    0 eV  Emax=  100 MeV  deltaRudd Fluo
+          DummyModel : Emin=  100 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+hydrogen_G4DNAChargeIncrease:  for hydrogen SubType=57 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+DNADingfelderChargeIncreaseModel : Emin=    0 eV  Emax=  100 MeV
+          DummyModel : Emin=  100 MeV Emax=  600 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+msc:  for kaon+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  600 MeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=3 Llim=1 mm
+
+hIoni:  for kaon+  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 600 MeV in 160 bins
+      Lambda tables from threshold to 600 MeV, 20 bins/decade, spline: 1
+      StepFunction=(0.1, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=1.05231 MeV  deltaVI
+          BetheBloch : Emin=1.05231 MeV Emax=  600 MeV  deltaVI
+
+msc:  for kaon-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  600 MeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=3 Llim=1 mm
+
+hIoni:  for kaon-  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 600 MeV in 160 bins
+      Lambda tables from threshold to 600 MeV, 20 bins/decade, spline: 1
+      StepFunction=(0.1, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=1.05231 MeV  deltaVI
+          BetheBloch : Emin=1.05231 MeV Emax=  600 MeV  deltaVI
+
+msc:  for mu+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  600 MeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=3 Llim=1 mm
+
+hIoni:  for mu+  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 600 MeV in 160 bins
+      Lambda tables from threshold to 600 MeV, 20 bins/decade, spline: 1
+      StepFunction=(0.1, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=225.219 keV  deltaVI
+          BetheBloch : Emin=225.219 keV Emax=  600 MeV  deltaVI
+
+msc:  for mu-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  600 MeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=3 Llim=1 mm
+
+hIoni:  for mu-  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 600 MeV in 160 bins
+      Lambda tables from threshold to 600 MeV, 20 bins/decade, spline: 1
+      StepFunction=(0.1, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=225.219 keV  deltaVI
+          BetheBloch : Emin=225.219 keV Emax=  600 MeV  deltaVI
+
+msc:  for pi+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  600 MeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=3 Llim=1 mm
+
+hIoni:  for pi+  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 600 MeV in 160 bins
+      Lambda tables from threshold to 600 MeV, 20 bins/decade, spline: 1
+      StepFunction=(0.1, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=297.505 keV  deltaVI
+          BetheBloch : Emin=297.505 keV Emax=  600 MeV  deltaVI
+
+msc:  for pi-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  600 MeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=3 Llim=1 mm
+
+hIoni:  for pi-  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 600 MeV in 160 bins
+      Lambda tables from threshold to 600 MeV, 20 bins/decade, spline: 1
+      StepFunction=(0.1, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=297.505 keV  deltaVI
+          BetheBloch : Emin=297.505 keV Emax=  600 MeV  deltaVI
+
+=========================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Initializing workers...
+=========================================================================
+
+[Message] Chemical reactions
+------------------------------------------------------------------------------
+H^0 + H^0 -> H_2^0
+--> Type: 1, k_obs: 5.03e+09 (M*s)^-1, Reff: 0.09 nm, Preac: 100.000 %
+------------------------------------------------------------------------------
+e_aq^-1 + H^0 -> OH^-1 + H_2^0
+--> Type: 1, k_obs: 2.50e+10 (M*s)^-1, Reff: 0.28 nm, Preac: 100.000 %
+------------------------------------------------------------------------------
+H^0 + °O^0 -> °OH^0
+--> Type: 1, k_obs: 2.02e+10 (M*s)^-1, Reff: 0.30 nm, Preac: 100.000 %
+------------------------------------------------------------------------------
+H^0 + O^-1 -> OH^-1
+--> Type: 1, k_obs: 2.00e+10 (M*s)^-1, Reff: 0.29 nm, Preac: 100.000 %
+------------------------------------------------------------------------------
+°OH^0 + °O^0 -> HO_2°^0
+--> Type: 1, k_obs: 2.02e+10 (M*s)^-1, Reff: 0.64 nm, Preac: 100.000 %
+------------------------------------------------------------------------------
+HO_2°^0 + °O^0 -> O_2^0 + °OH^0
+--> Type: 1, k_obs: 2.02e+10 (M*s)^-1, Reff: 0.62 nm, Preac: 100.000 %
+------------------------------------------------------------------------------
+°O^0 + °O^0 -> O_2^0
+--> Type: 1, k_obs: 2.20e+10 (M*s)^-1, Reff: 1.45 nm, Preac: 100.000 %
+------------------------------------------------------------------------------
+e_aq^-1 + e_aq^-1 -> OH^-1 + OH^-1 + H_2^0
+--> Type: 3, k_obs: 6.36e+09 (M*s)^-1, Reff: 0.17 nm, rc: 0.71 nm,
+    Preac: 100.000 %
+------------------------------------------------------------------------------
+H3O^1 + OH^-1 -> None
+--> Type: 3, k_obs: 1.13e+11 (M*s)^-1, Reff: 1.01 nm, rc: -0.71 nm,
+    Preac: 100.000 %
+------------------------------------------------------------------------------
+H3O^1 + O_3^-1 -> °OH^0 + O_2^0
+--> Type: 3, k_obs: 9.00e+10 (M*s)^-1, Reff: 1.04 nm, rc: -0.71 nm,
+    Preac: 100.000 %
+------------------------------------------------------------------------------
+°OH^0 + H^0 -> None
+--> Type: 2, k_obs: 1.55e+10 (M*s)^-1, Reff: 0.41 nm, k_dif: 2.85e+10 (M*s)^-1, 
+    k_act: 3.39e+10 (M*s)^-1, Preac: 32.987 %, alpha: 5.337 nm^-1
+------------------------------------------------------------------------------
+H^0 + H2O2^0 -> °OH^0
+--> Type: 2, k_obs: 3.50e+07 (M*s)^-1, Reff: 0.40 nm, k_dif: 2.82e+10 (M*s)^-1, 
+    k_act: 3.50e+07 (M*s)^-1, Preac: 0.052 %, alpha: 2.503 nm^-1
+------------------------------------------------------------------------------
+H^0 + OH^-1 -> e_aq^-1
+--> Type: 2, k_obs: 2.51e+07 (M*s)^-1, Reff: 0.52 nm, k_dif: 4.84e+10 (M*s)^-1, 
+    k_act: 2.51e+07 (M*s)^-1, Preac: 0.019 %, alpha: 1.924 nm^-1
+------------------------------------------------------------------------------
+H^0 + O_2^0 -> HO_2°^0
+--> Type: 2, k_obs: 2.10e+10 (M*s)^-1, Reff: 0.36 nm, k_dif: 2.56e+10 (M*s)^-1, 
+    k_act: 1.17e+11 (M*s)^-1, Preac: 67.028 %, alpha: 15.434 nm^-1
+------------------------------------------------------------------------------
+H^0 + HO_2°^0 -> H2O2^0
+--> Type: 2, k_obs: 1.00e+10 (M*s)^-1, Reff: 0.40 nm, k_dif: 2.82e+10 (M*s)^-1, 
+    k_act: 1.55e+10 (M*s)^-1, Preac: 18.801 %, alpha: 3.877 nm^-1
+------------------------------------------------------------------------------
+H^0 + O_2^-1 -> HO_2^-1
+--> Type: 2, k_obs: 1.00e+10 (M*s)^-1, Reff: 0.41 nm, k_dif: 2.71e+10 (M*s)^-1, 
+    k_act: 1.58e+10 (M*s)^-1, Preac: 19.458 %, alpha: 3.861 nm^-1
+------------------------------------------------------------------------------
+°OH^0 + °OH^0 -> H2O2^0
+--> Type: 2, k_obs: 5.50e+09 (M*s)^-1, Reff: 0.44 nm, k_dif: 7.33e+09 (M*s)^-1, 
+    k_act: 2.21e+10 (M*s)^-1, Preac: 54.481 %, alpha: 9.120 nm^-1
+------------------------------------------------------------------------------
+°OH^0 + H2O2^0 -> HO_2°^0
+--> Type: 2, k_obs: 2.88e+07 (M*s)^-1, Reff: 0.43 nm, k_dif: 1.46e+10 (M*s)^-1, 
+    k_act: 2.89e+07 (M*s)^-1, Preac: 0.079 %, alpha: 2.330 nm^-1
+------------------------------------------------------------------------------
+°OH^0 + H_2^0 -> H^0
+--> Type: 2, k_obs: 3.28e+07 (M*s)^-1, Reff: 0.36 nm, k_dif: 1.91e+10 (M*s)^-1, 
+    k_act: 3.29e+07 (M*s)^-1, Preac: 0.077 %, alpha: 2.783 nm^-1
+------------------------------------------------------------------------------
+e_aq^-1 + °OH^0 -> OH^-1
+--> Type: 2, k_obs: 2.95e+10 (M*s)^-1, Reff: 0.72 nm, k_dif: 3.87e+10 (M*s)^-1, 
+    k_act: 1.24e+11 (M*s)^-1, Preac: 47.974 %, alpha: 5.849 nm^-1
+------------------------------------------------------------------------------
+°OH^0 + OH^-1 -> O^-1
+--> Type: 2, k_obs: 6.30e+09 (M*s)^-1, Reff: 0.55 nm, k_dif: 3.12e+10 (M*s)^-1, 
+    k_act: 7.89e+09 (M*s)^-1, Preac: 8.028 %, alpha: 2.278 nm^-1
+------------------------------------------------------------------------------
+°OH^0 + HO_2°^0 -> O_2^0
+--> Type: 2, k_obs: 7.90e+09 (M*s)^-1, Reff: 0.43 nm, k_dif: 1.46e+10 (M*s)^-1, 
+    k_act: 1.72e+10 (M*s)^-1, Preac: 32.059 %, alpha: 5.050 nm^-1
+------------------------------------------------------------------------------
+°OH^0 + O_2^-1 -> O_2^0 + OH^-1
+--> Type: 2, k_obs: 1.07e+10 (M*s)^-1, Reff: 0.44 nm, k_dif: 1.32e+10 (M*s)^-1, 
+    k_act: 5.74e+10 (M*s)^-1, Preac: 63.412 %, alpha: 12.188 nm^-1
+------------------------------------------------------------------------------
+°OH^0 + HO_2^-1 -> HO_2°^0 + OH^-1
+--> Type: 2, k_obs: 8.32e+09 (M*s)^-1, Reff: 0.47 nm, k_dif: 1.28e+10 (M*s)^-1, 
+    k_act: 2.38e+10 (M*s)^-1, Preac: 41.450 %, alpha: 6.075 nm^-1
+------------------------------------------------------------------------------
+°OH^0 + O^-1 -> HO_2^-1
+--> Type: 2, k_obs: 1.00e+09 (M*s)^-1, Reff: 0.47 nm, k_dif: 1.49e+10 (M*s)^-1, 
+    k_act: 1.07e+09 (M*s)^-1, Preac: 2.665 %, alpha: 2.280 nm^-1
+------------------------------------------------------------------------------
+°OH^0 + O_3^-1 -> O_2^-1 + HO_2°^0
+--> Type: 2, k_obs: 8.50e+09 (M*s)^-1, Reff: 0.42 nm, k_dif: 1.33e+10 (M*s)^-1, 
+    k_act: 2.34e+10 (M*s)^-1, Preac: 41.723 %, alpha: 6.554 nm^-1
+------------------------------------------------------------------------------
+e_aq^-1 + H2O2^0 -> OH^-1 + °OH^0
+--> Type: 2, k_obs: 1.10e+10 (M*s)^-1, Reff: 0.71 nm, k_dif: 3.87e+10 (M*s)^-1, 
+    k_act: 1.54e+10 (M*s)^-1, Preac: 10.332 %, alpha: 1.968 nm^-1
+------------------------------------------------------------------------------
+H2O2^0 + OH^-1 -> HO_2^-1
+--> Type: 2, k_obs: 4.71e+08 (M*s)^-1, Reff: 0.54 nm, k_dif: 3.11e+10 (M*s)^-1, 
+    k_act: 4.78e+08 (M*s)^-1, Preac: 0.535 %, alpha: 1.880 nm^-1
+------------------------------------------------------------------------------
+H2O2^0 + °O^0 -> HO_2°^0 + °OH^0
+--> Type: 2, k_obs: 1.60e+09 (M*s)^-1, Reff: 0.41 nm, k_dif: 1.33e+10 (M*s)^-1, 
+    k_act: 1.82e+09 (M*s)^-1, Preac: 5.344 %, alpha: 2.771 nm^-1
+------------------------------------------------------------------------------
+H2O2^0 + O^-1 -> HO_2°^0 + OH^-1
+--> Type: 2, k_obs: 5.55e+08 (M*s)^-1, Reff: 0.46 nm, k_dif: 1.50e+10 (M*s)^-1, 
+    k_act: 5.76e+08 (M*s)^-1, Preac: 1.467 %, alpha: 2.258 nm^-1
+------------------------------------------------------------------------------
+H_2^0 + °O^0 -> H^0 + °OH^0
+--> Type: 2, k_obs: 4.77e+03 (M*s)^-1, Reff: 0.34 nm, k_dif: 1.75e+10 (M*s)^-1, 
+    k_act: 4.77e+03 (M*s)^-1, Preac: 0.000 %, alpha: 2.941 nm^-1
+------------------------------------------------------------------------------
+H_2^0 + O^-1 -> H^0 + OH^-1
+--> Type: 2, k_obs: 1.21e+08 (M*s)^-1, Reff: 0.39 nm, k_dif: 2.01e+10 (M*s)^-1, 
+    k_act: 1.22e+08 (M*s)^-1, Preac: 0.258 %, alpha: 2.580 nm^-1
+------------------------------------------------------------------------------
+e_aq^-1 + O_2^0 -> O_2^-1
+--> Type: 2, k_obs: 1.74e+10 (M*s)^-1, Reff: 0.67 nm, k_dif: 3.70e+10 (M*s)^-1, 
+    k_act: 3.28e+10 (M*s)^-1, Preac: 21.135 %, alpha: 2.817 nm^-1
+------------------------------------------------------------------------------
+e_aq^-1 + HO_2°^0 -> HO_2^-1
+--> Type: 2, k_obs: 1.29e+10 (M*s)^-1, Reff: 0.71 nm, k_dif: 3.87e+10 (M*s)^-1, 
+    k_act: 1.94e+10 (M*s)^-1, Preac: 12.670 %, alpha: 2.113 nm^-1
+------------------------------------------------------------------------------
+OH^-1 + HO_2°^0 -> O_2^-1
+--> Type: 2, k_obs: 6.30e+09 (M*s)^-1, Reff: 0.54 nm, k_dif: 3.11e+10 (M*s)^-1, 
+    k_act: 7.90e+09 (M*s)^-1, Preac: 8.165 %, alpha: 2.323 nm^-1
+------------------------------------------------------------------------------
+OH^-1 + °O^0 -> HO_2^-1
+--> Type: 2, k_obs: 4.20e+08 (M*s)^-1, Reff: 0.53 nm, k_dif: 2.93e+10 (M*s)^-1, 
+    k_act: 4.26e+08 (M*s)^-1, Preac: 0.512 %, alpha: 1.914 nm^-1
+------------------------------------------------------------------------------
+O_2^0 + °O^0 -> O_3^0
+--> Type: 2, k_obs: 4.00e+09 (M*s)^-1, Reff: 0.37 nm, k_dif: 1.23e+10 (M*s)^-1, 
+    k_act: 5.92e+09 (M*s)^-1, Preac: 17.440 %, alpha: 4.002 nm^-1
+------------------------------------------------------------------------------
+O_2^0 + O^-1 -> O_3^-1
+--> Type: 2, k_obs: 3.70e+09 (M*s)^-1, Reff: 0.42 nm, k_dif: 1.40e+10 (M*s)^-1, 
+    k_act: 5.03e+09 (M*s)^-1, Preac: 12.811 %, alpha: 3.237 nm^-1
+------------------------------------------------------------------------------
+HO_2°^0 + HO_2°^0 -> H2O2^0 + O_2^0
+--> Type: 2, k_obs: 9.80e+05 (M*s)^-1, Reff: 0.42 nm, k_dif: 7.31e+09 (M*s)^-1, 
+    k_act: 9.80e+05 (M*s)^-1, Preac: 0.005 %, alpha: 2.381 nm^-1
+------------------------------------------------------------------------------
+HO_2°^0 + O_2^-1 -> HO_2^-1 + O_2^0
+--> Type: 2, k_obs: 9.70e+07 (M*s)^-1, Reff: 0.43 nm, k_dif: 1.32e+10 (M*s)^-1, 
+    k_act: 9.77e+07 (M*s)^-1, Preac: 0.298 %, alpha: 2.343 nm^-1
+------------------------------------------------------------------------------
+HO_2^-1 + °O^0 -> O_2^-1 + °OH^0
+--> Type: 2, k_obs: 5.30e+09 (M*s)^-1, Reff: 0.45 nm, k_dif: 1.16e+10 (M*s)^-1, 
+    k_act: 9.77e+09 (M*s)^-1, Preac: 24.858 %, alpha: 4.098 nm^-1
+------------------------------------------------------------------------------
+e_aq^-1 + H3O^1 -> H^0
+--> Type: 4, k_obs: 2.11e+10 (M*s)^-1, Reff: 1.16 nm, k_dif: 1.26e+11 (M*s)^-1, 
+    k_act: 2.53e+10 (M*s)^-1, Preac: 3.857 %
+------------------------------------------------------------------------------
+e_aq^-1 + O_2^-1 -> H2O2^0 + OH^-1 + OH^-1
+--> Type: 4, k_obs: 1.29e+10 (M*s)^-1, Reff: 0.42 nm, k_dif: 2.12e+10 (M*s)^-1, 
+    k_act: 3.29e+10 (M*s)^-1, Preac: 38.683 %
+------------------------------------------------------------------------------
+e_aq^-1 + HO_2^-1 -> O^-1 + OH^-1
+--> Type: 4, k_obs: 3.51e+09 (M*s)^-1, Reff: 0.45 nm, k_dif: 2.14e+10 (M*s)^-1, 
+    k_act: 4.20e+09 (M*s)^-1, Preac: 7.130 %
+------------------------------------------------------------------------------
+e_aq^-1 + O^-1 -> OH^-1 + OH^-1
+--> Type: 4, k_obs: 2.31e+10 (M*s)^-1, Reff: 0.45 nm, k_dif: 2.35e+10 (M*s)^-1, 
+    k_act: 1.43e+12 (M*s)^-1, Preac: 95.994 %
+------------------------------------------------------------------------------
+H3O^1 + O_2^-1 -> HO_2°^0
+--> Type: 4, k_obs: 4.78e+10 (M*s)^-1, Reff: 0.91 nm, k_dif: 7.74e+10 (M*s)^-1, 
+    k_act: 1.25e+11 (M*s)^-1, Preac: 28.033 %
+------------------------------------------------------------------------------
+H3O^1 + HO_2^-1 -> H2O2^0
+--> Type: 4, k_obs: 5.00e+10 (M*s)^-1, Reff: 0.94 nm, k_dif: 7.70e+10 (M*s)^-1, 
+    k_act: 1.42e+11 (M*s)^-1, Preac: 30.397 %
+------------------------------------------------------------------------------
+H3O^1 + O^-1 -> °OH^0
+--> Type: 4, k_obs: 4.78e+10 (M*s)^-1, Reff: 0.94 nm, k_dif: 8.13e+10 (M*s)^-1, 
+    k_act: 1.16e+11 (M*s)^-1, Preac: 25.208 %
+------------------------------------------------------------------------------
+O_2^-1 + O^-1 -> O_2^0 + OH^-1 + OH^-1
+--> Type: 4, k_obs: 6.00e+08 (M*s)^-1, Reff: 0.20 nm, k_dif: 5.70e+09 (M*s)^-1, 
+    k_act: 6.71e+08 (M*s)^-1, Preac: 6.505 %
+------------------------------------------------------------------------------
+HO_2^-1 + O^-1 -> O_2^-1 + OH^-1
+--> Type: 4, k_obs: 3.50e+08 (M*s)^-1, Reff: 0.23 nm, k_dif: 5.81e+09 (M*s)^-1, 
+    k_act: 3.72e+08 (M*s)^-1, Preac: 3.477 %
+------------------------------------------------------------------------------
+O^-1 + O^-1 -> H2O2^0 + OH^-1 + OH^-1
+--> Type: 4, k_obs: 1.00e+08 (M*s)^-1, Reff: 0.23 nm, k_dif: 3.42e+09 (M*s)^-1, 
+    k_act: 1.03e+08 (M*s)^-1, Preac: 1.666 %
+------------------------------------------------------------------------------
+O^-1 + O_3^-1 -> O_2^-1 + O_2^-1
+--> Type: 4, k_obs: 7.00e+08 (M*s)^-1, Reff: 0.18 nm, k_dif: 5.58e+09 (M*s)^-1, 
+    k_act: 8.00e+08 (M*s)^-1, Preac: 8.067 %
+------------------------------------------------------------------------------
+O_3^-1 + None^0 -> H3O^1 + O_2^-1
+--> Type: 6, k_obs: 2.66e+03 s^-1
+------------------------------------------------------------------------------
+HO_2°^0 + H2O^0 -> H3O^1 + O_2^-1
+--> Type: 6, k_obs: 7.15e+05 s^-1
+------------------------------------------------------------------------------
+H^0 + H2O^0 -> e_aq^-1 + H3O^1
+--> Type: 6, k_obs: 5.94e+00 s^-1
+------------------------------------------------------------------------------
+e_aq^-1 + H2O^0 -> H^0 + OH^-1
+--> Type: 6, k_obs: 1.58e+01 s^-1
+------------------------------------------------------------------------------
+O_2^-1 + H2O^0 -> HO_2°^0 + OH^-1
+--> Type: 6, k_obs: 1.50e-01 s^-1
+------------------------------------------------------------------------------
+HO_2^-1 + H2O^0 -> H2O2^0 + OH^-1
+--> Type: 6, k_obs: 1.36e+06 s^-1
+------------------------------------------------------------------------------
+°O^0 + H2O^0 -> °OH^0 + °OH^0
+--> Type: 6, k_obs: 1.00e+03 s^-1
+------------------------------------------------------------------------------
+O^-1 + H2O^0 -> °OH^0 + OH^-1
+--> Type: 6, k_obs: 1.36e+06 s^-1
+------------------------------------------------------------------------------
+e_aq^-1 + H3O^1 -> H^0
+--> Type: 6, k_obs: 2.09e+03 s^-1
+------------------------------------------------------------------------------
+O_2^-1 + H3O^1 -> HO_2°^0
+--> Type: 6, k_obs: 4.73e+03 s^-1
+------------------------------------------------------------------------------
+OH^-1 + H3O^1 -> None
+--> Type: 6, k_obs: 1.12e+04 s^-1
+------------------------------------------------------------------------------
+H3O^1 + OH^-1 -> None
+--> Type: 6, k_obs: 1.12e+04 s^-1
+------------------------------------------------------------------------------
+HO_2^-1 + H3O^1 -> H2O2^0
+--> Type: 6, k_obs: 4.95e+03 s^-1
+------------------------------------------------------------------------------
+O^-1 + H3O^1 -> °OH^0
+--> Type: 6, k_obs: 4.73e+03 s^-1
+------------------------------------------------------------------------------
+O_3^-1 + H3O^1 -> °OH^0 + O_2^0
+--> Type: 6, k_obs: 8.91e+03 s^-1
+------------------------------------------------------------------------------
+H^0 + OH^-1 -> e_aq^-1
+--> Type: 6, k_obs: 2.48e+00 s^-1
+------------------------------------------------------------------------------
+°OH^0 + OH^-1 -> O^-1
+--> Type: 6, k_obs: 6.24e+02 s^-1
+------------------------------------------------------------------------------
+H2O2^0 + OH^-1 -> HO_2^-1
+--> Type: 6, k_obs: 4.66e+01 s^-1
+------------------------------------------------------------------------------
+HO_2°^0 + OH^-1 -> O_2^-1
+--> Type: 6, k_obs: 6.24e+02 s^-1
+------------------------------------------------------------------------------
+°O^0 + OH^-1 -> HO_2^-1
+--> Type: 6, k_obs: 4.16e+01 s^-1
+------------------------------------------------------------------------------
+
+[MESSAGE] Start: Thu Jul 17 14:02:34 2025
+
+============================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 100 tasks with 100 events/task...
+============================================================================================
+
+[MESSAGE] event-loop check point: 1000 events processed.
+[MESSAGE] event-loop check point: 2000 events processed.
+[MESSAGE] event-loop check point: 3000 events processed.
+[MESSAGE] event-loop check point: 4000 events processed.
+[MESSAGE] event-loop check point: 5000 events processed.
+[MESSAGE] event-loop check point: 6000 events processed.
+[MESSAGE] event-loop check point: 7000 events processed.
+[MESSAGE] event-loop check point: 8000 events processed.
+[MESSAGE] event-loop check point: 9000 events processed.
+[MESSAGE] End: Thu Jul 17 14:02:44 2025
+
+================================================================
+ Run summary
+ - Thread Number: 16
+ - Total Event Number: 10000
+ - Total Elapsed Time: 10.07 sec
+ - Throughput: 59582.9 events/min.
+ *** Physics Regression (G-value)
+ - Hydroxyl radical: 0.781597, 0.634992
+ - Solvated electron: 4.22268, 2.95812
+ - H2O2: 0.0310062, 0.571931
+================================================================
+
