@@ -43,7 +43,8 @@ DATASET = {
     '11.1.3': 'Geant4 11.1.3 (IRT)',
     '11.2.2': 'Geant4 11.2.2 (IRT)',
     '11.3.2': 'Geant4 11.3.2 (IRT)',
-    '11.4.0-beta': 'Geant4 11.4.0-beta (IRT)'
+    '11.4.0-beta': 'Geant4 11.4.0-beta (IRT)',
+    '11.3-ref6': 'Geant4 11.3-ref6 (IRT)'
 }
 
 CPUINFO = 'AMD Ryzen 9 9950X (16c/32t)'
@@ -53,11 +54,13 @@ FIGSIZE_X = 6
 FIGSIZE_Y = 4
 DPI = 200
 FONTSIZE = 14
-FONTSIZE_LEGEND = 10
+FONTSIZE_LEGEND = 8
 LINEWIDTH = 3.0
 
 XLABEL = 'Thread Number'
 YLABEL = 'Throughput (#Events/min)'
+
+LINESTYLES = ["dashed", "dotted", "dashdot", "solid"]
 
 #-------------------------------------------------------------------------------
 def load_data(dataset):
@@ -93,10 +96,12 @@ def load_data(dataset):
 #-------------------------------------------------------------------------------
 def makeplot(scores, pdf):
     fig, ax = plt.subplots(figsize=(FIGSIZE_X, FIGSIZE_Y), dpi=DPI)
+    counter = 0
     for key in scores.keys():
         data = scores[key]
-        ax.plot(data['thread_number'], data['throughput'],
-                label=DATASET[key], linewidth=LINEWIDTH)
+        ax.plot(data['thread_number'], data['throughput'], label=DATASET[key],
+                linewidth=LINEWIDTH, linestyle=LINESTYLES[counter%4])
+        counter += 1
 
     ax.set_title(CPUINFO, fontsize=FONTSIZE)
     ax.set_xlabel(XLABEL, fontsize=FONTSIZE)

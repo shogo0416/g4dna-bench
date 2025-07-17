@@ -44,6 +44,7 @@ INPUTS = [
     "./11.2.2/sim_1mt/gval.pkl",
     "./11.3.2/sim_1mt/gval.pkl",
     "./11.4.0-beta/sim_1mt/gval.pkl",
+    "./11.3-ref6/sim_1mt/gval.pkl",
 ]
 
 LABELS = [
@@ -51,6 +52,7 @@ LABELS = [
     "IRT (11.2.2)",
     "IRT (11.3.2)",
     "IRT (11.4.0-beta)",
+    "IRT (11.3-ref6)",
 ]
 
 XAXIS_LOG_SCALE = True
