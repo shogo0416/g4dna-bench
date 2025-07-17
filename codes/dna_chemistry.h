@@ -32,6 +32,7 @@
 #include "G4EmDNAChemistry_option1.hh"
 #include "G4EmDNAChemistry_option2.hh"
 #include "G4EmDNAChemistry_option3.hh"
+#include "G4Version.hh"
 
 //==============================================================================
 class DNABaseChemistry {
@@ -64,7 +65,9 @@ class DNAChemistry : public DNABaseChemistry,
                      public G4EmDNAChemistry {
 public:
   using G4EmDNAChemistry::G4EmDNAChemistry;
+#if G4VERSION_NUMBER >= 1100
   void ConstructDissociationChannels() override;
+#endif
 };
 
 //==============================================================================
@@ -72,7 +75,9 @@ class DNAChemistryOpt1 : public DNABaseChemistry,
                          public G4EmDNAChemistry_option1 {
 public:
   using G4EmDNAChemistry_option1::G4EmDNAChemistry_option1;
+#if G4VERSION_NUMBER >= 1100
   void ConstructDissociationChannels() override;
+#endif
 };
 
 //==============================================================================
@@ -80,7 +85,9 @@ class DNAChemistryOpt2 : public DNABaseChemistry,
                          public G4EmDNAChemistry_option2 {
 public:
   using G4EmDNAChemistry_option2::G4EmDNAChemistry_option2;
+#if G4VERSION_NUMBER >= 1100
   void ConstructDissociationChannels() override;
+#endif
 };
 
 //==============================================================================
@@ -88,7 +95,9 @@ class DNAChemistryOpt3 : public DNABaseChemistry,
                          public G4EmDNAChemistry_option3 {
 public:
   using G4EmDNAChemistry_option3::G4EmDNAChemistry_option3;
+#if G4VERSION_NUMBER >= 1100
   void ConstructDissociationChannels() override;
+#endif
 };
 
 #endif // DNA_CHEMISTRY_H_

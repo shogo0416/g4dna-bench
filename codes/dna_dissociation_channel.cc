@@ -26,7 +26,8 @@
   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ==============================================================================*/
 #include "dna_dissociation_channel.h"
-#include "G4Version.hh"
+
+#if G4VERSION_NUMBER >= 1100
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4DNAWaterDissociationDisplacer.hh"
@@ -35,6 +36,7 @@
 #include "G4H2O.hh"
 
 //------------------------------------------------------------------------------
+
 void DNADissociationChannel::ConstructDissociationChannels(
   bool alt_B1A1_decay, bool alt_decay_vibH2O)
 {
@@ -1228,3 +1230,5 @@ void DNADissociationChannel::ConstructDissociationChannels(
 
   delete occ;
 }
+
+#endif // G4VERSION_NUMBER >= 1100

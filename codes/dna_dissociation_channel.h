@@ -28,6 +28,8 @@
 #ifndef DNA_DISSOCIATION_CHANNEL_H_
 #define DNA_DISSOCIATION_CHANNEL_H_
 
+#include "G4Version.hh"
+
 class DNADissociationChannel {
 public:
   // constructor
@@ -35,9 +37,11 @@ public:
   // destructor
   ~DNADissociationChannel() = default;
 
+#if G4VERSION_NUMBER >= 1100
   static void ConstructDissociationChannels(
     bool alt_B1A1_decay = false,
     bool alt_decay_vibH2O  = false);
+#endif
 };
 
 #endif // DNA_DISSOCIATION_CHANNEL_H_

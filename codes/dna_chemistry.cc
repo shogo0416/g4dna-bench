@@ -26,6 +26,8 @@
   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ==============================================================================*/
 #include "dna_chemistry.h"
+
+#if G4VERSION_NUMBER >= 1100
 #include "dna_dissociation_channel.h"
 #include "G4PhysicsConstructorFactory.hh"
 
@@ -61,3 +63,5 @@ void DNAChemistryOpt3::ConstructDissociationChannels()
   DNADissociationChannel::ConstructDissociationChannels(
     use_alt_B1A1_decay_, use_alt_decay_vibH2O_);
 }
+
+#endif // G4VERSION_NUMBER >= 1100
