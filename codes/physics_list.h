@@ -51,11 +51,11 @@ public:
 #if G4VERSION_NUMBER >= 1130
   void SetTimeStepModel(const std::string& name);
   void EnableMultipleIonisation(bool in);
+  DNABaseChemistry* GetBaseChemistry(const std::string& name);
 #endif
 
   G4VPhysicsConstructor* GetPhysics();
   G4VPhysicsConstructor* GetChemistry();
-  DNABaseChemistry* GetChemistry(const std::string& name);
 
   void ConstructProcess();
   void ConstructParticle();
@@ -68,8 +68,10 @@ private:
   G4VPhysicsConstructor* chem_list_;
 
 #if G4VERSION_NUMBER >= 1130
+  void SetAltChemistry(const std::string& name);
   void ConstructMultipleIonisationProcess();
   bool enable_mioni_;
+  DNABaseChemistry* base_chem_;
 #endif
 };
 
@@ -100,21 +102,24 @@ inline void PhysicsList::SetChemistry(G4VPhysicsConstructor* in)
 }
 
 //------------------------------------------------------------------------------
-inline DNABaseChemistry* PhysicsList::GetChemistry(const std::string& name)
+inline DNABaseChemistry* PhysicsList::GetBaseChemistry(const std::string& name)
 {
-  if (name == "DNAChemistry") {
+  if (!enable_mioni_) { return nullptr; }
+
+  if (name == "G4EmDNAChemistry") {
     auto* ptr = static_cast<DNAChemistry*>(GetChemistry());
     return static_cast<DNABaseChemistry*>(ptr);
-  } else if (name == "DNAChemistryOpt1") {
+  } else if (name == "G4EmDNAChemistry_option1") {
     auto* ptr = static_cast<DNAChemistryOpt1*>(GetChemistry());
     return static_cast<DNABaseChemistry*>(ptr);
-  } else if (name == "DNAChemistryOpt2") {
+  } else if (name == "G4EmDNAChemistry_option2") {
     auto* ptr = static_cast<DNAChemistryOpt2*>(GetChemistry());
     return static_cast<DNABaseChemistry*>(ptr);
-  } else if (name == "DNAChemistryOpt3") {
+  } else if (name == "G4EmDNAChemistry_option3") {
     auto* ptr = static_cast<DNAChemistryOpt3*>(GetChemistry());
     return static_cast<DNABaseChemistry*>(ptr);
   }
+
   return nullptr;
 }
 

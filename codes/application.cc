@@ -354,14 +354,14 @@ void Application::Setup()
   ::end_time = chemconfs.value("simulation_end_time", 1.0E+06) * ps;
 
 #if G4VERSION_NUMBER >= 1130
-  auto* chemlist = plist->GetChemistry(chemopt);
-  if (chemlist) {
+  auto* basechem = plist->GetBaseChemistry(chemopt);
+  if (basechem) {
     auto alt_B1A1_decay   = chemconfs.value("use_alternative_B1A1_decay",
                                             false);
     auto alt_decay_vibH2O = chemconfs.value("use_alternative_decay_vibH2O",
                                             false);
-    chemlist->UseAltB1A1Decay(alt_B1A1_decay);
-    chemlist->UseAltDecayVibH2O(alt_decay_vibH2O);
+    basechem->UseAltB1A1Decay(alt_B1A1_decay);
+    basechem->UseAltDecayVibH2O(alt_decay_vibH2O);
   }
   auto time_step_model = chemconfs.value("time_step_model", "IRT");
   plist->SetTimeStepModel(time_step_model);
