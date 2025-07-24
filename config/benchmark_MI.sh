@@ -35,10 +35,12 @@ BIN="bin/chem-bench"
 
 # Geant4 version
 #G4VERSION="11.3.2"
-G4VERSION="11.4.0-beta"
+#G4VERSION="11.4.0-beta"
+G4VERSION="dev"
 
 # physics and chemistry lists
-PHYSLIST="G4EmDNAPhysics_option8"
+#PHYSLIST="G4EmDNAPhysics_option8"
+PHYSLIST="G4EmDNAPhysics_option2"
 CHEMLIST="G4EmDNAChemistry_option3"
 
 # event number
@@ -46,6 +48,9 @@ EVENT_NUM=10000
 
 # thread number
 THREAD_NUM=32
+
+# use alternative dissociative decay channels
+USE_ALT_DECAY_CHANNELS=true
 
 # incident energy in MeV
 declare -A ENERGY=(
@@ -127,8 +132,8 @@ cat << EOF > ${config_filename}
   "chemistry_configs": {
     "chemistry_option" : "${CHEMLIST}",
     "time_step_model"  : "IRT",
-    "use_alternative_B1A1_decay"   : false,
-    "use_alternative_decay_vibH2O" : false,
+    "use_alternative_B1A1_decay"   : ${USE_ALT_DECAY_CHANNELS},
+    "use_alternative_decay_vibH2O" : ${USE_ALT_DECAY_CHANNELS},
     "use_g4_molecule_counter"      : false,
     "simulation_end_time"          : 1.0E+06
   },
@@ -314,7 +319,7 @@ done
 
 # set Geant4 environment
 g4major_version=($(echo $G4VERSION | cut -d '.' -f 1))
-if [ $g4major_version == 11 ]; then
+if [ $g4major_version == 11 ] || [ $g4major_version == "dev" ]; then
   source $HOME/setenv-geant4.sh $G4VERSION
 else
   source $HOME/setenv-geant4.sh $G4VERSION MT
