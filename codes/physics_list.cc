@@ -46,6 +46,10 @@
 #include "G4EmDNAChemistry_option3.hh"
 
 #if G4VERSION_NUMBER >= 1130
+#include "G4ParticleDefinition.hh"
+#include "G4Proton.hh"
+#include "G4Alpha.hh"
+#include "G4GenericIon.hh"
 #include "G4EmParameters.hh"
 #include "G4ChemTimeStepModel.hh"
 #include "G4DNADoubleIonisation.hh"
@@ -229,48 +233,55 @@ void PhysicsList::SetTimeStepModel(const std::string& name)
 //------------------------------------------------------------------------------
 void PhysicsList::ConstructMultipleIonisationProcess()
 {
-  auto ph = G4PhysicsListHelper::GetPhysicsListHelper();
-
-  auto piter = GetParticleIterator();
-  piter->reset();
-
-  while ((*piter)()) {
-
-    auto pdef = piter->value();
-    auto pname = pdef->GetParticleName();
-
-    if (pname == "proton") {
-
-      ph->RegisterProcess(
-        new G4DNADoubleIonisation("proton_G4DNADoubleIonisation"), pdef);
-      ph->RegisterProcess(
-        new G4DNATripleIonisation("proton_G4DNATripleIonisation"), pdef);
-      ph->RegisterProcess(
-        new G4DNAQuadrupleIonisation("proton_G4DNAQuadrupleIonisation"), pdef);
-
-    } else if (pname == "alpha") {
-
-      ph->RegisterProcess(
-        new G4DNADoubleIonisation("alpha_G4DNADoubleIonisation"), pdef);
-      ph->RegisterProcess(
-        new G4DNATripleIonisation("alpha_G4DNATripleIonisation"), pdef);
-      ph->RegisterProcess(
-        new G4DNAQuadrupleIonisation("alpha_G4DNAQuadrupleIonisation"), pdef);
-
-    } else if (pname == "GenericIon") {
-
-      // for carbon ions
-      ph->RegisterProcess(
-        new G4DNADoubleIonisation("GenericIon_G4DNADoubleIonisation"), pdef);
-      ph->RegisterProcess(
-        new G4DNATripleIonisation("GenericIon_G4DNATripleIonisation"), pdef);
-      ph->RegisterProcess(
-        new G4DNAQuadrupleIonisation("GenericIon_G4DNAQuadrupleIonisation"),
-        pdef);
-
+  auto BuildDoubleIonisation = [](const std::string& name,
+                                  G4ParticleDefinition* part) {
+    auto* ph = G4PhysicsListHelper::GetPhysicsListHelper();
+    if (!ph->RegisterProcess(new G4DNADoubleIonisation(name), part)) {
+      std::cout << "[WARNNING] Failed to set " << name << std::endl;
     }
+  };
 
-  }
+  auto BuildTripleIonisation = [](const std::string& name,
+                                  G4ParticleDefinition* part) {
+    auto* ph = G4PhysicsListHelper::GetPhysicsListHelper();
+    if (!ph->RegisterProcess(new G4DNATripleIonisation(name), part)) {
+      std::cout << "[WARNNING] Failed to set " << name << std::endl;
+    }
+  };
+
+  auto BuildQuadrupleIonisation = [](const std::string& name,
+                                     G4ParticleDefinition* part) {
+    auto* ph = G4PhysicsListHelper::GetPhysicsListHelper();
+    if (!ph->RegisterProcess(new G4DNAQuadrupleIonisation(name), part)) {
+      std::cout << "[WARNNING] Failed to set " << name << std::endl;
+    }
+  };
+
+  // for protons
+  auto* proton = G4Proton::Proton();
+  BuildDoubleIonisation("proton_G4DNADoubleIonisation", proton);
+  BuildTripleIonisation("proton_G4DNATripleIonisation", proton);
+  BuildQuadrupleIonisation("proton_G4DNAQuadrupleIonisation", proton);
+
+  // for alpha particles
+  auto* alphapp = G4Alpha::Alpha();
+  BuildDoubleIonisation("alpha_G4DNADoubleIonisation", alphapp);
+  BuildTripleIonisation("alpha_G4DNATripleIonisation", alphapp);
+  BuildQuadrupleIonisation("alpha_G4DNAQuadrupleIonisation", alphapp);
+
+  // for carbon ions
+  auto* gion = G4GenericIon::GenericIon();
+  BuildDoubleIonisation("GenericIon_G4DNADoubleIonisation", gion);
+  BuildTripleIonisation("GenericIon_G4DNATripleIonisation", gion);
+  BuildQuadrupleIonisation("GenericIon_G4DNAQuadrupleIonisation", gion);
+
+#if G4VERSION_NUMBER >= 1132 && G4VERSION_REFERENCE_TAG >= 6
+  // for hydrogen atoms
+  auto* hydrogen = G4DNAGenericIonsManager::Instance()->GetIon("hydrogen");
+  BuildDoubleIonisation("hydrogen_G4DNADoubleIonisation", hydrogen);
+  BuildTripleIonisation("hydrogen_G4DNATripleIonisation", hydrogen);
+  BuildQuadrupleIonisation("hydrogen_G4DNAQuadrupleIonisation", hydrogen);
+#endif
 
 }
 
