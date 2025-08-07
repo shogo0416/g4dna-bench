@@ -44,7 +44,8 @@ DATASET = {
     '11.2.2': 'Geant4 11.2.2 (IRT)',
     '11.3.2': 'Geant4 11.3.2 (IRT)',
     '11.4.0-beta': 'Geant4 11.4.0-beta (IRT)',
-    '11.3-ref6': 'Geant4 11.3-ref6 (IRT)'
+    '11.3-ref6': 'Geant4 11.3-ref6 (IRT)',
+    '11.3-ref7': 'Geant4 11.3-ref7 (IRT)'
 }
 
 CPUINFO = 'AMD Ryzen 9 9950X (16c/32t)'
